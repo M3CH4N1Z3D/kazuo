@@ -5,10 +5,10 @@ import ProtectedRoutes from "@/context/ProtectedRoutes";
 function inventario() {
   return (
     <div>
-      {/* <ProtectedRoutes> */}
+      <ProtectedRoutes>
         <Inventario/>
          
-      {/* </ProtectedRoutes> */}
+      </ProtectedRoutes>
     </div>
   );
 }

@@ -53,10 +53,12 @@ export const StoreForm = () => {
 
     try {
       setLoading(true);
+      const token = userData?.token || localStorage.getItem("token");
       const response = await fetch(`${kazuo_back}/store/bodega/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(dataStore),
       });

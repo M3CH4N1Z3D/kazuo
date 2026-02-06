@@ -4,7 +4,9 @@ import ProtectedRoutes from "@/context/ProtectedRoutes";
 function company() {
   return (
     <div>
-      <Company />
+      <ProtectedRoutes>
+        <Company />
+      </ProtectedRoutes>
     </div>
   );
 }

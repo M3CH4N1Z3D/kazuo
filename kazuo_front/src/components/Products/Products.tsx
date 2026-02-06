@@ -3,7 +3,9 @@
 import { IEditStoreProps, IProduct } from "@/interfaces/types";
 import { useAuth0 } from "@auth0/auth0-react";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Fragment } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import ProductForm from "../ProductForm/ProductForm";
 import { useAppContext } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import jsPDF from "jspdf";
@@ -29,39 +31,40 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [storeName, setStoreName] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch(`${kazuo_back}/product/store/${storeId}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${userData?.token}`,
-            "Content-Type": "application/json",
-          },
-        });
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(`${kazuo_back}/product/store/${storeId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userData?.token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-        if (!response.ok) {
-          throw new Error("Error al obtener los productos");
-        }
-
-        const data = await response.json();
-        const sortedProducts = data.sort((a: IProduct, b: IProduct) =>
-          a.name.localeCompare(b.name)
-        );
-        setProducts(sortedProducts);
-
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error:", error);
-        setProducts([]);
-        setIsLoading(false);
+      if (!response.ok) {
+        throw new Error("Error al obtener los productos");
       }
-    };
 
+      const data = await response.json();
+      const sortedProducts = data.sort((a: IProduct, b: IProduct) =>
+        a.name.localeCompare(b.name)
+      );
+      setProducts(sortedProducts);
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error:", error);
+      setProducts([]);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     if (userData?.token) {
       fetchProducts();
     }
@@ -93,7 +96,16 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
   }, [storeId, userData]);
 
   const handleCreateNewProduct = () => {
-    router.push(`/AddNewProduct/${storeId}`);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleProductCreated = () => {
+    setIsModalOpen(false);
+    fetchProducts();
   };
 
   const handlePencilClick = () => {
@@ -462,6 +474,45 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
           )}
         </div>
       </main>
+
+      <Transition appear show={isModalOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-50" onClose={handleCloseModal}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <ProductForm
+                    storeId={storeId}
+                    onSuccess={handleProductCreated}
+                    onCancel={handleCloseModal}
+                    isModal={true}
+                  />
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
     </div>
   );
 };

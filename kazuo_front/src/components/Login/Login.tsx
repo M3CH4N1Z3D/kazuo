@@ -7,15 +7,14 @@ import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import Link from "next/link";
 import { useAppContext } from "@/context/AppContext";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useGoogleLogin } from "@react-oauth/google";
 import React from "react";
 import Loader from "../Loader/Loader";
 
 const Login: React.FC = () => {
   const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
-  const { loginWithRedirect, user, isAuthenticated, getAccessTokenSilently } =
-    useAuth0();
+  
   const initialState = {
     email: "",
     password: "",
@@ -37,53 +36,52 @@ const Login: React.FC = () => {
     setIsButtonDisabled(hasErrors || isEmptyField);
   }, [errors, dataUser]);
 
-  useEffect(() => {
-    const handleAuthenticationComplete = async () => {
-      if (isAuthenticated && user) {
-        console.log("User authenticated:", user);
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      try {
+        const response = await fetch(`${kazuo_back}/auth/google`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token: tokenResponse.access_token }),
+        });
 
-        try {
-          const accessToken = await getAccessTokenSilently();
-          const response = await fetch(`${kazuo_back}/auth/auth0/callback`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify({ email: user.email }),
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem("token", data.token);
-
-            Swal.fire({
-              title: `¡Bienvenido, ${user.name}!`,
-              text: "Has iniciado sesión con Google exitosamente.",
-              icon: "success",
-              confirmButtonText: "Aceptar",
-            }).then(() => {
-              router.push("/Soluciones");
-            });
-          } else {
-            throw new Error("Error al procesar el inicio de sesión con Google");
-          }
-        } catch (error) {
-          console.error("Error durante el inicio de sesión con Google:", error);
+        if (response.ok) {
+          const loginData = await response.json();
+          await login(loginData);
           Swal.fire({
-            title: "Error en el inicio de sesión con Google",
-            text: "Ha ocurrido un error. Por favor, inténtalo nuevamente.",
-            icon: "error",
+            title: `¡Bienvenido, ${loginData.name}!`,
+            text: "Has iniciado sesión con Google exitosamente.",
+            icon: "success",
             confirmButtonText: "Aceptar",
           });
+          router.push("/GestionInventario");
+        } else {
+          throw new Error("Error en login Google");
         }
+      } catch (error) {
+        console.error(error);
+        Swal.fire({
+          title: "Error",
+          text: "No se pudo iniciar sesión con Google. Inténtalo de nuevo.",
+          icon: "error",
+          confirmButtonText: "Aceptar",
+        });
+      } finally {
         setLoading(false);
-      } else {
-        console.log("Usuario no autenticado");
       }
-    };
-    handleAuthenticationComplete();
-  }, [isAuthenticated, user, getAccessTokenSilently, router, kazuo_back]);
+    },
+    onError: () => {
+      Swal.fire({
+        title: "Error",
+        text: "Error al conectar con Google.",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
+    },
+  });
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const { name } = event.target;
@@ -176,9 +174,10 @@ const Login: React.FC = () => {
           });
           router.push(`/GestionInventario`);
         } else {
+          const errorData = await response.json();
           Swal.fire({
             title: "Error",
-            text: "Credenciales incorrectas. Por favor, inténtalo de nuevo.",
+            text: errorData.message || "Credenciales incorrectas. Por favor, inténtalo de nuevo.",
             icon: "error",
             confirmButtonText: "Aceptar",
           });
@@ -186,7 +185,7 @@ const Login: React.FC = () => {
       } catch (error) {
         Swal.fire({
           title: "Error",
-          text: "Credenciales incorrectas. Por favor, inténtalo de nuevo.",
+          text: "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
           icon: "error",
           confirmButtonText: "Aceptar",
         });
@@ -197,14 +196,7 @@ const Login: React.FC = () => {
     }
   };
 
-  // const handleGoogleLogin = () => {
-  //   loginWithRedirect({
-  //     authorizationParams: {
-  //       connection: "google-oauth2",
-  //     },
-  //   });
-  // };
-  const handleGoogleLogin = () => loginWithRedirect();
+  const handleGoogleLogin = () => googleLogin();
 
   const isFormValid =
     Object.keys(errors).length === 0 && Object.values(touched).every((t) => t);

@@ -11,7 +11,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from 'src/Entities/product.entity';
 import { Repository } from 'typeorm';
 import { Category } from 'src/Entities/category.entity';
-import { v2 as Cloudinary } from 'cloudinary';
 import { StoreService } from '../store/store.service';
 import { Store } from 'src/Entities/store.entity';
 import { StoreRepository } from '../store/store.repository';

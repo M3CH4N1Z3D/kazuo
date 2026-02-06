@@ -90,8 +90,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.removeItem("igmUrl");
 
     // Cerrar sesión con Auth0
-    logoutAuth0();
-    window.location.href = window.location.origin;
+    if (
+      process.env.NEXT_PUBLIC_AUTH0_DOMAIN &&
+      process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID
+    ) {
+      logoutAuth0({ logoutParams: { returnTo: window.location.origin } });
+    } else {
+      window.location.href = "/";
+    }
   };
 
   const value: AppContextType = {

@@ -10,6 +10,7 @@ import {
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import {
+  ChangePasswordDto,
   CreateUserDto,
   EncryptPasswordDto,
   LoginUserDto,
@@ -18,6 +19,7 @@ import {
 } from 'src/modules/users/user.dto';
 import { ResetPasswordGuard } from './guards/resetpass-guard.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard as JwtAuthGuard } from './guards/auth-guard.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -28,6 +30,11 @@ export class AuthController {
   getAuth(): string {
     return this.authService.getAuth();
   }
+  @Post('/google')
+  async googleLogin(@Body() body: { token: string }) {
+    return this.authService.loginWithGoogle(body.token);
+  }
+
   @Post('/signin')
   async singIn(@Body() credentials: LoginUserDto) {
     console.log(credentials);
@@ -54,6 +61,15 @@ export class AuthController {
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     const { token, newPassword, confirmNewPass } = resetPasswordDto;
     return this.authService.resetPassword(token, newPassword, confirmNewPass);
+  }
+
+  @Post('/change-password')
+  @UseGuards(JwtAuthGuard)
+  async changePassword(
+    @Req() req,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    return this.authService.changePassword(req.user.userId, changePasswordDto);
   }
 
   @Post('auth0/callback')

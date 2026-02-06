@@ -74,6 +74,23 @@ export class AddUserToCompanyDto {
   @IsEmail({}, { message: 'El correo electrónico debe ser válido.' })
   @IsNotEmpty({ message: 'El correo electrónico no puede estar vacío.' })
   email: string;
+
+  @ApiProperty({
+    description: 'Nombre del usuario que se agregará a la compañía',
+    example: 'Juan Perez',
+  })
+  @IsString({ message: 'El nombre debe ser una cadena.' })
+  @IsNotEmpty({ message: 'El nombre no puede estar vacío.' })
+  name: string;
+
+  @ApiProperty({
+    description: 'Cargo del usuario que se agregará a la compañía',
+    example: 'Gerente',
+    required: false,
+  })
+  @IsString({ message: 'El cargo debe ser una cadena.' })
+  @IsOptional()
+  position?: string;
 }
 
 export class UpdateCompanyDto {

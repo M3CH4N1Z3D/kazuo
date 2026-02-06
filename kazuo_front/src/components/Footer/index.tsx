@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { FaLinkedin, FaInstagram, FaGithub } from "react-icons/fa";
+import { usePathname } from "next/navigation";
 
 type Platform = "instagram" | "linkedin" | "github";
 
@@ -12,6 +13,7 @@ type Participant = {
 };
 
 export default function Footer() {
+  const pathname = usePathname();
   const [dropdownOpen, setDropdownOpen] = useState<{
     instagram: boolean;
     facebook: boolean;
@@ -88,6 +90,8 @@ export default function Footer() {
       { name: "Antonella Defilippi", url: "https://github.com/antonelladeff" },
     ],
   };
+
+  if (pathname === "/GestionInventario") return null;
 
   return (
     <footer className="bg-blue-900 text-white py-12 px-4">

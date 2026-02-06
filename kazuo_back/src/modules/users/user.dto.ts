@@ -71,6 +71,32 @@ export class CreateUserDto {
   @ApiHideProperty()
   @IsEmpty()
   isAdmin?: boolean;
+
+  @ApiProperty({
+    description: 'Token de invitación opcional',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  invitationToken?: string;
+
+  @ApiProperty({
+    description: 'Posición o cargo del usuario',
+    example: 'Gerente',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  position?: string;
+
+  @ApiProperty({
+    description: 'Permisos del usuario',
+    example: ['manage_products', 'view_statistics'],
+    required: false,
+  })
+  @IsOptional()
+  permissions?: string[];
 }
 
 export class LoginUserDto extends PickType(CreateUserDto, ['email']) {
@@ -148,10 +174,10 @@ export class UpdateUserDto {
     description: 'Debe ser un string entre 3 y 50 caracteres.',
     example: 'Empresa 1',
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @Length(3, 50)
-  company: string;
+  company?: string;
 
   /**
    * Propiedad oculta
@@ -166,6 +192,23 @@ export class UpdateUserDto {
   @ApiHideProperty()
   @IsEmpty()
   isSuperAdmin?: boolean = false;
+
+  @ApiProperty({
+    description: 'Posición o cargo del usuario',
+    example: 'Gerente',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  position?: string;
+
+  @ApiProperty({
+    description: 'Permisos del usuario',
+    example: ['manage_products', 'view_statistics'],
+    required: false,
+  })
+  @IsOptional()
+  permissions?: string[];
 }
 
 export class ResetPasswordDto {
@@ -211,4 +254,29 @@ export class EncryptPasswordDto {
   @IsString()
   @MinLength(8, { message: 'La contraseña debe tener al menos 8 caracteres.' })
   password: string;
+}
+
+export class ChangePasswordDto {
+  @ApiProperty({
+    description: 'Contraseña actual',
+    example: 'OldPass123!',
+  })
+  @IsString()
+  @IsNotEmpty()
+  oldPassword: string;
+
+  @ApiProperty({
+    description: 'Nueva contraseña',
+    example: 'NewPass123!',
+  })
+  @IsString()
+  @MinLength(8, {
+    message: 'La nueva contraseña debe tener al menos 8 caracteres',
+  })
+  @IsNotEmpty()
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,15}$/, {
+    message:
+      'La contraseña debe contener al menos una letra minúscula, una letra mayúscula, un número y un carácter especial (!@#$%^&*) y tener entre 8 y 15 caracteres.',
+  })
+  newPassword: string;
 }

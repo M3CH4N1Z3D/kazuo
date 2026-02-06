@@ -19,17 +19,12 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { AuthGuard } from 'src/modules/auth/guards/auth-guard.guard';
 import { Product } from 'src/Entities/product.entity';
 import {
-  ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from 'src/decorators/roles.decorators';
-import { Role } from 'src/decorators/roles.enum';
-
 @ApiTags('products')
 @Controller('product')
 export class ProductController {
@@ -67,8 +62,7 @@ export class ProductController {
     };
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard)
   @Put(':id')
   @ApiOperation({ summary: 'Actualizar un producto por ID' })
   @ApiParam({
@@ -89,8 +83,7 @@ export class ProductController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.productService.remove(id);

@@ -4,21 +4,47 @@ import { TRegisterError, IRegisterProps } from "@/interfaces/types";
 import { validateRegisterForm } from "@/helpers/validate";
 import Swal from "sweetalert2";
 // import { register } from "@/helpers/auth.helper";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Loader from "../Loader/Loader";
+import { useAppContext } from "@/context/AppContext";
+import { useGoogleLogin } from "@react-oauth/google";
+import { useEffect } from "react";
 
 const Register = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { login } = useAppContext();
   const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
+  
+  const token = searchParams.get("token");
+  const emailParam = searchParams.get("email");
+  const nameParam = searchParams.get("name");
+
   const initialState: IRegisterProps = {
-    email: "",
+    email: emailParam || "",
     password: "",
     confirmPass: "",
-    name: "",
-    company: "",
+    name: nameParam || "",
+    invitationToken: token || undefined,
   };
 
   const [dataUser, setDataUser] = useState<IRegisterProps>(initialState);
+
+  useEffect(() => {
+    if (emailParam || token || nameParam) {
+      setDataUser((prev) => ({
+        ...prev,
+        email: emailParam || prev.email,
+        name: nameParam || prev.name,
+        invitationToken: token || undefined,
+      }));
+      setTouched((prev) => ({
+        ...prev,
+        email: !!emailParam,
+        name: !!nameParam,
+      }));
+    }
+  }, [emailParam, token, nameParam]);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<TRegisterError>(initialState);
   const [touched, setTouched] = useState<{ [key: string]: boolean }>({
@@ -26,8 +52,56 @@ const Register = () => {
     password: false,
     confirmPass: false,
     name: false,
-    company: false,
   });
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      try {
+        const response = await fetch(`${kazuo_back}/auth/google`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token: tokenResponse.access_token }),
+        });
+
+        if (response.ok) {
+          const loginData = await response.json();
+          await login(loginData);
+          Swal.fire({
+            title: `¡Bienvenido, ${loginData.name}!`,
+            text: "Has iniciado sesión con Google exitosamente.",
+            icon: "success",
+            confirmButtonText: "Aceptar",
+          });
+          router.push("/GestionInventario");
+        } else {
+          throw new Error("Error en login Google");
+        }
+      } catch (error) {
+        console.error(error);
+        Swal.fire({
+          title: "Error",
+          text: "No se pudo iniciar sesión con Google. Inténtalo de nuevo.",
+          icon: "error",
+          confirmButtonText: "Aceptar",
+        });
+      } finally {
+        setLoading(false);
+      }
+    },
+    onError: () => {
+      Swal.fire({
+        title: "Error",
+        text: "Error al conectar con Google.",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
+    },
+  });
+
+  const handleGoogleLogin = () => googleLogin();
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const { name } = event.target;
@@ -87,16 +161,16 @@ const Register = () => {
             password: false,
             confirmPass: false,
             name: false,
-            company: false,
           });
           router.push("/Login");
         } else {
-          throw new Error("Respuesta no exitosa del servidor");
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Error al registrarse");
         }
-      } catch (response) {
+      } catch (error: any) {
         Swal.fire({
           title: "Error al hacer tu registro",
-          text: "Intentalo de nuevo",
+          text: error.message || "Intentalo de nuevo",
           icon: "error",
           confirmButtonText: "Aceptar",
         });
@@ -115,6 +189,49 @@ const Register = () => {
         <h2 className="text-2xl font-bold text-center text-gray-700 uppercase">
           Registrarse
         </h2>
+        {!token && (
+          <>
+            <div>
+              <button
+                onClick={handleGoogleLogin}
+                className="w-full py-2 px-4 bg-white text-gray-700 font-semibold rounded-md shadow-sm hover:bg-gray-50 border border-gray-300 flex items-center justify-center"
+              >
+                <svg
+                  className="w-5 h-5 mr-2"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    fill="#4285F4"
+                  />
+                  <path
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    fill="#34A853"
+                  />
+                  <path
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                    fill="#FBBC05"
+                  />
+                  <path
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                    fill="#EA4335"
+                  />
+                </svg>
+                Registrarse con Google
+              </button>
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">O</span>
+              </div>
+            </div>
+          </>
+        )}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <label
@@ -130,7 +247,10 @@ const Register = () => {
               onBlur={handleBlur}
               value={dataUser.email}
               onChange={handleChange}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              readOnly={!!token}
+              className={`block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
+                token ? "bg-gray-100 cursor-not-allowed" : ""
+              }`}
             />
             {touched.email && errors.email && (
               <p className="text-red-500 text-sm">{errors.email}</p>
@@ -191,30 +311,13 @@ const Register = () => {
               value={dataUser.name}
               onChange={handleChange}
               onBlur={handleBlur}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              readOnly={!!token}
+              className={`block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
+                token ? "bg-gray-100 cursor-not-allowed" : ""
+              }`}
             />
             {touched.name && errors.name && (
               <p className="text-red-500 text-sm">{errors.name}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <label
-              htmlFor="company"
-              className="block text-sm font-bold text-gray-700"
-            >
-              Nombre de la Empresa:
-            </label>
-            <input
-              type="text"
-              name="company"
-              id="company"
-              value={dataUser.company}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-            {touched.company && errors.company && (
-              <p className="text-red-500 text-sm">{errors.company}</p>
             )}
           </div>
           <button

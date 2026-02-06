@@ -11,6 +11,7 @@ import {
   Req,
   UseGuards,
   ConflictException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { StoreService } from './store.service';
 import { CreateStoreDto } from './dto/create-store.dto';
@@ -20,7 +21,6 @@ import { Role } from 'src/decorators/roles.enum';
 import { Roles } from 'src/decorators/roles.decorators';
 import { AuthGuard } from '../auth/guards/auth-guard.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { request } from 'http';
 import { ApiBadRequestResponse, ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Users } from 'src/Entities/users.entity';
 import { Store } from 'src/Entities/store.entity';
@@ -30,6 +30,7 @@ export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
   @Post('bodega')
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Crear una nueva tienda (bodega)' })
   @ApiCreatedResponse({
     description: 'La tienda (bodega) fue creada exitosamente.',
@@ -79,19 +80,32 @@ export class StoreController {
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard, /*RolesGuard*/)
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard)
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateStore: UpdateStoreDto,
+    @Req() request: any,
   ) {
-    return this.storeService.update(id, updateStore, request);
+    if (
+      !request.user ||
+      !request.user.roles ||
+      !request.user.roles.includes(Role.Admin)
+    ) {
+      throw new ForbiddenException('No tienes permisos para modificar bodegas');
+    }
+    return this.storeService.update(id, updateStore);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.Admin)
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
+  @UseGuards(AuthGuard)
+  async remove(@Param('id', ParseUUIDPipe) id: string, @Req() request: any) {
+    if (
+      !request.user ||
+      !request.user.roles ||
+      !request.user.roles.includes(Role.Admin)
+    ) {
+      throw new ForbiddenException('No tienes permisos para eliminar bodegas');
+    }
     return this.storeService.remove(id);
   }
 }

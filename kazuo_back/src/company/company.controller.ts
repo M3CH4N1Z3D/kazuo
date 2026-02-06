@@ -7,6 +7,8 @@ import {
   NotFoundException,
   UseGuards,
   Get,
+  Delete,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -52,6 +54,7 @@ export class CompanyController {
   }
 
   @Get('user/:userId')
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Obtener las compañías de un usuario específico' })
   @ApiResponse({
     status: 200,
@@ -99,7 +102,7 @@ export class CompanyController {
     @Body() addUserToCompanyDto: AddUserToCompanyDto,
   ): Promise<void> {
     return this.companyService.addUserToCompany(
-      addUserToCompanyDto.email,
+      addUserToCompanyDto,
       companyId,
     );
   }
@@ -124,6 +127,44 @@ export class CompanyController {
   @Get('AllStoresCompany/:companyId')
   async storesByCompany(@Param('companyId') companyId: string) {
     return this.companyService.storesByCompany(companyId);
+  }
+
+  @Put(':companyId/users/:userId/permissions')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiOperation({ summary: 'Actualizar permisos de un usuario en la compañía' })
+  async updateUserPermissions(
+    @Param('companyId') companyId: string,
+    @Param('userId') userId: string,
+    @Body('permissions') permissions: string[],
+  ) {
+    return this.companyService.updateUserPermissions(
+      companyId,
+      userId,
+      permissions,
+    );
+  }
+
+  @Delete(':companyId/users/:userId')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiOperation({ summary: 'Eliminar usuario de la compañía y del sistema' })
+  @ApiResponse({ status: 200, description: 'Usuario eliminado correctamente.' })
+  @ApiResponse({
+    status: 409,
+    description: 'Conflicto: El usuario tiene dependencias.',
+  })
+  async removeUserFromCompany(
+    @Param('companyId') companyId: string,
+    @Param('userId') userId: string,
+    @Query('migrateToEmail') migrateToEmail?: string,
+    @Query('forceDelete') forceDelete?: string,
+  ) {
+    const isForceDelete = forceDelete === 'true';
+    return this.companyService.removeUserFromCompany(companyId, userId, {
+      migrateToEmail,
+      forceDelete: isForceDelete,
+    });
   }
   @Get(':id')
   @ApiOperation({ summary: 'Obtener compañía por ID' })  // Descripción de la operación

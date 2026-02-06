@@ -16,7 +16,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { FaDownload } from "react-icons/fa";
 import Loader1 from "../Loader/Loader1";
 
-const ProductForm: React.FC<IEditStoreProps> = ({ storeId }) => {
+const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, isModal }) => {
   const { userData } = useAppContext();
   const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
@@ -161,14 +161,18 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId }) => {
       });
       console.log(userToken);
       if (response.ok) {
-        Swal.fire({
-          title: "Productos Añadidos con éxito",
-          text: "Los productos han sido almacenados",
-          icon: "success",
-          confirmButtonText: "Aceptar",
-        });
-        router.push(`/Products/${storeId}`);
+      Swal.fire({
+        title: "Productos Añadidos con éxito",
+        text: "Los productos han sido almacenados",
+        icon: "success",
+        confirmButtonText: "Aceptar",
+      });
+      if (onSuccess) {
+        onSuccess();
       } else {
+        router.push(`/Products/${storeId}`);
+      }
+    } else {
         const errorData = await response.json();
         throw new Error(errorData.message || "No se pudo cargar los productos");
       }
@@ -276,7 +280,11 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId }) => {
               icon: "success",
               confirmButtonText: "Aceptar",
             });
-            router.push(`/Products/${storeId}`);
+            if (onSuccess) {
+              onSuccess();
+            } else {
+              router.push(`/Products/${storeId}`);
+            }
           } else {
             const errorData = await response.json();
             console.error("Error en la respuesta del servidor:", errorData);
@@ -325,12 +333,28 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId }) => {
   };
 
   const handleBack = () => {
-    window.history.back();
+    if (onCancel) {
+      onCancel();
+    } else {
+      window.history.back();
+    }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4 mt-5">
-      <div className="w-full max-w-md mt-5 mb-5 p-8 space-y-6 bg-white shadow-lg rounded-lg">
+    <div
+      className={
+        isModal
+          ? "w-full"
+          : "flex items-center justify-center min-h-screen bg-gray-100 px-4 mt-5"
+      }
+    >
+      <div
+        className={
+          isModal
+            ? "w-full space-y-6"
+            : "w-full max-w-md mt-5 mb-5 p-8 space-y-6 bg-white shadow-lg rounded-lg"
+        }
+      >
         <button onClick={handleBack} className="mb-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
         </button>

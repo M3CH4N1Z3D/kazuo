@@ -70,14 +70,13 @@ export class Users {
   isSuperAdmin: boolean;
   @ApiProperty({
     description: 'URL de la imagen del usuario',
-    example: 'https://res.cloudinary.com/dytdzrpgq/image/upload/v1730841991/kh1rrkfxnass7dbaop7d.jpg',
+    example: 'https://example.com/default-profile.jpg',
   })
   @Column({
     type: 'varchar',
     length: 255,
     nullable: true,
-    default:
-      'https://res.cloudinary.com/dytdzrpgq/image/upload/v1730841991/kh1rrkfxnass7dbaop7d.jpg',
+    default: 'https://example.com/default-profile.jpg',
   })
   imgUrl?: string;
 
@@ -97,7 +96,16 @@ export class Users {
   pay: boolean;
 
   @Column({ nullable: true })
-    auth0Id: string | null;
+  auth0Id: string | null;
+
+  @Column({ nullable: true })
+  position: string | null;
+
+  @Column('simple-array', { nullable: true })
+  permissions: string[];
+
+  @Column({ nullable: true })
+  googleId: string | null;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

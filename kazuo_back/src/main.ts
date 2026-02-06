@@ -12,18 +12,8 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
-  app.use(
-    '/stripe/webhook',
-    bodyParser.raw({
-      type: 'application/json',
-      verify: (req, res, buf) => {
-        req['rawBody'] = buf.toString();
-      },
-    }),
-  );
-
   app.enableCors({
-    origin: '*',
+    origin: process.env.FRONTEND_URL || '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     allowedHeaders: 'Content-Type, Accept, Authorization',
@@ -44,7 +34,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
 
-  const PORT = 3002;
+  const PORT = process.env.PORT || 3001;
 
   await app.listen(PORT);
   console.log(`Application is running on: ${await app.getUrl()}`);

@@ -16,7 +16,7 @@ export interface IRegisterProps {
   password: string;
   confirmPass: string;
   name: string;
-  company: string;
+  invitationToken?: string;
 }
 
 export interface IUpdatePassProps {
@@ -127,12 +127,16 @@ export interface CompanyData {
   contactPhone: string;
   email: string;
   industry: string;
+  users?: TeamMember[];
 }
 export interface TeamMember {
   id: string;
   name: string;
   email: string;
   position: string;
+  imgUrl?: string;
+  isAdmin?: boolean;
+  permissions?: string[];
 }
 
 export interface IStore {
@@ -149,6 +153,9 @@ export interface ICategory {
 
 export interface IEditStoreProps {
   storeId: string;
+  onSuccess?: () => void;
+  onCancel?: () => void;
+  isModal?: boolean;
 }
 
 export interface InventarioProps {

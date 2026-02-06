@@ -6,10 +6,13 @@ import { Company } from '../Entities/company.entity';
 import { CompanyRepository } from './company.repository';
 import { UsersModule } from 'src/modules/users/users.module';
 import { MailModule } from 'src/mail/mail.module';
+import { Store } from 'src/Entities/store.entity';
+import { Product } from 'src/Entities/product.entity';
+import { Provider } from 'src/Entities/providers.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Company, CompanyRepository]),
+    TypeOrmModule.forFeature([Company, CompanyRepository, Store, Product, Provider]),
     UsersModule,
     MailModule,
   ],

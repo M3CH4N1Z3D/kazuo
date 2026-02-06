@@ -24,21 +24,6 @@ export function validateLoginForm(values: ILoginProps): ILoginError {
     if (values.password.length < 8) {
       errors.password = "La contraseña debe tener al menos 8 caracteres";
     }
-    if (!/[A-Z]/.test(values.password)) {
-      errors.password =
-        "La contraseña debe contener al menos una letra mayúscula";
-    }
-    if (!/[a-z]/.test(values.password)) {
-      errors.password =
-        "La contraseña debe contener al menos una letra minúscula";
-    }
-    if (!/[0-9]/.test(values.password)) {
-      errors.password = "La contraseña debe contener al menos un número";
-    }
-    if (!/[!@#$%^&*]/.test(values.password)) {
-      errors.password =
-        "La contraseña debe contener al menos un carácter especial (!@#$%^&*)";
-    }
   }
 
   return errors;
@@ -75,9 +60,6 @@ export function validateRegisterForm(values: IRegisterProps): TRegisterError {
     errors.name = "El nombre es obligatorio";
   }
 
-  if (!values.company) {
-    errors.company = "El nombre de la compañia es obligatorio";
-  }
   if (!values.password) {
     errors.password = "La contraseña es obligatoria";
   } else if (values.password !== values.confirmPass) {

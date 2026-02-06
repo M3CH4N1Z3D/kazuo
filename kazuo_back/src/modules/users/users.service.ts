@@ -68,6 +68,14 @@ export class UsersService {
     return userWithoutPassword;
   }
 
+  async setAdminStatus(id: string, isAdmin: boolean) {
+    const existingUser = await this.userRepository.getById(id);
+    if (!existingUser) {
+      throw new NotFoundException(`Usuario con id ${id} no encontrado`);
+    }
+    await this.userRepository.updateUser(id, { isAdmin });
+  }
+
   async deleteUser(id: string) {
     const user = await this.userRepository.getById(id);
     if (!user) {

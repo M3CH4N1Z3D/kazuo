@@ -1,23 +1,37 @@
 "use client";
 import { ICategory, IStore } from "@/interfaces/types";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Fragment } from "react";
 import { FaPencilAlt, FaTimes } from "react-icons/fa";
 import { useAppContext } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Menu, Transition } from "@headlessui/react";
-import { BiDotsHorizontal } from "react-icons/bi";
+import { Menu, Transition, Dialog } from "@headlessui/react";
+import { BiDotsHorizontal, BiSearch, BiMenu } from "react-icons/bi";
 
 import Loader from "../Loader/Loader";
 import Link from "next/link";
-import { Underline } from "lucide-react";
+import {
+  Underline,
+  Home,
+  Lightbulb,
+  ClipboardList,
+  Phone,
+  Users,
+  LogOut,
+  LayoutDashboard,
+  Building2,
+  User,
+  Globe,
+} from "lucide-react";
+import CreateStoreModal from "./CreateStoreModal";
 
 const Inventario: React.FC = () => {
   const [store, setStore] = useState<IStore[]>([]);
+  const [isCreateStoreOpen, setIsCreateStoreOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const { userData, setUserData } = useAppContext();
+  const { userData, setUserData, logout } = useAppContext();
   const { user, isAuthenticated } = useAuth0();
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
@@ -26,7 +40,155 @@ const Inventario: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
   const [previewImage, setPreviewImage] = useState(userData?.igmUrl);
-  const cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    name: "",
+    email: "",
+  });
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [changePasswordData, setChangePasswordData] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+    setEditFormData({
+      name: userData?.name || "",
+      email: userData?.email || "",
+    });
+  };
+
+  const handleLogout = async () => {
+    const result = await Swal.fire({
+      title: "¿Estás seguro que quieres cerrar sesión?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, cerrar sesión",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (result.isConfirmed) {
+      logout();
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditFormData({ name: "", email: "" });
+  };
+
+  const handleChangePassword = async () => {
+    if (
+      !changePasswordData.oldPassword ||
+      !changePasswordData.newPassword ||
+      !changePasswordData.confirmPassword
+    ) {
+      Swal.fire("Error", "Todos los campos son obligatorios", "error");
+      return;
+    }
+    if (changePasswordData.newPassword !== changePasswordData.confirmPassword) {
+      Swal.fire("Error", "Las contraseñas no coinciden", "error");
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,15}$/;
+    if (!passwordRegex.test(changePasswordData.newPassword)) {
+      Swal.fire(
+        "Error",
+        "La contraseña debe tener entre 8-15 caracteres, mayúscula, minúscula, número y especial",
+        "error"
+      );
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${kazuo_back}/auth/change-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userData?.token}`,
+        },
+        body: JSON.stringify({
+          oldPassword: changePasswordData.oldPassword,
+          newPassword: changePasswordData.newPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al cambiar contraseña");
+      }
+
+      Swal.fire("Éxito", "Contraseña actualizada correctamente", "success");
+      setIsChangePasswordOpen(false);
+      setChangePasswordData({
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } catch (error: any) {
+      console.error(error);
+      Swal.fire("Error", error.message, "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    if (!editFormData.name || !editFormData.email) {
+      Swal.fire("Error", "Todos los campos son obligatorios", "error");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${kazuo_back}/users/${userData?.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userData?.token}`,
+        },
+        body: JSON.stringify({
+          name: editFormData.name,
+          email: editFormData.email,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Error al actualizar perfil");
+
+      const updatedUser = await response.json();
+
+      setUserData((prev) => ({
+        ...prev!,
+        name: updatedUser.name,
+        email: updatedUser.email,
+      }));
+
+      const storedUser = JSON.parse(localStorage.getItem("userData") || "{}");
+      localStorage.setItem(
+        "userData",
+        JSON.stringify({
+          ...storedUser,
+          name: updatedUser.name,
+          email: updatedUser.email,
+        })
+      );
+
+      setIsEditing(false);
+      Swal.fire("Éxito", "Perfil actualizado correctamente", "success");
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Error", "No se pudo actualizar el perfil", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files ? e.target.files[0] : null;
@@ -144,35 +306,37 @@ const Inventario: React.FC = () => {
   };
 
   // FUNCION POR PETICION0ES CRUD
-  useEffect(() => {
-    const fetchStores = async () => {
-      if (userData || isAuthenticated) {
-        const userId = userData ? userData.id : user?.sub;
+  const fetchStores = async () => {
+    if (userData || isAuthenticated) {
+      const userId = userData ? userData.id : user?.sub;
 
-        try {
-          const response = await fetch(
-            `${kazuo_back}/companies/AllStoresCompany/${userData?.company}`
-          );
-          const dataStore = await response.json();
+      if (!userData?.company) return;
 
-          const storeInfo =
-            dataStore[0]?.stores.map((store: any) => ({
-              id: store?.id || "",
-              name: store?.name || "",
-              categoryName: store?.category?.name || "",
-              categoryId: store?.category?.id || "",
-            })) || [];
+      try {
+        const response = await fetch(
+          `${kazuo_back}/companies/AllStoresCompany/${userData?.company}`
+        );
+        const dataStore = await response.json();
 
-          setStore(storeInfo);
-        } catch (error) {
-          console.error("No se pudo cargar las bodegas ", error);
-          setStore([]);
-        }
+        const storeInfo =
+          dataStore[0]?.stores.map((store: any) => ({
+            id: store?.id || "",
+            name: store?.name || "",
+            categoryName: store?.category?.name || "",
+            categoryId: store?.category?.id || "",
+          })) || [];
+
+        setStore(storeInfo);
+      } catch (error) {
+        console.error("No se pudo cargar las bodegas ", error);
+        setStore([]);
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     fetchStores();
-  }, []);
+  }, [userData, isAuthenticated]);
 
   const filteredStores = Array.isArray(store)
     ? store.filter(
@@ -203,7 +367,7 @@ const Inventario: React.FC = () => {
 
   const handleNavigateToCreateStore = () => {
     if (userData || isAuthenticated) {
-      router.push("/storeform");
+      setIsCreateStoreOpen(true);
     } else {
       router.push("/login");
     }
@@ -233,284 +397,616 @@ const Inventario: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      {/* Información de Usuario */}
-      <div className="bg-white shadow-md rounded-md p-4 mb-8">
-        <h2 className="text-xl font-semibold mb-4">Información de Usuario</h2>
-        <div className="relative flex items-center justify-center mb-4">
-          <div>
-            <h2>Subir Imagen de Perfil</h2>
-            {userData?.igmUrl && (
-              <img src={userData.igmUrl} alt="Imagen de perfil" width={100} />
-            )}
-            <div>
-              <input type="file" accept="image/*" onChange={handleFileChange} />
-              <button onClick={handleUpload} disabled={isLoading}>
-                {isLoading ? "Subiendo..." : "Subir Imagen"}
-              </button>
-            </div>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-          </div>
-
-          <div
-            className="absolute bottom-0 right-0 bg-blue-500 rounded-full p-2 cursor-pointer hover:bg-blue-600"
-            onClick={handlePencilClick}
-          >
-            <FaPencilAlt className="text-white" />
-          </div>
-          <input
-            type="file"
-            ref={fileInputRef}
-            className="hidden"
-            accept="image/*"
-            onChange={handleUpload}
-          />
-        </div>
-
-        <p>
-          <strong>Nombre: </strong>
-          {isAuthenticated ? user?.name : userData?.name}
-        </p>
-        <p>
-          <strong>Email: </strong>
-          {isAuthenticated ? user?.email : userData?.email}
-        </p>
-        <p>
-          <strong>Plan: </strong>
-          {userData?.isAdmin ? "Kazuo Pro" : "Free"}
-        </p>
-        <p>
-          <Link href={"/Company"}>
-            <strong className="text-green-800">Ir a Mi Empresa</strong>
-          </Link>
-        </p>
-
-        <button
-          className={`mt-4 px-4 py-2 rounded text-white ${
-            userData?.isAdmin
-              ? "bg-green-600 hover:bg-green-700"
-              : "bg-gray-400 cursor-not-allowed"
-          }`}
-          onClick={() => router.push("/register-company")}
-          disabled={!userData?.isAdmin}
-        >
-          Registrar Empresa
-        </button>
-      </div>
-
-      {/* Encabezado de Inventario */}
-
-      <div className="flex justify-between items-center mb-8">
+      {/* Header con Menú Hamburguesa */}
+      <div className="flex justify-between items-center mb-8 gap-4">
         <h2 className="text-2xl font-bold text-gray-800">
           Gestión de Inventario
         </h2>
-        <div className="space-x-4">
+        <div className="flex items-center gap-4">
           <button
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-sm transition-colors font-medium flex items-center gap-2 hidden sm:flex"
             onClick={handleNavigateToCreateStore}
           >
-            Crear Bodega
+            <span>+</span> Crear Bodega
           </button>
+          <Menu as="div" className="relative">
+            <Menu.Button className="p-2 rounded-full hover:bg-gray-200 transition-colors">
+              <BiMenu className="h-8 w-8 text-gray-700" />
+            </Menu.Button>
+            <Transition
+              as={Fragment}
+              enter="transition ease-out duration-100"
+              enterFrom="transform opacity-0 scale-95"
+              enterTo="transform opacity-100 scale-100"
+              leave="transition ease-in duration-75"
+              leaveFrom="transform opacity-100 scale-100"
+              leaveTo="transform opacity-0 scale-95"
+            >
+              <Menu.Items className="absolute right-0 w-64 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 h-[80vh] overflow-y-auto">
+                <div className="p-1">
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active ? "bg-blue-50 text-blue-700" : "text-gray-900"
+                        } group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2`}
+                        onClick={() => router.push("/")}
+                      >
+                        <Home size={18} /> Inicio
+                      </button>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active ? "bg-blue-50 text-blue-700" : "text-gray-900"
+                        } group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2`}
+                        onClick={() => router.push("/Soluciones")}
+                      >
+                        <Lightbulb size={18} /> Soluciones
+                      </button>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active ? "bg-blue-50 text-blue-700" : "text-gray-900"
+                        } group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2`}
+                        onClick={() => router.push("/Planes")}
+                      >
+                        <ClipboardList size={18} /> Planes
+                      </button>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active ? "bg-blue-50 text-blue-700" : "text-gray-900"
+                        } group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2`}
+                        onClick={() => router.push("/Contacto")}
+                      >
+                        <Phone size={18} /> Contacto
+                      </button>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active ? "bg-blue-50 text-blue-700" : "text-gray-900"
+                        } group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2`}
+                        onClick={() => router.push("/Nosotros")}
+                      >
+                        <Users size={18} /> Nosotros
+                      </button>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active ? "bg-blue-50 text-blue-700" : "text-gray-900"
+                        } group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2`}
+                        onClick={() => router.push("/GoogleTranslate")}
+                      >
+                        <Globe size={18} /> Traducir
+                      </button>
+                    )}
+                  </Menu.Item>
+                </div>
+                <div className="p-1 border-t border-gray-100">
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active ? "bg-blue-50 text-blue-700" : "text-gray-900"
+                        } group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2`}
+                        onClick={() => router.push("/GestionInventario")}
+                      >
+                        <LayoutDashboard size={18} /> Gestión de inventario
+                      </button>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active ? "bg-blue-50 text-blue-700" : "text-gray-900"
+                        } group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2`}
+                        onClick={() => router.push("/Company")}
+                      >
+                        <Building2 size={18} /> Gestión de empresa
+                      </button>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active ? "bg-blue-50 text-blue-700" : "text-gray-900"
+                        } group flex w-full items-center rounded-md px-2 py-2 text-sm sm:hidden gap-2`}
+                        onClick={handleNavigateToCreateStore}
+                      >
+                        <span className="text-lg font-bold">+</span> Crear
+                        Bodega
+                      </button>
+                    )}
+                  </Menu.Item>
+                </div>
+                <div className="p-1 border-t border-gray-100">
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active ? "bg-blue-50 text-blue-700" : "text-gray-900"
+                        } group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2`}
+                        onClick={() => setIsProfileOpen(true)}
+                      >
+                        <User size={18} /> Perfil
+                      </button>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active ? "bg-red-50 text-red-700" : "text-red-600"
+                        } group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2`}
+                        onClick={handleLogout}
+                      >
+                        <LogOut size={18} /> Cerrar sesión
+                      </button>
+                    )}
+                  </Menu.Item>
+                </div>
+              </Menu.Items>
+            </Transition>
+          </Menu>
         </div>
       </div>
 
+      <CreateStoreModal
+        isOpen={isCreateStoreOpen}
+        onClose={() => setIsCreateStoreOpen(false)}
+        onStoreCreated={fetchStores}
+      />
+
+      {/* Modal de Perfil */}
+    <Transition appear show={isProfileOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-50" onClose={() => setIsProfileOpen(false)}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black bg-opacity-25" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Title
+                  as="h3"
+                  className="text-lg font-medium leading-6 text-gray-900 mb-4"
+                >
+                  Perfil de Usuario
+                </Dialog.Title>
+                
+                <div className="flex flex-col items-center gap-4">
+                  {/* Avatar Section */}
+                  <div className="relative group shrink-0">
+                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md bg-gray-100 flex items-center justify-center">
+                      {userData?.igmUrl ? (
+                        <img
+                          src={userData.igmUrl}
+                          alt="Perfil"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-4xl text-gray-400 font-bold">
+                          {(isAuthenticated ? user?.name : userData?.name)
+                            ?.charAt(0)
+                            .toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      onClick={handlePencilClick}
+                      className="absolute bottom-1 right-1 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg transition-colors z-10"
+                      title="Cambiar foto de perfil"
+                    >
+                      <FaPencilAlt size={14} />
+                    </button>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                    />
+                  </div>
+
+                  {/* User Details */}
+                  {isEditing ? (
+                    <div className="w-full space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Nombre
+                        </label>
+                        <input
+                          type="text"
+                          value={editFormData.name}
+                          onChange={(e) =>
+                            setEditFormData({
+                              ...editFormData,
+                              name: e.target.value,
+                            })
+                          }
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Email
+                        </label>
+                        <input
+                          type="email"
+                          value={editFormData.email}
+                          onChange={(e) =>
+                            setEditFormData({
+                              ...editFormData,
+                              email: e.target.value,
+                            })
+                          }
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2 mt-4">
+                        <button
+                          onClick={handleCancelEdit}
+                          className="px-3 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm"
+                        >
+                          Cancelar
+                        </button>
+                        <button
+                          onClick={handleSaveProfile}
+                          disabled={isLoading}
+                          className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                        >
+                          {isLoading ? "Guardando..." : "Guardar"}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="text-center space-y-2">
+                        <h2 className="text-2xl font-bold text-gray-800">
+                          {isAuthenticated ? user?.name : userData?.name}
+                        </h2>
+                        <p className="text-gray-500 font-medium">
+                          {isAuthenticated ? user?.email : userData?.email}
+                        </p>
+
+                        <div className="flex justify-center">
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                              userData?.isAdmin
+                                ? "bg-indigo-100 text-indigo-700"
+                                : "bg-gray-100 text-gray-600"
+                            }`}
+                          >
+                            Plan: {userData?.isAdmin ? "Kazuo Pro" : "Free"}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {!isAuthenticated && (
+                        <div className="flex flex-col items-center gap-2 mt-2">
+                          <button
+                            onClick={handleEditClick}
+                            className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                          >
+                            Editar Perfil
+                          </button>
+                          <button
+                            onClick={() => setIsChangePasswordOpen(true)}
+                            className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                          >
+                            Cambiar Contraseña
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Upload Confirmation */}
+                      {file && (
+                        <div className="flex flex-col items-center gap-2 mt-2 bg-blue-50 p-2 rounded-lg border border-blue-100 w-full">
+                          <p className="text-sm text-blue-700 truncate max-w-[200px]">
+                            {file.name}
+                          </p>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={handleUpload}
+                              disabled={isLoading}
+                              className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md shadow-sm transition-colors"
+                            >
+                              {isLoading ? "Subiendo..." : "Confirmar Cambio"}
+                            </button>
+                            <button
+                              onClick={() => setFile(null)}
+                              className="p-1 hover:bg-blue-200 rounded text-blue-600"
+                              title="Cancelar"
+                            >
+                              <FaTimes />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {error && (
+                        <p className="text-sm text-red-500 mt-2">{error}</p>
+                      )}
+                       <div className="mt-6 flex justify-end">
+                          <button
+                          type="button"
+                          className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                          onClick={() => setIsProfileOpen(false)}
+                          >
+                          Cerrar
+                          </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </div>
+      </Dialog>
+    </Transition>
+
+    {/* Modal Change Password */}
+    <Transition appear show={isChangePasswordOpen} as={Fragment}>
+      <Dialog
+        as="div"
+        className="relative z-50"
+        onClose={() => setIsChangePasswordOpen(false)}
+      >
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black bg-opacity-25" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Title
+                  as="h3"
+                  className="text-lg font-medium leading-6 text-gray-900 mb-4"
+                >
+                  Cambiar Contraseña
+                </Dialog.Title>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Contraseña Actual
+                    </label>
+                    <input
+                      type="password"
+                      value={changePasswordData.oldPassword}
+                      onChange={(e) =>
+                        setChangePasswordData({
+                          ...changePasswordData,
+                          oldPassword: e.target.value,
+                        })
+                      }
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Nueva Contraseña
+                    </label>
+                    <input
+                      type="password"
+                      value={changePasswordData.newPassword}
+                      onChange={(e) =>
+                        setChangePasswordData({
+                          ...changePasswordData,
+                          newPassword: e.target.value,
+                        })
+                      }
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Mínimo 8 caracteres, mayúscula, minúscula, número y
+                      caracter especial.
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Confirmar Nueva Contraseña
+                    </label>
+                    <input
+                      type="password"
+                      value={changePasswordData.confirmPassword}
+                      onChange={(e) =>
+                        setChangePasswordData({
+                          ...changePasswordData,
+                          confirmPassword: e.target.value,
+                        })
+                      }
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-end gap-2">
+                  <button
+                    type="button"
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                    onClick={() => setIsChangePasswordOpen(false)}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                    onClick={handleChangePassword}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Guardando..." : "Guardar"}
+                  </button>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </div>
+      </Dialog>
+    </Transition>
+
       {/* Search Bar */}
-      <div className="mb-4">
+      <div className="mb-8 relative max-w-lg mx-auto sm:mx-0">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <BiSearch className="text-gray-400 text-lg" />
+        </div>
         <input
           type="text"
-          placeholder="Buscar bodegas por nombre o categoría"
+          placeholder="Buscar bodegas por nombre o categoría..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="border border-gray-300 rounded-md p-2 w-[50vh]"
+          className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
         />
       </div>
 
-      {/* Show message or stores */}
+      {/* Stores Grid */}
       {loading ? (
-        <Loader message="Cargando bodegas..." />
-      ) : searchQuery === "" ? (
-        store && store.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1 mt-8">
-            {store.map((bodega) => (
-              <div
-                key={bodega.id}
-                className="grid grid-cols-5 grid-rows-5 gap-1 bg-white shadow-lg rounded-lg p-6 w-content"
-              >
-                <div className="col-span-4 row-span-3">
-                  <h3 className="text-lg font-semibold mb-2">{bodega.name}</h3>
-                </div>
-                <div className="col-span-4 row-span-2 col-start-1 row-start-4">
-                  <p className="text-gray-500 mb-4">
-                    Categoría: {getCategoryName(bodega.categoryId)}
-                  </p>
-                </div>
-                <div className="col-start-5 row-start-1">
-                  <Menu as="div" className="relative ">
-                    <Menu.Button className="flex items-center text-gray-400 hover:text-gray-600">
-                      <BiDotsHorizontal
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </Menu.Button>
-                    <Transition
-                      enter="transition ease-out duration-100"
-                      enterFrom="transform opacity-0 scale-95"
-                      enterTo="transform opacity-100 scale-100"
-                      leave="transition ease-in duration-75"
-                      leaveFrom="transform opacity-100 scale-100"
-                      leaveTo="transform opacity-0 scale-95"
-                    >
-                      <Menu.Items className="absolute right-0 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        <div className="px-1 py-1">
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                className={`mt-4 px-4 py-2 rounded text-white ${
-                                  userData?.isAdmin
-                                    ? "bg-blue-500 hover:bg-blue-700"
-                                    : "bg-gray-400 cursor-not-allowed"
-                                }`}
-                                onClick={(e) =>
-                                  handleNavigateToEditStore(e, bodega.id)}
-                                disabled={!userData?.isAdmin}
-                              >
-                                Modificar
-                              </button>
-                            )}
-                          </Menu.Item>
-                          <br />
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                className={`mt-4 px-4 py-2 rounded text-white ${
-                                  userData?.isAdmin
-                                    ? "bg-red-600 hover:bg-red-700"
-                                    : "bg-gray-400 cursor-not-allowed"
-                                }`}
-                                onClick={()=>handleDeleteStore}
-                                disabled={!userData?.isAdmin}
-                              >
-                                Eliminar
-                              </button>
-                            )}
-                          </Menu.Item>
-                          <br />
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                className={`${
-                                  active
-                                    ? "bg-green-500 text-white"
-                                    : "text-gray-900"
-                                } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                onClick={(e) =>
-                                  handleNavigateToStorePage(e, bodega.id)
-                                }
-                              >
-                                Entrar
-                              </button>
-                            )}
-                          </Menu.Item>
-                        </div>
-                      </Menu.Items>
-                    </Transition>
-                  </Menu>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center text-gray-600 text-lg mt-4">
-            Aún no tienes bodegas creadas.
-          </div>
-        )
-      ) : filteredStores.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
-          {filteredStores.map((bodega) => (
-            <div
-              key={bodega.id}
-              className="grid grid-cols-5 grid-rows-5 gap-1 bg-white shadow-lg rounded-lg p-6 w-content"
-            >
-              <div className="col-span-4 row-span-3">
-                <h3 className="text-lg font-semibold mb-2">{bodega.name}</h3>
-              </div>
-              <div className="col-span-4 row-span-2 col-start-1 row-start-4">
-                <p className="text-gray-500 mb-4">
-                  Categoría: {getCategoryName(bodega.categoryId)}
-                </p>
-              </div>
-              <div className="col-start-5 row-start-1">
-                <Menu as="div" className="relative ">
-                  <Menu.Button className="flex items-center text-gray-400 hover:text-gray-600">
-                    <BiDotsHorizontal className="h-5 w-5" aria-hidden="true" />
-                  </Menu.Button>
-                  <Transition
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
-                  >
-                    <Menu.Items className="absolute right-0 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <div className="px-1 py-1">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <button
-                              className={`${
-                                active
-                                  ? "bg-blue-500 text-white"
-                                  : "text-gray-900"
-                              } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                              onClick={(e) =>
-                                handleNavigateToEditStore(e, bodega.id)
-                              }
-                            >
-                              Modificar
-                            </button>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <button
-                              className={`${
-                                active
-                                  ? "bg-red-500 text-white"
-                                  : "text-gray-900"
-                              } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                              onClick={(e) => handleDeleteStore(e, bodega.id)}
-                            >
-                              Eliminar
-                            </button>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <button
-                              className={`${
-                                active
-                                  ? "bg-green-500 text-white"
-                                  : "text-gray-900"
-                              } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                              onClick={(e) =>
-                                handleNavigateToStorePage(e, bodega.id)
-                              }
-                            >
-                              Entrar
-                            </button>
-                          )}
-                        </Menu.Item>
-                      </div>
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
-              </div>
-            </div>
-          ))}
+        <div className="flex justify-center py-12">
+           <Loader message="Cargando bodegas..." />
         </div>
       ) : (
-        <div className="text-center text-gray-600 text-lg mt-4">
-          No se encontraron bodegas que coincidan con su búsqueda.
-        </div>
+        <>
+           {(() => {
+             const displayStores = searchQuery === "" ? store : filteredStores;
+             
+             if (displayStores.length === 0) {
+               return (
+                 <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100">
+                   <div className="text-gray-400 mb-3 text-5xl">📦</div>
+                   <h3 className="text-lg font-medium text-gray-900">No se encontraron bodegas</h3>
+                   <p className="text-gray-500">
+                     {searchQuery ? "Intenta con otra búsqueda." : "Comienza creando tu primera bodega."}
+                   </p>
+                 </div>
+               );
+             }
+
+             return (
+               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                 {displayStores.map((bodega) => (
+                   <div
+                     key={bodega.id}
+                     className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 flex flex-col overflow-hidden"
+                   >
+                     <div className="p-5 flex-1 relative">
+                       <div className="flex justify-between items-start">
+                         <div className="pr-8">
+                            <h3 className="text-lg font-bold text-gray-800 mb-1 line-clamp-2" title={bodega.name}>{bodega.name}</h3>
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              {getCategoryName(bodega.categoryId)}
+                            </span>
+                         </div>
+                         <div className="absolute top-4 right-3">
+                           <Menu as="div" className="relative">
+                             <Menu.Button className="p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                               <BiDotsHorizontal className="h-6 w-6" />
+                             </Menu.Button>
+                             <Transition
+                               enter="transition ease-out duration-100"
+                               enterFrom="transform opacity-0 scale-95"
+                               enterTo="transform opacity-100 scale-100"
+                               leave="transition ease-in duration-75"
+                               leaveFrom="transform opacity-100 scale-100"
+                               leaveTo="transform opacity-0 scale-95"
+                             >
+                               <Menu.Items className="absolute right-0 w-48 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
+                                 <div className="p-1">
+                                   <Menu.Item>
+                                     {({ active }) => (
+                                       <button
+                                         className={`${active ? "bg-blue-50 text-blue-700" : "text-gray-700"} flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                         onClick={(e) => handleNavigateToEditStore(e, bodega.id)}
+                                         disabled={!userData?.isAdmin}
+                                       >
+                                          Modificar
+                                       </button>
+                                     )}
+                                   </Menu.Item>
+                                    {userData?.isAdmin && (
+                                      <Menu.Item>
+                                        {({ active }) => (
+                                          <button
+                                            className={`${active ? "bg-red-50 text-red-700" : "text-red-600"} flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                            onClick={(e) => handleDeleteStore(e, bodega.id)}
+                                          >
+                                            Eliminar
+                                          </button>
+                                        )}
+                                      </Menu.Item>
+                                    )}
+                                 </div>
+                               </Menu.Items>
+                             </Transition>
+                           </Menu>
+                         </div>
+                       </div>
+                     </div>
+                     <div className="bg-gray-50 px-5 py-3 border-t border-gray-100 mt-auto">
+                        <button
+                           onClick={(e) => handleNavigateToStorePage(e, bodega.id)}
+                           className="text-sm font-medium text-blue-600 hover:text-blue-800 w-full text-left"
+                        >
+                          Ver inventario →
+                        </button>
+                     </div>
+                   </div>
+                 ))}
+               </div>
+             );
+           })()}
+        </>
       )}
     </div>
   );

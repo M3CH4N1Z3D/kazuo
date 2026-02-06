@@ -4,8 +4,6 @@ import { Inter } from "next/font/google";
 import Navbar from "../components/Navbar";
 import ShowComponents from "../components/ShowComponents";
 import Footer from "../components/Footer";
-import { AppProvider } from "@/context/AppContext";
-import { Auth0Provider } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
 import ClientLayout from "./ClientLayout";
 import { Suspense } from "react";
@@ -35,14 +33,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en">
       <body className={inter.className}>
         <ClientLayout>
-          <AppProvider>
-            <ShowComponents>
-              <Navbar />
-            </ShowComponents>
-            <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>{" "}
-            <Footer />
-            <ChatButton />
-          </AppProvider>
+          <ShowComponents>
+            <Navbar />
+          </ShowComponents>
+          <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>{" "}
+          <Footer />
+          <ChatButton />
         </ClientLayout>
       </body>
     </html>

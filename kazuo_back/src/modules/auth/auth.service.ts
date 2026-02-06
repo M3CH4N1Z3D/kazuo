@@ -9,6 +9,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { CryptoService } from 'src/crypto/crypto.service';
 import { UserRepository } from '../users/users.repository';
 import { CompanyService } from 'src/company/company.service';
+import axios from 'axios';
+import { ChangePasswordDto, CreateUserDto } from '../users/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +27,7 @@ export class AuthService {
   }
 
   async signIn(email: string, password: string) {
-    if (!email || !password) return 'Datos obligatorios';
+    if (!email || !password) throw new BadRequestException('Datos obligatorios');
   
     const user = await this.userRepository.getUserByEmail(email);
     if (!user) throw new BadRequestException('Credenciales inválidas');
@@ -33,42 +35,38 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) throw new BadRequestException('Credenciales inválidas');
   
-    const payload = {
-        id: user.id,
-        email: user.email,
-        isAdmin: user.isAdmin,
-    };
-  
-    const token = this.jwtService.sign(payload);
-
-    const companyId = user.companies.length > 0 ? user.companies[0].id : null;
-
-    return {
-        message: 'Usuario loggeado',
-        token,
-        email: user.email,
-        name: user.name,
-        id: user.id,
-        igmUrl: user.imgUrl,
-        isAdmin: user.isAdmin ? true : false,
-        isSuperAdmin: user.isSuperAdmin ? true : false,      
-        company: companyId,
-    };
-
+    return this.generateAuthResponse(user);
   }
   
 
-  async signUp(user: Partial<Users>): Promise<Partial<Users>> {
-    const { email, password } = user;
+  async signUp(user: CreateUserDto): Promise<Partial<Users>> {
+    const { email, password, invitationToken } = user;
     const foundUser = await this.userRepository.getUserByEmail(email);
-    if (foundUser) throw new BadRequestException('Email Registrado, ingresa');
+    if (foundUser) throw new BadRequestException('El correo electrónico ya está registrado.');
 
     const hashedPass = await bcrypt.hash(password, 10);
 
     const createdUser = await this.userRepository.createUser({
       ...user,
       password: hashedPass,
+      isAdmin: true,
     });
+
+    if (invitationToken) {
+      try {
+        const payload = this.jwtService.verify(invitationToken);
+        if (payload.type === 'invitation' && payload.email === email) {
+          await this.companyService.addUserToCompany(
+            { email, name: user.name, position: payload.position },
+            payload.companyId,
+          );
+        } else {
+          throw new BadRequestException('Token de invitación inválido');
+        }
+      } catch (error) {
+        throw new BadRequestException('Token de invitación inválido o expirado');
+      }
+    }
 
     await this.mailService.sendMail(
       createdUser.email,
@@ -92,7 +90,8 @@ export class AuthService {
       resetPasswordExpires: expirationTime,
     });
 
-    const resetUrl = `http://localhost:3000/UpdatePass?token=${token}`;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const resetUrl = `${frontendUrl}/UpdatePass?token=${token}`;
     await this.mailService.sendMail(
       email,
       'Restablecimiento de contraseña',
@@ -165,6 +164,91 @@ export class AuthService {
     const payload = { email: user.email, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
+    };
+  }
+
+  async loginWithGoogle(token: string) {
+    try {
+      const googleUser = await axios.get(
+        'https://www.googleapis.com/oauth2/v3/userinfo',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const { sub, email, name, picture } = googleUser.data;
+
+      let user = await this.userRepository.getUserByEmail(email);
+
+      if (user) {
+        if (!user.googleId) {
+          user.googleId = sub;
+          await this.userRepository.save(user);
+        }
+      } else {
+        const password = await bcrypt.hash(uuidv4(), 10);
+        user = await this.userRepository.createUser({
+          email,
+          name,
+          imgUrl: picture,
+          password,
+          googleId: sub,
+          isAdmin: true,
+        });
+        // Ensure companies is an array for the response generator
+        user.companies = [];
+      }
+
+      return this.generateAuthResponse(user);
+    } catch (error) {
+      throw new BadRequestException('Token de Google inválido o error en la autenticación');
+    }
+  }
+
+  async changePassword(
+    userId: string,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<string> {
+    const { oldPassword, newPassword } = changePasswordDto;
+
+    const user = await this.userRepository.getById(userId);
+    if (!user) throw new BadRequestException('Usuario no encontrado');
+
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isPasswordValid)
+      throw new BadRequestException('La contraseña actual es incorrecta');
+
+    const hashedPass = await bcrypt.hash(newPassword, 10);
+
+    await this.userRepository.updateUser(userId, { password: hashedPass });
+
+    return 'Contraseña actualizada correctamente';
+  }
+
+  private generateAuthResponse(user: Users) {
+    const payload = {
+      id: user.id,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    };
+
+    const token = this.jwtService.sign(payload);
+
+    const companyId =
+      user.companies && user.companies.length > 0 ? user.companies[0].id : null;
+
+    return {
+      message: 'Usuario loggeado',
+      token,
+      email: user.email,
+      name: user.name,
+      id: user.id,
+      igmUrl: user.imgUrl,
+      isAdmin: user.isAdmin ? true : false,
+      isSuperAdmin: user.isSuperAdmin ? true : false,
+      company: companyId,
     };
   }
 }

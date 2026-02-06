@@ -1,11 +1,7 @@
 {
-	"folders": [
-		{
-			"path": "../kazuo_front"
-		},
-		{
-			"path": "../kazuo_back"
-		}
-	],
-	"settings": {}
+    "folders": [
+        {
+            "path": "."
+        }
+    ]
 }

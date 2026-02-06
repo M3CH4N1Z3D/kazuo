@@ -22,8 +22,7 @@ export class AuthGuard implements CanActivate {
     if (!token) throw new UnauthorizedException('Se requiere Token');
 
     try {
-      const secret = process.env.JWT_SECRET;
-      const payload = this.jwtService.verify(token, { secret });
+      const payload = this.jwtService.verify(token);
 
       payload.exp = new Date(payload.exp * 1000);
       payload.iat = new Date(payload.iat * 1000);
@@ -35,8 +34,6 @@ export class AuthGuard implements CanActivate {
       if (payload.isSuperAdmin) {
         roles.push(Role.SuperAdmin);
       }
-
-      console.log('Roles del usuario:', roles);
 
       request.user = {
         userId: payload.id,
@@ -69,6 +66,7 @@ export class AuthGuard implements CanActivate {
 
       return true;
     } catch (error) {
+      console.error('AuthGuard Error:', error);
       throw new UnauthorizedException('Token invalido');
     }
   }

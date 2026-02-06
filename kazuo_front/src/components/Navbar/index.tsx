@@ -5,13 +5,28 @@ import { useEffect, useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import { Menu, X, Globe } from "lucide-react";
+import {
+  Menu,
+  X,
+  Globe,
+  Home,
+  Lightbulb,
+  ClipboardList,
+  Phone,
+  Users,
+  LogOut,
+  LayoutDashboard,
+  LogIn,
+  UserPlus,
+} from "lucide-react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 interface AuthButtonsProps {
   isLoggedIn: boolean;
   handleLogout: () => void;
   handleOnClick: (route: string) => void;
+  onLinkClick?: () => void;
+  mobile?: boolean;
 }
 
 export default function Navbar() {
@@ -20,6 +35,9 @@ export default function Navbar() {
   const router = useRouter();
 
   const handleLogout = async () => {
+    // Cerrar el menú si está abierto
+    setIsMenuOpen(false);
+
     const result = await Swal.fire({
       title: "¿Estás seguro que quieres cerrar sesión?",
       icon: "warning",
@@ -32,7 +50,6 @@ export default function Navbar() {
 
     if (result.isConfirmed) {
       logout();
-      router.push("/Login");
     }
   };
 
@@ -43,6 +60,10 @@ export default function Navbar() {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
   };
 
   return (
@@ -63,15 +84,17 @@ export default function Navbar() {
         </div>
       </div>
       {isMenuOpen && (
-        <div className="lg:hidden mt-4">
+        <div className="lg:hidden mt-4 bg-white shadow-lg rounded-lg p-4 absolute top-16 left-0 right-0 z-50 border border-gray-100">
           <nav className="flex flex-col space-y-4">
-            <NavLinks />
+            <NavLinks onLinkClick={closeMenu} mobile />
           </nav>
-          <div className="mt-4 flex flex-col space-y-4">
+          <div className="mt-4 flex flex-col space-y-4 pt-4 border-t border-gray-100">
             <AuthButtons
               isLoggedIn={isLoggedIn}
               handleLogout={handleLogout}
               handleOnClick={handleOnClick}
+              onLinkClick={closeMenu}
+              mobile
             />
           </div>
         </div>
@@ -80,26 +103,61 @@ export default function Navbar() {
   );
 }
 
-function NavLinks() {
+function NavLinks({
+  onLinkClick,
+  mobile,
+}: {
+  onLinkClick?: () => void;
+  mobile?: boolean;
+}) {
+  const baseClasses =
+    "flex items-center gap-2 font-medium transition-colors hover:text-blue-800";
+  const activeClasses = "text-blue-600";
+  const inactiveClasses = "text-gray-600";
+
   return (
     <>
-      <Link href="/" className="text-blue-600 font-medium">
-        Inicio
+      <Link
+        href="/"
+        onClick={onLinkClick}
+        className={`${baseClasses} ${activeClasses}`}
+      >
+        <Home size={18} /> Inicio
       </Link>
-      <Link href="/Soluciones" className="text-blue-600 font-medium">
-        Soluciones
+      <Link
+        href="/Soluciones"
+        onClick={onLinkClick}
+        className={`${baseClasses} ${activeClasses}`}
+      >
+        <Lightbulb size={18} /> Soluciones
       </Link>
-      <Link href="/Planes" className="text-gray-600">
-        Planes
+      <Link
+        href="/Planes"
+        onClick={onLinkClick}
+        className={`${baseClasses} ${inactiveClasses}`}
+      >
+        <ClipboardList size={18} /> Planes
       </Link>
-      <Link href="/Contacto" className="text-gray-600">
-        Contacto
+      <Link
+        href="/Contacto"
+        onClick={onLinkClick}
+        className={`${baseClasses} ${inactiveClasses}`}
+      >
+        <Phone size={18} /> Contacto
       </Link>
-      <Link href="/Nosotros" className="text-gray-600">
-        Nosotros
+      <Link
+        href="/Nosotros"
+        onClick={onLinkClick}
+        className={`${baseClasses} ${inactiveClasses}`}
+      >
+        <Users size={18} /> Nosotros
       </Link>
-      <Link href="/GoogleTranslate " className="text-gray-600">
-        <i className="fa fa-globe fa-1.7x" aria-hidden="true"></i> Traducir
+      <Link
+        href="/GoogleTranslate "
+        onClick={onLinkClick}
+        className={`${baseClasses} ${inactiveClasses}`}
+      >
+        <Globe size={18} /> Traducir
       </Link>
     </>
   );
@@ -109,37 +167,43 @@ function AuthButtons({
   isLoggedIn,
   handleLogout,
   handleOnClick,
+  onLinkClick,
+  mobile,
 }: AuthButtonsProps) {
   return (
     <>
       {isLoggedIn ? (
         <>
           <button
-            onClick={handleLogout}
-            className="w-full lg:w-auto px-4 py-2 text-gray-600"
-          >
-            Cerrar sesión
-          </button>
-          <button
-            className="w-full lg:w-auto px-4 py-2 bg-blue-600 text-white rounded-md"
+            className="w-full lg:w-auto px-4 py-2 bg-blue-600 text-white rounded-md flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors"
             onClick={() => handleOnClick("/GestionInventario")}
           >
-            Gestion de inventario
+            <LayoutDashboard size={18} /> Gestion de inventario
+          </button>
+          <button
+            onClick={handleLogout}
+            className={`w-full lg:w-auto px-4 py-2 text-gray-600 hover:text-red-600 transition-colors flex items-center justify-center gap-2 ${
+              !mobile ? "hidden lg:flex" : ""
+            }`}
+          >
+            <LogOut size={18} /> Cerrar sesión
           </button>
         </>
       ) : (
         <>
           <Link
             href="/Login"
-            className="w-full lg:w-auto px-4 py-2 text-gray-600"
+            onClick={onLinkClick}
+            className="w-full lg:w-auto px-4 py-2 text-gray-600 flex items-center justify-center gap-2 hover:text-blue-600 transition-colors"
           >
-            Iniciar sesión
+            <LogIn size={18} /> Iniciar sesión
           </Link>
           <Link
             href="/Register"
-            className="w-full lg:w-auto px-4 py-2 bg-blue-600 text-white rounded-md"
+            onClick={onLinkClick}
+            className="w-full lg:w-auto px-4 py-2 bg-blue-600 text-white rounded-md flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors"
           >
-            Registrarme
+            <UserPlus size={18} /> Registrarme
           </Link>
         </>
       )}

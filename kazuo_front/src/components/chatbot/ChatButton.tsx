@@ -3,9 +3,13 @@
 import React, { useState } from "react";
 import { MessageCircle, X } from "lucide-react";
 import ChatBot from "./ChatBot";
+import { useAppContext } from "@/context/AppContext";
 
 export default function ChatButton() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const { isLoggedIn } = useAppContext();
+
+  if (!isLoggedIn) return null;
 
   const handleChatBotClick = () => {
     setIsChatOpen(!isChatOpen);

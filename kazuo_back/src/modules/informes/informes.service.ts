@@ -168,19 +168,17 @@ export class InformesService {
   // La función enviarCorreoElectronico permanece sin cambios
   async enviarCorreoElectronico(pdf: Buffer) {
     const transporter = createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
+      service: 'gmail',
       auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
       logger: true,
       debug: true,
     });
 
     const mailOptions = {
-      from: '"Kazuo" <kazuoflaias@gmail.com>',
+      from: `"Kazuo" <${process.env.EMAIL_USER}>`,
       to: 'xsaul.ortizx@gmail.com',
       subject: 'Informe generado',
       text: 'Adjunto encontrarás el informe generado.',

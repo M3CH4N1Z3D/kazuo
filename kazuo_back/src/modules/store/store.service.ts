@@ -107,7 +107,7 @@ export class StoreService {
     return { message: 'Bodega encontrada', storeFound };
   }
 
-  async update(id: string, updateStore: UpdateStoreDto, request: any) {
+  async update(id: string, updateStore: UpdateStoreDto) {
     const storeFound = await this.storeRepository.findOne({ where: { id } });
 
     if (!storeFound) {
@@ -151,7 +151,7 @@ export class StoreService {
       );
     }
 
-    const deleteUser = await this.storeRepository.delete(storeFound);
+    const deleteUser = await this.storeRepository.delete(id);
     return { message: 'La bodega fue eliminada exitosamente', deleteUser };
   }
 
@@ -271,17 +271,15 @@ export class StoreService {
 
   async enviarCorreoElectronico(pdf: Buffer) {
     const transporter = createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
+      service: 'gmail',
       auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
     const mailOptions = {
-      from: '"Kazuo" <kazuoflaias@gmail.com>',
+      from: `"Kazuo" <${process.env.EMAIL_USER}>`,
       to: 'xsaul.ortizx@gmail.com',
       subject: 'Informe de Bodega',
       text: 'Adjunto encontrarás el informe de la bodega.',

@@ -8,9 +8,15 @@ import Loader from "../Loader/Loader";
 
 import { useAppContext } from "@/context/AppContext";
 
-const CompanyRegistrationForm: React.FC = () => {
+interface CompanyRegistrationFormProps {
+  onSuccess?: () => void;
+}
+
+const CompanyRegistrationForm: React.FC<CompanyRegistrationFormProps> = ({
+  onSuccess,
+}) => {
   const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
-  const { userData } = useAppContext();
+  const { userData, setUserData, logout } = useAppContext();
 
   const token = userData?.token;
 
@@ -88,9 +94,9 @@ const CompanyRegistrationForm: React.FC = () => {
 
     if (Object.keys(validationErrors).length === 0) {
       let userId = "";
-      const userData = localStorage.getItem("userData");
-      if (userData) {
-        const parsedUserData = JSON.parse(userData);
+      const storedUserData = localStorage.getItem("userData");
+      if (storedUserData) {
+        const parsedUserData = JSON.parse(storedUserData);
         userId = parsedUserData.id;
       }
 
@@ -116,21 +122,49 @@ const CompanyRegistrationForm: React.FC = () => {
         // console.log(dataFormm);
         console.log(token);
 
+        if (response.status === 401) {
+          Swal.fire({
+            title: "Sesión expirada",
+            text: "Su sesión ha expirado. Por favor inicie sesión nuevamente.",
+            icon: "warning",
+            confirmButtonText: "Aceptar",
+          }).then(() => {
+            logout();
+          });
+          return;
+        }
+
         if (response.ok) {
+          const newCompany = await response.json();
+
+          if (userData && setUserData) {
+            const updatedUserData = {
+              ...(userData as any),
+              company: newCompany.id,
+            };
+            setUserData(updatedUserData);
+            localStorage.setItem("userData", JSON.stringify(updatedUserData));
+          }
+
           Swal.fire({
             title: "¡Te has registrado exitosamente!",
             text: "Ya estas registrado.",
             icon: "success",
             confirmButtonText: "Aceptar",
           });
-          router.push("/Company");
+          if (onSuccess) {
+            onSuccess();
+          } else {
+            router.push("/Company");
+          }
         } else {
-          throw new Error("Respuesta no exitosa del servidor");
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Error al registrarse");
         }
-      } catch {
+      } catch (error: any) {
         Swal.fire({
           title: "Error al hacer tu registro",
-          text: "Inténtalo de nuevo",
+          text: error.message || "Inténtalo de nuevo",
           icon: "error",
           confirmButtonText: "Aceptar",
         });
