@@ -81,27 +81,12 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
   };
 
   const downloadTemplate = () => {
-    const fileId = "1e1xuwETRuSMJK1-p6hJa8fWTb8Xj3y6j";
-    const exportUrl = `https://docs.google.com/spreadsheets/d/${fileId}/export?format=xlsx`;
-
-    fetch(exportUrl)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "plantilla.xlsx";
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      })
-      .catch((error) => {
-        console.error("Error al descargar la plantilla:", error);
-        alert(
-          "Error al descargar la plantilla. Por favor, intente nuevamente."
-        );
-      });
+    const a = document.createElement("a");
+    a.href = "/plantilla.xlsx";
+    a.download = "plantilla.xlsx";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -148,8 +133,32 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
   const handleBulkUpload = async (products: IProduct[]) => {
     setLoadingTemplate(true);
     const userData = localStorage.getItem("userData");
-    const parsedUserDataToken = JSON.parse(userData!);
-    const userToken = parsedUserDataToken.token;
+
+    if (!userData) {
+      Swal.fire({
+        title: "Error",
+        text: "No se encontró información de sesión. Por favor inicie sesión nuevamente.",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
+      setLoadingTemplate(false);
+      return;
+    }
+
+    const parsedUserDataToken = JSON.parse(userData);
+    const userToken = parsedUserDataToken?.token;
+
+    if (!userToken) {
+      Swal.fire({
+        title: "Error",
+        text: "Token de sesión inválido. Por favor inicie sesión nuevamente.",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
+      setLoadingTemplate(false);
+      return;
+    }
+
     try {
       const response = await fetch(`${kazuo_back}/product/bulk`, {
         method: "POST",

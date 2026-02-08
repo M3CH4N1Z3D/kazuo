@@ -48,7 +48,11 @@ export class AuthGuard implements CanActivate {
         throw new NotFoundException('Sin autorización');
       }
 
-      if (request.method === 'PUT' || request.method === 'DELETE') {
+      const path = request.originalUrl || request.url;
+      if (
+        (request.method === 'PUT' || request.method === 'DELETE') &&
+        path.includes('/users')
+      ) {
         const userIdToModify = request.params.id;
 
         if (
@@ -59,7 +63,7 @@ export class AuthGuard implements CanActivate {
           return true;
         } else {
           throw new UnauthorizedException(
-            'No tienes permiso para modificar a este usuario',
+            'No tienes permiso para modificar a este usuario. Debes ser Administrador o el propietario de la cuenta para realizar esta acción.',
           );
         }
       }

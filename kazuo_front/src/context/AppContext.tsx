@@ -88,6 +88,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.removeItem("userData");
     localStorage.removeItem("token");
     localStorage.removeItem("igmUrl");
+    sessionStorage.removeItem("chatConversation");
 
     // Cerrar sesión con Auth0
     if (

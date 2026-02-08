@@ -1,92 +1,202 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CompanyService } from 'src/company/company.service';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ProductService } from 'src/modules/product/product.service';
-import { StoreService } from 'src/modules/store/store.service'; 
-import { CategoryService } from 'src/modules/category/category.service';
-import { UsersService } from 'src/modules/users/users.service';
+import { StoreService } from 'src/modules/store/store.service';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
 @Injectable()
 export class ChatBotService {
-  private isFirstMessage: boolean = true;
-  private lastActivityTime: number = Date.now();
-  private readonly INACTIVITY_TIMEOUT = 5 * 60 * 1000;
-  constructor(
-    private readonly companyService: CompanyService,
-    private readonly productService: ProductService,
-    private readonly storeService: StoreService, 
-    private readonly categoryService: CategoryService,
-    private readonly userService: UsersService,
-  ) {}
+  private genAI: GoogleGenerativeAI;
+  private model: any;
 
-  private checkInactivity(): boolean {
-    const currentTime = Date.now();
-    if (currentTime - this.lastActivityTime > this.INACTIVITY_TIMEOUT) {
-      this.isFirstMessage = true;
-    }
-    this.lastActivityTime = currentTime;
-    return false;
+  constructor(
+    private readonly productService: ProductService,
+    private readonly storeService: StoreService,
+  ) {
+    this.genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+    this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
   }
 
-  async handleChatQuery(message: string, userId: string) {
-    if (this.checkInactivity()) {
-      return {
-        prompt: `El chat se ha reiniciado debido a inactividad. Hola, soy R2D2-K tu asistente en Kazuo. ¿En qué te puedo ayudar el día de hoy?\n\nOpciones disponibles:\n1. Consultar mi bodega\n2. Agregar producto a mi bodega\n3. Consultar información de mi compañía\n4. Consultar proveedores\n5. Agregar proveedor\n6. Agregar usuario a mi compañía\n7. Eliminar un producto\n8. Hacer cíclicos\n\nPor favor, escribe el número o el nombre de la opción que deseas.`,
-      };
-    }
-    const lowerMessage = message.toLowerCase();
+  async chat(message: string, history: any[], userId?: string) {
+    try {
+      // 1. Definir las herramientas (Tools) que Gemini puede usar
+      const tools: any = [
+        {
+          function_declarations: [
+            {
+              name: 'getStores',
+              description: 'Obtiene la lista de bodegas o tiendas disponibles del usuario actual. Devuelve ID, nombre y categoría de cada bodega.',
+            },
+            {
+              name: 'searchProducts',
+              description: 'Busca productos en el inventario. Puede filtrar por un término de búsqueda y opcionalmente por el ID de una bodega específica.',
+              parameters: {
+                type: 'OBJECT',
+                properties: {
+                  query: {
+                    type: 'STRING',
+                    description: 'Término de búsqueda para el producto (nombre, descripción, etc.)',
+                  },
+                  storeId: {
+                    type: 'STRING',
+                    description: '(Opcional) El ID de la bodega donde buscar. Si no se provee, busca en todas o pide aclaración.',
+                  },
+                },
+                required: ['query'],
+              },
+            },
+            {
+              name: 'getProductStatistics',
+              description: 'Obtiene estadísticas generales de los productos o de una bodega.',
+            }
+          ],
+        },
+      ];
 
-   
-    if (this.isFirstMessage) {
-      this.isFirstMessage = false;
-      return {
-        prompt: `Hola, soy R2D2-K tu asistente en Kazuo. ¿En qué te puedo ayudar el día de hoy?\n\nOpciones disponibles:\n1. Consultar mi bodega\n2. Agregar producto a mi bodega\n3. Consultar información de mi compañía\n4. Consultar proveedores\n5. Agregar proveedor\n6. Agregar usuario a mi compañía\n7. Eliminar un producto\n8. Hacer cíclicos\n\nPor favor, escribe el número o el nombre de la opción que deseas.`,
-      };
-    }
+      // 2. Configurar el modelo con las herramientas
+      const model = this.genAI.getGenerativeModel({
+        model: 'gemini-2.5-pro',
+        tools: tools,
+      });
 
-    if (lowerMessage.includes('bodegas')) {
-      try {
-        const stores = await this.storeService.findAllStores(userId);
-        if (stores.length > 0) {
-          return {
-            prompt: `Aquí tienes la información de tu(s) bodega(s):`,
-            data: stores, 
-          };
-        } else {
-          return { prompt: 'Aún no tienes bodegas registradas.' };
-        }
-      } catch (error) {
-        if (error instanceof NotFoundException) {
-          return { prompt: error.message };
-        }
-        return { prompt: 'Hubo un problema al consultar la bodega.' };
+      // 3. Iniciar el chat con el historial proporcionado
+      // Mapear el historial al formato de Gemini si es necesario (USER/MODEL)
+      // Asumimos que history viene en formato compatible o lo adaptamos
+      const chat = model.startChat({
+        history: history.map((h) => ({
+          role: h.role === 'model' || h.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: h.content || (h.parts && h.parts[0]?.text) || '' }],
+        })),
+      });
+
+      // 4. Enviar el mensaje del usuario
+      let result = await chat.sendMessage(message);
+      let response = await result.response;
+      let text = '';
+      
+      // 5. Verificar si el modelo quiere llamar a una función (Function Calling)
+      // Usamos un bucle para manejar múltiples turnos de llamadas a funciones si es necesario
+      let functionCalls = response.functionCalls();
+
+      while (functionCalls && functionCalls.length > 0) {
+        console.log('Gemini solicitó ejecutar funciones:', functionCalls);
+
+        // Ejecutar las funciones solicitadas
+        const functionResponses = await Promise.all(
+          functionCalls.map(async (call) => {
+            const { name, args } = call;
+            let apiResponse;
+
+            console.log(`Ejecutando herramienta: ${name} con argumentos:`, args);
+
+            if (name === 'getStores') {
+              // Si tenemos userId, buscamos sus tiendas. Si no, devolvemos error o lista vacía.
+              if (userId) {
+                try {
+                    apiResponse = await this.storeService.findAllStores(userId);
+                } catch (e) {
+                    console.error('Error en getStores:', e);
+                    apiResponse = { error: 'No se encontraron bodegas o hubo un error al buscarlas.' };
+                }
+              } else {
+                apiResponse = { error: 'Usuario no identificado para buscar bodegas.' };
+              }
+            } else if (name === 'searchProducts') {
+              try {
+                const { query } = args as any;
+                let { storeId } = args as any;
+
+                if (storeId) {
+                    // Validar si storeId es un UUID válido
+                    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                    let isValidId = uuidRegex.test(storeId);
+
+                    if (!isValidId) {
+                        // Lógica de recuperación: buscar por nombre si no es un UUID válido
+                        if (userId) {
+                            try {
+                                const userStores = await this.storeService.findAllStores(userId);
+                                // Buscar coincidencia exacta o si el nombre contiene el término
+                                const foundStore = userStores.find(s =>
+                                    s.name.toLowerCase() === storeId.toLowerCase() ||
+                                    s.name.toLowerCase().includes(storeId.toLowerCase())
+                                );
+
+                                if (foundStore) {
+                                    storeId = foundStore.id;
+                                    isValidId = true;
+                                } else {
+                                    apiResponse = { error: `No pude encontrar una bodega llamada "${storeId}".` };
+                                }
+                            } catch (e) {
+                                // Si findAllStores falla (ej: 404), asumimos que no hay tiendas
+                                apiResponse = { error: `No encontré bodegas asociadas para buscar "${storeId}".` };
+                            }
+                        } else {
+                            apiResponse = { error: `El ID de bodega "${storeId}" no es válido.` };
+                        }
+                    }
+
+                    if (isValidId) {
+                        const products = await this.productService.getProductsByStoreId(storeId);
+                        // Filtramos manualmente por query ya que el servicio no tiene búsqueda
+                        apiResponse = products.filter(p =>
+                            p.name.toLowerCase().includes(query.toLowerCase())
+                        );
+                    }
+                } else {
+                     // Si no hay storeId, buscamos en todos
+                     const allProducts = await this.productService.findAll();
+                     apiResponse = allProducts.filter(p =>
+                        p.name.toLowerCase().includes(query.toLowerCase())
+                     );
+                }
+              } catch (e) {
+                  console.error('Error en searchProducts:', e);
+                  apiResponse = { error: 'Error al buscar productos.' };
+              }
+            } else if (name === 'getProductStatistics') {
+                try {
+                    // Simulación básica
+                    const products = await this.productService.findAll();
+                    apiResponse = {
+                        totalProducts: products.length,
+                        message: 'Estadísticas básicas generadas.'
+                    };
+                } catch (e) {
+                    console.error('Error en getProductStatistics:', e);
+                    apiResponse = { error: 'Error al obtener estadísticas.' };
+                }
+            } else {
+                apiResponse = { error: `Función ${name} no implementada.` };
+            }
+
+            return {
+              functionResponse: {
+                name,
+                response: { result: apiResponse },
+              },
+            };
+          })
+        );
+
+        // 6. Enviar los resultados de las funciones de vuelta al modelo
+        console.log('Enviando resultados de funciones a Gemini...');
+        result = await chat.sendMessage(functionResponses);
+        response = await result.response;
+        
+        // Verificar si hay más llamadas a funciones en la nueva respuesta
+        functionCalls = response.functionCalls();
       }
-    }    
-    if (lowerMessage.includes('categorias')) {
-      try {
-        const categories = await this.categoryService.findAll();
-        return {
-          prompt: 'Aquí tienes las categorías disponibles:',
-          data: categories,
-        };
-      } catch (error) {
-        return { prompt: 'Hubo un problema al consultar las categorías.' };
-      }
+
+      // Si no hubo más llamadas a función (o nunca las hubo), obtener la respuesta de texto
+      text = response.text();
+
+      console.log('Respuesta generada:', text);
+      return { response: text };
+
+    } catch (error) {
+      console.error('Error en ChatbotService:', error);
+      throw new InternalServerErrorException('Error al procesar la solicitud del chatbot.');
     }
-
-    if (lowerMessage.includes('mi información') || lowerMessage.includes('mis datos')) {
-      try {
-        const user = await this.userService.getUserById(userId);
-        return {
-          prompt: 'Aquí está user'
-        };
-      } catch (error) {
-        return { prompt: 'No se pudo obtener tu información.' };
-      }
-    }
-
-   
-
-
-    return { prompt: 'Lo siento, no entendí la solicitud.' };
   }
 }
-

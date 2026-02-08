@@ -13,7 +13,7 @@ import { WebsocketModule } from './modules/websocket/websocket.module';
 import { CompanyModule } from './company/company.module';
 import { ProvidersModule } from './providers/providers.module';
 import { InformesModule } from './modules/informes/informes.module';
-import { ChatbotModule } from './chatbot/chatbot.modulle';
+import { ChatbotModule } from './chatbot/chatbot.module';
 
 @Module({
   imports: [
@@ -43,7 +43,7 @@ import { ChatbotModule } from './chatbot/chatbot.modulle';
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '30d' },
     }),
   ],
   controllers: [],

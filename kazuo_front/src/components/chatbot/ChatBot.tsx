@@ -9,13 +9,11 @@ interface ChatBotProps {
 }
 
 interface Message {
-  role: string;
+  role: "user" | "model";
   content: string;
 }
 export default function ChatBot({ onClose }: ChatBotProps) {
-  const [messages, setMessages] = useState<{ role: string; content: string }[]>(
-    []
-  );
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [position, setPosition] = useState({ x: 20, y: 20 });
@@ -68,10 +66,20 @@ export default function ChatBot({ onClose }: ChatBotProps) {
   const handleSendMessage = async () => {
     if (input.trim()) {
       setIsLoading(true);
-      const userMessage = { role: "user", content: input };
+      const userMessage: Message = { role: "user", content: input };
       const updatedMessages = [...messages, userMessage];
       setMessages(updatedMessages);
+      const currentInput = input; // Guardar input actual para envío
       setInput("");
+
+      // Formatear historial para el backend (excluyendo el mensaje actual que se envía aparte, o incluyéndolo según lógica backend,
+      // pero el controller recibe 'message' y 'history'. Generalmente history es lo previo).
+      // El formato esperado por Gemini API (via backend) es:
+      // { role: 'user' | 'model', parts: [{ text: string }] }
+      const historyFormatted = messages.map((msg) => ({
+        role: msg.role,
+        parts: [{ text: msg.content }],
+      }));
 
       try {
         const backendResponse = await fetch(`${kazuo_back}/chatbot`, {
@@ -80,7 +88,11 @@ export default function ChatBot({ onClose }: ChatBotProps) {
             "Content-Type": "application/json",
             Authorization: localStorage.getItem("token") || "",
           },
-          body: JSON.stringify({ message: input, userId: userData?.id }),
+          body: JSON.stringify({
+            message: currentInput,
+            history: historyFormatted,
+            userId: userData?.id,
+          }),
         });
 
         if (!backendResponse.ok) {
@@ -88,35 +100,36 @@ export default function ChatBot({ onClose }: ChatBotProps) {
         }
 
         const backendData = await backendResponse.json();
+
+        // Asumiendo que el backend devuelve la respuesta directa en algún campo o estructura
+        // Ajustar según lo que realmente devuelve el backend.
+        // El código anterior usaba backendData.prompt y backendData.data.
+        // Mantendré esa lógica pero adaptando el rol.
+
         const botMessage: Message = {
-          role: "assistant",
-          content: backendData.prompt,
+          role: "model",
+          content: backendData.prompt || backendData.response || "", // Fallback
         };
+
+        let newMessages: Message[] = [...updatedMessages, botMessage];
 
         if (backendData.data) {
           const dataMessage: Message = {
-            role: "assistant",
+            role: "model",
             content:
               typeof backendData.data === "string"
                 ? backendData.data
                 : JSON.stringify(backendData.data),
           };
-          const newMessages: Message[] = [
-            ...updatedMessages,
-            botMessage,
-            dataMessage,
-          ];
-          setMessages(newMessages);
-        } else {
-          const newMessages: Message[] = [...updatedMessages, botMessage];
-          setMessages(newMessages);
+          newMessages = [...newMessages, dataMessage];
         }
 
-        sessionStorage.setItem("chatConversation", JSON.stringify(messages));
+        setMessages(newMessages);
+        sessionStorage.setItem("chatConversation", JSON.stringify(newMessages));
       } catch (error) {
         console.error("Error al procesar la solicitud:", error);
-        const errorMessage = {
-          role: "assistant",
+        const errorMessage: Message = {
+          role: "model",
           content: "Lo siento, ha ocurrido un error al procesar tu solicitud.",
         };
         setMessages([...updatedMessages, errorMessage]);

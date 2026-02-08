@@ -6,7 +6,7 @@ import Loader from "@/components/Loader/Loader";
 import Swal from "sweetalert2";
 import CompanyRegistrationForm from "../RegisterCompany";
 import { useAppContext } from "@/context/AppContext";
-import { PERMISSIONS, PERMISSION_LABELS } from "@/constants/permissions";
+import { PERMISSIONS, PERMISSION_LABELS, PERMISSION_DESCRIPTIONS } from "@/constants/permissions";
 
 export default function MiEmpresa() {
   const { logout } = useAppContext();
@@ -496,20 +496,29 @@ export default function MiEmpresa() {
             </h3>
             <div className="space-y-3 mb-6">
               {Object.entries(PERMISSION_LABELS).map(([key, label]) => (
-                <div key={key} className="flex items-center">
+                <div key={key} className="flex items-start">
                   <input
                     type="checkbox"
                     id={key}
                     checked={selectedPermissions.includes(key)}
                     onChange={() => togglePermission(key)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded flex-shrink-0"
                   />
-                  <label
-                    htmlFor={key}
-                    className="ml-2 block text-sm text-gray-900 cursor-pointer"
-                  >
-                    {label}
-                  </label>
+                  <div className="ml-2">
+                    <label
+                      htmlFor={key}
+                      className="block text-sm font-medium text-gray-900 cursor-pointer"
+                    >
+                      {label}
+                    </label>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {
+                        PERMISSION_DESCRIPTIONS[
+                          key as keyof typeof PERMISSION_DESCRIPTIONS
+                        ]
+                      }
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>

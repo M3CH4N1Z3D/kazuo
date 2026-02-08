@@ -37,10 +37,19 @@ const EditProductForm: React.FC<{ productId: string }> = ({ productId }) => {
     };
 
     const fetchStores = async () => {
-      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-      const response = await fetch(`${kazuo_back}/store/user/${userData.id}`);
-      const data = await response.json();
-      setStores(data);
+      try {
+        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+        const response = await fetch(`${kazuo_back}/store/user/${userData.id}`);
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setStores(data);
+        } else {
+          setStores([]);
+        }
+      } catch (error) {
+        console.error("Error fetching stores:", error);
+        setStores([]);
+      }
     };
 
     fetchProduct();
@@ -259,13 +268,14 @@ const EditProductForm: React.FC<{ productId: string }> = ({ productId }) => {
                 <option value={product.storeId}>
                   {product.store?.name || "Bodega actual"}
                 </option>
-                {stores
-                  .filter((store) => store.id !== product.storeId)
-                  .map((store) => (
-                    <option key={store.id} value={store.id}>
-                      {store.name}
-                    </option>
-                  ))}
+                {Array.isArray(stores) &&
+                  stores
+                    .filter((store) => store.id !== product.storeId)
+                    .map((store) => (
+                      <option key={store.id} value={store.id}>
+                        {store.name}
+                      </option>
+                    ))}
               </select>
             </div>
           </div>

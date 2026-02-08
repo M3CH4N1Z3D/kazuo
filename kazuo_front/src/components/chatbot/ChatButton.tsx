@@ -1,22 +1,36 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MessageCircle, X } from "lucide-react";
 import ChatBot from "./ChatBot";
 import { useAppContext } from "@/context/AppContext";
 
 export default function ChatButton() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const { isLoggedIn } = useAppContext();
 
-  if (!isLoggedIn) return null;
+  useEffect(() => {
+    const checkIsDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    checkIsDesktop();
+    window.addEventListener("resize", checkIsDesktop);
+
+    return () => {
+      window.removeEventListener("resize", checkIsDesktop);
+    };
+  }, []);
+
+  if (!isLoggedIn || !isDesktop) return null;
 
   const handleChatBotClick = () => {
     setIsChatOpen(!isChatOpen);
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 hidden sm:block">
+    <div className="fixed bottom-4 right-4 z-50">
       {/* Chatbot Button */}
       {!isChatOpen && (
         <div

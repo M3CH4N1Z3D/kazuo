@@ -316,12 +316,12 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
       <main className="w-full flex-grow container mx-auto px-4 py-8">
         <div className="rounded-md p-8 md:w-2/3 mx-auto">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">
+            <h2 className="text-3xl font-bold text-gray-800">
               {storeName || "Cargando el nombre de la bodega"}
             </h2>
             <div className="flex flex-col sm:flex-row gap-4">
               <button
-                className={`mt-4 px-4 py-2 rounded text-white ${
+                className={`w-full sm:w-52 px-4 py-2 rounded text-sm text-white transition duration-300 ease-in-out flex items-center justify-center ${
                   userData?.isAdmin
                     ? "bg-blue-600 hover:bg-blue-700"
                     : "bg-gray-400 cursor-not-allowed"
@@ -332,7 +332,7 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
                 Generar Informe
               </button>
               <button
-                className={`mt-4 px-4 py-2 rounded text-white ${
+                className={`w-full sm:w-52 px-4 py-2 rounded text-sm text-white transition duration-300 ease-in-out flex items-center justify-center ${
                   userData?.isAdmin
                     ? "bg-green-600 hover:bg-green-700"
                     : "bg-gray-400 cursor-not-allowed"
@@ -343,7 +343,7 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
                 Estadisticas por Bodega
               </button>
               <button
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition duration-300 ease-in-out"
+                className="w-full sm:w-52 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm transition duration-300 ease-in-out flex items-center justify-center"
                 onClick={handleCreateNewProduct}
               >
                 Agregar Producto
@@ -435,6 +435,7 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
                               <FontAwesomeIcon
                                 icon={faEdit}
                                 className="text-blue-500 hover:text-blue-600 cursor-pointer mx-1"
+                                title="Editar producto"
                                 onClick={() =>
                                   handleNavigateToProductPage(product.id!)
                                 }
@@ -442,15 +443,18 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
                               <FontAwesomeIcon
                                 icon={faChartLine}
                                 className="text-green-500 hover:text-green-600"
+                                title="Ver estadísticas"
                               />
                               <FontAwesomeIcon
                                 icon={faPlus}
-                                className="text-yellow-500 hover:text-yellow-600"
+                                className="text-yellow-500 hover:text-yellow-600 cursor-pointer"
+                                title="Añadir stock"
                                 onClick={() => handleAddProduct(product.id!)}
                               />
                               <FontAwesomeIcon
                                 icon={faMinus}
-                                className="text-red-500 hover:text-red-600"
+                                className="text-red-500 hover:text-red-600 cursor-pointer"
+                                title="Despachar producto"
                                 onClick={() =>
                                   handleNewOrderProduct(product.id!)
                                 }
