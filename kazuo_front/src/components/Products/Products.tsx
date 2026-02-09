@@ -18,7 +18,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loader from "../Loader/Loader";
 import Swal from "sweetalert2";
-import { ArrowLeft } from "lucide-react";
 
 const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
   const router = useRouter();
@@ -120,10 +119,6 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
       product.unids.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.bange.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  const handleBack = () => {
-    window.history.back();
-  };
 
   const handleNavigateToStatistics = () => {
     router.push(`/Statistics/${storeId}`);
@@ -359,9 +354,6 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
               className="border border-gray-300 rounded-md p-3 w-full"
             />
 
-            <button onClick={handleBack} className="mb-4">
-              <ArrowLeft className="mr-2 h-4 w-4 mt-3" />
-            </button>
           </div>
           {isLoading ? (
             <div className="flex justify-center items-center h-32">

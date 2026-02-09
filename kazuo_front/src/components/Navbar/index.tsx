@@ -18,6 +18,8 @@ import {
   LayoutDashboard,
   LogIn,
   UserPlus,
+  Building,
+  User,
 } from "lucide-react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
@@ -69,13 +71,24 @@ export default function Navbar() {
   return (
     <header className="container mx-auto px-4 py-6">
       <div className="flex items-center justify-between">
-        <button className="lg:hidden" onClick={toggleMenu}>
+        <button
+          className={`${!isLoggedIn ? "lg:hidden" : ""}`}
+          onClick={toggleMenu}
+        >
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-        <nav className="hidden lg:flex items-center space-x-6">
-          <NavLinks />
+        <nav
+          className={`${
+            isLoggedIn ? "hidden" : "hidden lg:flex"
+          } items-center space-x-6`}
+        >
+          <NavLinks isLoggedIn={isLoggedIn} />
         </nav>
-        <div className="hidden lg:flex items-center space-x-4">
+        <div
+          className={`${
+            isLoggedIn ? "hidden" : "hidden lg:flex"
+          } items-center space-x-4`}
+        >
           <AuthButtons
             isLoggedIn={isLoggedIn}
             handleLogout={handleLogout}
@@ -84,9 +97,13 @@ export default function Navbar() {
         </div>
       </div>
       {isMenuOpen && (
-        <div className="lg:hidden mt-4 bg-white shadow-lg rounded-lg p-4 absolute top-16 left-0 right-0 z-50 border border-gray-100">
+        <div
+          className={`${
+            !isLoggedIn ? "lg:hidden" : ""
+          } mt-4 bg-white shadow-lg rounded-lg p-4 absolute top-16 left-0 right-0 z-50 border border-gray-100`}
+        >
           <nav className="flex flex-col space-y-4">
-            <NavLinks onLinkClick={closeMenu} mobile />
+            <NavLinks onLinkClick={closeMenu} mobile isLoggedIn={isLoggedIn} />
           </nav>
           <div className="mt-4 flex flex-col space-y-4 pt-4 border-t border-gray-100">
             <AuthButtons
@@ -106,14 +123,65 @@ export default function Navbar() {
 function NavLinks({
   onLinkClick,
   mobile,
+  isLoggedIn,
 }: {
   onLinkClick?: () => void;
   mobile?: boolean;
+  isLoggedIn: boolean;
 }) {
   const baseClasses =
     "flex items-center gap-2 font-medium transition-colors hover:text-blue-800";
   const activeClasses = "text-blue-600";
   const inactiveClasses = "text-gray-600";
+
+  if (isLoggedIn) {
+    return (
+      <>
+        <Link
+          href="/GestionInventario"
+          onClick={onLinkClick}
+          className={`${baseClasses} ${inactiveClasses}`}
+        >
+          <LayoutDashboard size={18} /> Gestion de inventario
+        </Link>
+        <Link
+          href="/Company"
+          onClick={onLinkClick}
+          className={`${baseClasses} ${inactiveClasses}`}
+        >
+          <Building size={18} /> Gestion de empresa
+        </Link>
+        <Link
+          href="/GestionInventario"
+          onClick={onLinkClick}
+          className={`${baseClasses} ${inactiveClasses}`}
+        >
+          <User size={18} /> Perfil
+        </Link>
+        <Link
+          href="/GoogleTranslate "
+          onClick={onLinkClick}
+          className={`${baseClasses} ${inactiveClasses}`}
+        >
+          <Globe size={18} /> Traducir
+        </Link>
+        <Link
+          href="/Nosotros"
+          onClick={onLinkClick}
+          className={`${baseClasses} ${inactiveClasses}`}
+        >
+          <Users size={18} /> Nosotros
+        </Link>
+        <Link
+          href="/Contacto"
+          onClick={onLinkClick}
+          className={`${baseClasses} ${inactiveClasses}`}
+        >
+          <Phone size={18} /> Contacto
+        </Link>
+      </>
+    );
+  }
 
   return (
     <>
@@ -174,12 +242,6 @@ function AuthButtons({
     <>
       {isLoggedIn ? (
         <>
-          <button
-            className="w-full lg:w-auto px-4 py-2 bg-blue-600 text-white rounded-md flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors"
-            onClick={() => handleOnClick("/GestionInventario")}
-          >
-            <LayoutDashboard size={18} /> Gestion de inventario
-          </button>
           <button
             onClick={handleLogout}
             className={`w-full lg:w-auto px-4 py-2 text-gray-600 hover:text-red-600 transition-colors flex items-center justify-center gap-2 ${

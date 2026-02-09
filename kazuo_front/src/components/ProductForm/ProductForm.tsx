@@ -12,7 +12,7 @@ import { validateProductForm } from "@/helpers/validate";
 import * as XLSX from "xlsx";
 import { useAppContext } from "@/context/AppContext";
 import Loader from "../Loader/Loader";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { FaDownload } from "react-icons/fa";
 import Loader1 from "../Loader/Loader1";
 
@@ -341,13 +341,6 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
     }
   };
 
-  const handleBack = () => {
-    if (onCancel) {
-      onCancel();
-    } else {
-      window.history.back();
-    }
-  };
 
   return (
     <div
@@ -364,9 +357,6 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
             : "w-full max-w-md mt-5 mb-5 p-8 space-y-6 bg-white shadow-lg rounded-lg"
         }
       >
-        <button onClick={handleBack} className="mb-4">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-        </button>
         <h2 className="text-2xl font-bold text-center text-blue-700">
           Registrar
         </h2>
