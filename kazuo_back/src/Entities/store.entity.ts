@@ -32,7 +32,7 @@ export class Store {
   @ManyToOne(() => Users, (users) => users.stores, { onDelete: 'CASCADE' })
   user: Users;
 
-  @ManyToMany(() => Company, (company) => company.stores)
+  @ManyToMany(() => Company, (company) => company.stores, { onDelete: 'CASCADE' })
   companies: Company[];
   
 }

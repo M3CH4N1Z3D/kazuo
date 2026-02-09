@@ -34,19 +34,27 @@ export class ChatBotService {
                 properties: {
                   query: {
                     type: 'STRING',
-                    description: 'Término de búsqueda para el producto (nombre, descripción, etc.)',
+                    description: '(Opcional) Término de búsqueda para el producto (nombre, descripción, etc.). Si se omite, devuelve todos los productos.',
                   },
                   storeId: {
                     type: 'STRING',
                     description: '(Opcional) El ID de la bodega donde buscar. Si no se provee, busca en todas o pide aclaración.',
                   },
                 },
-                required: ['query'],
               },
             },
             {
               name: 'getProductStatistics',
-              description: 'Obtiene estadísticas generales de los productos o de una bodega.',
+              description: 'Obtiene estadísticas generales de los productos o de una bodega específica.',
+              parameters: {
+                type: 'OBJECT',
+                properties: {
+                  storeId: {
+                    type: 'STRING',
+                    description: '(Opcional) El ID de la bodega para obtener estadísticas específicas.',
+                  },
+                },
+              },
             }
           ],
         },
@@ -137,18 +145,32 @@ export class ChatBotService {
                     }
 
                     if (isValidId) {
+                        console.log(`[DEBUG] Buscando productos para storeId: ${storeId}`);
                         const products = await this.productService.getProductsByStoreId(storeId);
-                        // Filtramos manualmente por query ya que el servicio no tiene búsqueda
-                        apiResponse = products.filter(p =>
-                            p.name.toLowerCase().includes(query.toLowerCase())
-                        );
+                        console.log(`[DEBUG] Encontrados ${products.length} productos en la base de datos para la bodega ${storeId}`);
+                        
+                        if (query && query.trim() !== '' && query.toLowerCase() !== 'todo') {
+                            // Filtramos manualmente por query
+                            console.log(`[DEBUG] Filtrando por query: "${query}"`);
+                            apiResponse = products.filter(p =>
+                                p.name.toLowerCase().includes(query.toLowerCase())
+                            );
+                        } else {
+                            // Devolver todos los productos de la bodega
+                            apiResponse = products;
+                        }
+                        console.log(`[DEBUG] Resultados enviados: ${Array.isArray(apiResponse) ? apiResponse.length : 0}`);
                     }
                 } else {
-                     // Si no hay storeId, buscamos en todos
+                     // Si no hay storeId, buscamos en todos (idealmente debería ser filtrado por usuario si es posible)
                      const allProducts = await this.productService.findAll();
-                     apiResponse = allProducts.filter(p =>
-                        p.name.toLowerCase().includes(query.toLowerCase())
-                     );
+                     if (query && query.trim() !== '' && query.toLowerCase() !== 'todo') {
+                         apiResponse = allProducts.filter(p =>
+                            p.name.toLowerCase().includes(query.toLowerCase())
+                         );
+                     } else {
+                         apiResponse = allProducts;
+                     }
                 }
               } catch (e) {
                   console.error('Error en searchProducts:', e);
@@ -156,11 +178,18 @@ export class ChatBotService {
               }
             } else if (name === 'getProductStatistics') {
                 try {
-                    // Simulación básica
-                    const products = await this.productService.findAll();
+                    const { storeId } = args as any;
+                    let products;
+                    
+                    if (storeId) {
+                         products = await this.productService.getProductsByStoreId(storeId);
+                    } else {
+                         products = await this.productService.findAll();
+                    }
+
                     apiResponse = {
                         totalProducts: products.length,
-                        message: 'Estadísticas básicas generadas.'
+                        message: storeId ? `Estadísticas para la bodega ${storeId}` : 'Estadísticas generales.',
                     };
                 } catch (e) {
                     console.error('Error en getProductStatistics:', e);

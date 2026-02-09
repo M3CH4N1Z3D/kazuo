@@ -80,4 +80,13 @@ export class UpdateProductDto {
   @IsOptional()
   @IsNumber()
   minStock?: number;
+
+  @ApiProperty({
+    description: 'Store ID where the product is located',
+    example: 'uuid-of-store',
+    required: false,
+  })
+  @IsOptional()
+  @IsUUID()
+  storeId?: string;
 }

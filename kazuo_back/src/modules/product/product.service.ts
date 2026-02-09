@@ -76,6 +76,14 @@ export class ProductService {
       throw new NotFoundException('El producto no existe');
     }
   
+    if (updateProduct.storeId) {
+      const store = await this.storeRepository.findById(updateProduct.storeId);
+      if (!store) {
+        throw new NotFoundException('Bodega no encontrada');
+      }
+      product.store = store;
+    }
+
     Object.assign(product, updateProduct);
     product.updatedAt = new Date();
   

@@ -151,6 +151,17 @@ export class StoreService {
       );
     }
 
+    // Cargar la tienda con sus compañías para eliminar la relación
+    const storeWithCompanies = await this.storeRepository.findOne({
+      where: { id },
+      relations: ['companies'],
+    });
+
+    if (storeWithCompanies && storeWithCompanies.companies.length > 0) {
+      storeWithCompanies.companies = [];
+      await this.storeRepository.save(storeWithCompanies);
+    }
+
     const deleteUser = await this.storeRepository.delete(id);
     return { message: 'La bodega fue eliminada exitosamente', deleteUser };
   }
