@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAppContext } from "@/context/AppContext";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Swal from "sweetalert2";
 import {
   Menu,
@@ -69,26 +69,24 @@ export default function Navbar() {
   };
 
   return (
-    <header className="container mx-auto px-4 py-6">
-      <div className="flex items-center justify-between">
-        <button
-          className={`${!isLoggedIn ? "lg:hidden" : ""}`}
-          onClick={toggleMenu}
-        >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-        <nav
-          className={`${
-            isLoggedIn ? "hidden" : "hidden lg:flex"
-          } items-center space-x-6`}
-        >
+    <>
+      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <div className="flex items-center gap-4">
+          <button
+            className="lg:hidden p-2 -ml-2 hover:bg-muted rounded-md transition-colors"
+            onClick={toggleMenu}
+            aria-label="Abrir menú principal"
+          >
+            <Menu size={24} />
+          </button>
+        </div>
+        
+        <nav className="hidden lg:flex items-center space-x-4">
           <NavLinks isLoggedIn={isLoggedIn} />
         </nav>
-        <div
-          className={`${
-            isLoggedIn ? "hidden" : "hidden lg:flex"
-          } items-center space-x-4`}
-        >
+
+        <div className="hidden lg:flex items-center space-x-4">
           <AuthButtons
             isLoggedIn={isLoggedIn}
             handleLogout={handleLogout}
@@ -96,27 +94,51 @@ export default function Navbar() {
           />
         </div>
       </div>
+
+      </header>
+
+      {/* Mobile Drawer */}
       {isMenuOpen && (
-        <div
-          className={`${
-            !isLoggedIn ? "lg:hidden" : ""
-          } mt-4 bg-white shadow-lg rounded-lg p-4 absolute top-16 left-0 right-0 z-50 border border-gray-100`}
-        >
-          <nav className="flex flex-col space-y-4">
-            <NavLinks onLinkClick={closeMenu} mobile isLoggedIn={isLoggedIn} />
-          </nav>
-          <div className="mt-4 flex flex-col space-y-4 pt-4 border-t border-gray-100">
-            <AuthButtons
-              isLoggedIn={isLoggedIn}
-              handleLogout={handleLogout}
-              handleOnClick={handleOnClick}
-              onLinkClick={closeMenu}
-              mobile
-            />
+        <div className="fixed inset-0 z-[99999] lg:hidden">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50 transition-opacity backdrop-blur-sm"
+            onClick={closeMenu}
+            aria-hidden="true"
+          />
+          
+          {/* Drawer Panel */}
+          <div className="fixed inset-y-0 left-0 z-[99999] h-screen w-3/4 max-w-sm !bg-white dark:!bg-slate-900 !opacity-100 p-6 shadow-xl transition-transform duration-300 ease-in-out border-r overflow-y-auto bg-opacity-100">
+            <div className="flex items-center justify-between mb-8">
+              <span className="text-lg font-bold text-foreground">Menu</span>
+              <button
+                onClick={closeMenu}
+                className="p-2 -mr-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-colors"
+                aria-label="Cerrar menú"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <nav className="flex flex-col space-y-2">
+              <NavLinks onLinkClick={closeMenu} mobile isLoggedIn={isLoggedIn} />
+            </nav>
+            
+            <div className="mt-auto pt-8 border-t">
+              <div className="flex flex-col space-y-4">
+                <AuthButtons
+                  isLoggedIn={isLoggedIn}
+                  handleLogout={handleLogout}
+                  handleOnClick={handleOnClick}
+                  onLinkClick={closeMenu}
+                  mobile
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 }
 
@@ -129,10 +151,19 @@ function NavLinks({
   mobile?: boolean;
   isLoggedIn: boolean;
 }) {
+  const pathname = usePathname();
   const baseClasses =
-    "flex items-center gap-2 font-medium transition-colors hover:text-blue-800";
-  const activeClasses = "text-blue-600";
-  const inactiveClasses = "text-gray-600";
+    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground";
+  const activeClasses = "bg-accent text-accent-foreground";
+  const inactiveClasses = "text-muted-foreground";
+
+  const getLinkClasses = (path: string) => {
+    // Normalizar paths para comparación (eliminar espacios extra si los hay)
+    const cleanPath = path.trim();
+    const isActive =
+      cleanPath === "/" ? pathname === "/" : pathname?.startsWith(cleanPath);
+    return `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`;
+  };
 
   if (isLoggedIn) {
     return (
@@ -140,42 +171,43 @@ function NavLinks({
         <Link
           href="/GestionInventario"
           onClick={onLinkClick}
-          className={`${baseClasses} ${inactiveClasses}`}
+          className={getLinkClasses("/GestionInventario")}
         >
           <LayoutDashboard size={18} /> Gestion de inventario
         </Link>
         <Link
           href="/Company"
           onClick={onLinkClick}
-          className={`${baseClasses} ${inactiveClasses}`}
+          className={getLinkClasses("/Company")}
         >
           <Building size={18} /> Gestion de empresa
         </Link>
+        {/* Nota: Perfil redirige a GestionInventario en el original, se mantiene asi pero podria ser un error o intencional */}
         <Link
           href="/GestionInventario"
           onClick={onLinkClick}
-          className={`${baseClasses} ${inactiveClasses}`}
+          className={getLinkClasses("/GestionInventario")}
         >
           <User size={18} /> Perfil
         </Link>
         <Link
-          href="/GoogleTranslate "
+          href="/GoogleTranslate"
           onClick={onLinkClick}
-          className={`${baseClasses} ${inactiveClasses}`}
+          className={getLinkClasses("/GoogleTranslate")}
         >
           <Globe size={18} /> Traducir
         </Link>
         <Link
           href="/Nosotros"
           onClick={onLinkClick}
-          className={`${baseClasses} ${inactiveClasses}`}
+          className={getLinkClasses("/Nosotros")}
         >
           <Users size={18} /> Nosotros
         </Link>
         <Link
           href="/Contacto"
           onClick={onLinkClick}
-          className={`${baseClasses} ${inactiveClasses}`}
+          className={getLinkClasses("/Contacto")}
         >
           <Phone size={18} /> Contacto
         </Link>
@@ -185,45 +217,41 @@ function NavLinks({
 
   return (
     <>
-      <Link
-        href="/"
-        onClick={onLinkClick}
-        className={`${baseClasses} ${activeClasses}`}
-      >
+      <Link href="/" onClick={onLinkClick} className={getLinkClasses("/")}>
         <Home size={18} /> Inicio
       </Link>
       <Link
         href="/Soluciones"
         onClick={onLinkClick}
-        className={`${baseClasses} ${activeClasses}`}
+        className={getLinkClasses("/Soluciones")}
       >
         <Lightbulb size={18} /> Soluciones
       </Link>
       <Link
         href="/Planes"
         onClick={onLinkClick}
-        className={`${baseClasses} ${inactiveClasses}`}
+        className={getLinkClasses("/Planes")}
       >
         <ClipboardList size={18} /> Planes
       </Link>
       <Link
         href="/Contacto"
         onClick={onLinkClick}
-        className={`${baseClasses} ${inactiveClasses}`}
+        className={getLinkClasses("/Contacto")}
       >
         <Phone size={18} /> Contacto
       </Link>
       <Link
         href="/Nosotros"
         onClick={onLinkClick}
-        className={`${baseClasses} ${inactiveClasses}`}
+        className={getLinkClasses("/Nosotros")}
       >
         <Users size={18} /> Nosotros
       </Link>
       <Link
-        href="/GoogleTranslate "
+        href="/GoogleTranslate"
         onClick={onLinkClick}
-        className={`${baseClasses} ${inactiveClasses}`}
+        className={getLinkClasses("/GoogleTranslate")}
       >
         <Globe size={18} /> Traducir
       </Link>
@@ -244,7 +272,7 @@ function AuthButtons({
         <>
           <button
             onClick={handleLogout}
-            className={`w-full lg:w-auto px-4 py-2 text-gray-600 hover:text-red-600 transition-colors flex items-center justify-center gap-2 ${
+            className={`w-full lg:w-auto px-4 py-2 text-muted-foreground hover:text-destructive transition-colors flex items-center justify-center gap-2 ${
               !mobile ? "hidden lg:flex" : ""
             }`}
           >
@@ -256,14 +284,14 @@ function AuthButtons({
           <Link
             href="/Login"
             onClick={onLinkClick}
-            className="w-full lg:w-auto px-4 py-2 text-gray-600 flex items-center justify-center gap-2 hover:text-blue-600 transition-colors"
+            className="w-full lg:w-auto px-4 py-2 text-sm font-medium text-muted-foreground flex items-center justify-center gap-2 hover:text-primary transition-colors"
           >
             <LogIn size={18} /> Iniciar sesión
           </Link>
           <Link
             href="/Register"
             onClick={onLinkClick}
-            className="w-full lg:w-auto px-4 py-2 bg-blue-600 text-white rounded-md flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors"
+            className="w-full lg:w-auto px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors shadow-sm"
           >
             <UserPlus size={18} /> Registrarme
           </Link>

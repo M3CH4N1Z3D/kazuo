@@ -15,7 +15,11 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       colors: {
-        terciary: "#f97316",
+        terciary: "#f97316", // Deprecated: use accent-orange or chart-2
+        brand: {
+          orange: "#F97316", // Accent Orange
+          blue: "#2563EB",   // Primary Blue (redundant with primary but useful for utilities)
+        },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -61,6 +65,9 @@ const config: Config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      fontFamily: {
+        sans: ["var(--font-inter)", "sans-serif"], // Add this to hook up with layout
       },
     },
   },

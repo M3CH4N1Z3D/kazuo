@@ -376,13 +376,13 @@ export default function MiEmpresa() {
             </h2>
           </div>
 
-          <div className="p-6">
-            <p>Nombre: {companyData?.CompanyName}</p>
-            <p>País: {companyData?.country}</p>
-            <p>Dirección: {companyData?.address}</p>
-            <p>Teléfono: {companyData?.contactPhone}</p>
-            <p>Email: {companyData?.email}</p>
-            <p>Industria: {companyData?.industry}</p>
+          <div className="p-6 space-y-2">
+            <p><span className="font-semibold">Nombre:</span> {companyData?.CompanyName}</p>
+            <p><span className="font-semibold">País:</span> {companyData?.country}</p>
+            <p><span className="font-semibold">Dirección:</span> {companyData?.address}</p>
+            <p><span className="font-semibold">Teléfono:</span> {companyData?.contactPhone}</p>
+            <p><span className="font-semibold">Email:</span> {companyData?.email}</p>
+            <p><span className="font-semibold">Industria:</span> {companyData?.industry}</p>
           </div>
         </div>
         {/* Sección de equipo */}
@@ -396,7 +396,7 @@ export default function MiEmpresa() {
             {teamMembers.map((member) => (
               <div
                 key={member.id}
-                className="flex items-center justify-between p-4 border-b last:border-b-0"
+                className="flex flex-col md:flex-row md:items-center justify-between p-4 border-b last:border-b-0 gap-4"
               >
                 <div className="flex items-center">
                   {member.imgUrl ? (
@@ -406,15 +406,15 @@ export default function MiEmpresa() {
                       className="w-10 h-10 rounded-full mr-4 object-cover"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full mr-4 bg-gray-200 flex items-center justify-center text-gray-500 font-bold">
+                    <div className="w-10 h-10 rounded-full mr-4 bg-gray-200 flex items-center justify-center text-gray-500 font-bold flex-shrink-0">
                       {member.name.charAt(0)}
                     </div>
                   )}
                   <div>
-                    <div className="flex items-center">
+                    <div className="flex flex-wrap items-center gap-2">
                       <p className="font-semibold text-gray-900">{member.name}</p>
                       {member.isAdmin && (
-                        <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full border border-blue-200">
+                        <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full border border-blue-200">
                           Admin
                         </span>
                       )}
@@ -423,11 +423,11 @@ export default function MiEmpresa() {
                   </div>
                 </div>
                 {isAdmin && (
-                  <div className="flex space-x-2">
+                  <div className="flex flex-wrap gap-2 w-full md:w-auto">
                     {!member.isAdmin && (
                       <button
                         onClick={() => handleOpenPermissionsModal(member)}
-                        className="px-3 py-1 bg-yellow-500 text-white text-sm rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition duration-300"
+                        className="flex-1 md:flex-none px-3 py-1 bg-yellow-500 text-white text-sm rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition duration-300 flex items-center justify-center"
                         title="Gestionar Permisos"
                       >
                         <FaKey className="inline mr-1" /> Permisos
@@ -435,7 +435,7 @@ export default function MiEmpresa() {
                     )}
                     <button
                       onClick={() => handleRemoveTeamMember(member.id)}
-                      className="px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-300"
+                      className="flex-1 md:flex-none px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-300 flex items-center justify-center"
                     >
                       <FaTrash className="inline mr-1" /> Eliminar
                     </button>

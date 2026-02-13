@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { DataSource } from 'typeorm';
-import { AppModule } from '../kazuo_back/src/app.module'
+import { AppModule } from './src/app.module'
 
 async function runMigrations() {
   const app = await NestFactory.createApplicationContext(AppModule);

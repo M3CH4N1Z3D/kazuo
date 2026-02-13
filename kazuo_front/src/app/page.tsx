@@ -3,37 +3,34 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import React from 'react';
-import {useTranslation} from 'react-i18next';
+import { Button } from "@/components/ui/button";
 
 export default function LandingPage() {
-
-  // const { t, i18n } = useTranslation( "global" );
-
-    return (
-    <div className="bg-white">
-      <main className="container mx-auto px-4 py-16 flex flex-col md:flex-row items-center">
-        <div className="md:w-1/2 md:pr-8 mb-8 md:mb-0 text-center md:text-left">
-          <p className="text-sm font-medium text-gray-500 mb-4">
-           {/* <h1>{t("landing.managementSystem")} </h1> */}
-            SISTEMA DE GESTIÓN PARA PYMES
+  return (
+    <div className="bg-background min-h-[calc(100vh-4rem)] flex items-center">
+      <main className="container mx-auto px-4 py-12 md:py-24 flex flex-col md:flex-row items-center gap-12">
+        <div className="flex-1 text-center md:text-left space-y-6">
+          <p className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">
+            Sistema de Gestión para PYMES
           </p>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-snug">
-            Descubre la <span className="text-blue-600">Gestión Eficiente</span>{" "}
-
-            con IA organiza tu inventario en solo 2 clicks.
-
+          
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
+            Descubre la <span className="text-primary">Gestión Eficiente</span>{" "}
+            con IA
           </h1>
-          <p className="text-gray-600 mb-8">
-            Olvídate de los procesos manuales con nuestro Sistema de Gestión
-            Empresarial que automatiza tu facturación, inventario, reportes y
-            mucho más.
+          
+          <p className="text-xl text-muted-foreground md:pr-12 leading-relaxed">
+            Organiza tu inventario en solo 2 clicks. Olvídate de los procesos manuales con nuestro Sistema de Gestión
+            Empresarial que automatiza tu facturación, inventario, reportes y mucho más.
           </p>
 
-          <Link href={"/Register"}>
-          <p className="w-full bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-transform duration-300 ease-in-out text-white py-2 rounded-xl text-center font-semibold shadow-md hover:scale-105">
-            Empieza tus 15 días gratis
-          </p>
-          </Link>
+          <div className="flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start pt-4">
+            <Button asChild size="lg" className="w-full sm:w-auto text-lg px-8 py-6 shadow-lg hover:scale-105 transition-transform">
+              <Link href="/Register">
+                Empieza tus 15 días gratis
+              </Link>
+            </Button>
+          </div>
 
           <div className="flex items-center justify-center md:justify-start mt-6">
             <div className="flex">

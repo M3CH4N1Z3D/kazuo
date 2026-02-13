@@ -8,8 +8,9 @@ import { useRouter } from "next/navigation";
 import ClientLayout from "./ClientLayout";
 import { Suspense } from "react";
 import ChatButton from "@/components/chatbot/ChatButton"
+import { Toaster } from "sonner";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "Kazuo",
@@ -31,7 +32,7 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.className} ${inter.variable}`}>
         <ClientLayout>
           <ShowComponents>
             <Navbar />
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>{" "}
           <Footer />
           <ChatButton />
+          <Toaster richColors position="top-center" />
         </ClientLayout>
       </body>
     </html>
