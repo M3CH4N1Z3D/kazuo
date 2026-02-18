@@ -25,6 +25,9 @@
     "migration:revert": "npm run typeorm -- -d ./src/config/typeorm.ts migration:revert",
     "migration:show": "npm run typeorm -- -d ./src/config/typeorm.ts migration:show"
   },
+  "engines": {
+    "node": ">=18.x"
+  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.980.0",
     "@google/generative-ai": "^0.24.1",

@@ -20,9 +20,9 @@ export default registerAs('typeorm', () => {
         migrations: ['dist/migrations/*{.ts,.js}'],
         autoLoadEntities: true,
         logging: false,
-        synchronize: true,
-        ssl: process.env.DB_HOST === 'localhost' ? false : {
-          rejectUnauthorized: false,
+        synchronize: false, // En producción synchronize debe ser false para evitar pérdida de datos accidental
+        ssl: {
+          rejectUnauthorized: false, // Requerido para Supabase y muchas DBs cloud
         },
       };
     }

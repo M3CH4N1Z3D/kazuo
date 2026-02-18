@@ -98,3 +98,4 @@ dist-ssr
 kazuo-user_accessKeys.csv
 *accessKeys.csv
 *.csv
+DEPLOYMENT_GUIDE.md
