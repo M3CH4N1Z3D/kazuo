@@ -5,10 +5,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProvidersRepository } from './providers.repository'; // Nuevo repositorio de Providers
-import { Product } from 'src/Entities/product.entity';
+import { Product } from '../Entities/product.entity';
 import { CreateProviderDto } from './providers.dto';
-import { Provider } from 'src/Entities/providers.entity';
-import { UsersService } from 'src/modules/users/users.service';
+import { Provider } from '../Entities/providers.entity';
+import { UsersService } from '../modules/users/users.service';
 import { Repository } from 'typeorm';
 
 @Injectable()

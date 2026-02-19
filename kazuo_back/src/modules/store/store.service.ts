@@ -6,13 +6,13 @@ import {
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Store } from 'src/Entities/store.entity';
+import { Store } from '../../Entities/store.entity';
 import { In, Repository } from 'typeorm';
-import { Category } from 'src/Entities/category.entity';
-import { Users } from 'src/Entities/users.entity';
+import { Category } from '../../Entities/category.entity';
+import { Users } from '../../Entities/users.entity';
 import PDFDocument from 'pdfkit';
 import { createTransport } from 'nodemailer';
-import { CompanyRepository } from 'src/company/company.repository';
+import { CompanyRepository } from '../../company/company.repository';
 
 @Injectable()
 export class StoreService {

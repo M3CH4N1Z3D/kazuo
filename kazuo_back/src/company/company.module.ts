@@ -4,11 +4,11 @@ import { CompanyController } from './company.controller';
 import { CompanyService } from './company.service';
 import { Company } from '../Entities/company.entity';
 import { CompanyRepository } from './company.repository';
-import { UsersModule } from 'src/modules/users/users.module';
-import { MailModule } from 'src/mail/mail.module';
-import { Store } from 'src/Entities/store.entity';
-import { Product } from 'src/Entities/product.entity';
-import { Provider } from 'src/Entities/providers.entity';
+import { UsersModule } from '../modules/users/users.module';
+import { MailModule } from '../mail/mail.module';
+import { Store } from '../Entities/store.entity';
+import { Product } from '../Entities/product.entity';
+import { Provider } from '../Entities/providers.entity';
 
 @Module({
   imports: [

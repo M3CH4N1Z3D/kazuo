@@ -8,13 +8,13 @@ import {
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Product } from 'src/Entities/product.entity';
+import { Product } from '../../Entities/product.entity';
 import { Repository } from 'typeorm';
-import { Category } from 'src/Entities/category.entity';
+import { Category } from '../../Entities/category.entity';
 import { StoreService } from '../store/store.service';
-import { Store } from 'src/Entities/store.entity';
+import { Store } from '../../Entities/store.entity';
 import { StoreRepository } from '../store/store.repository';
-import { MailService } from 'src/mail/mail.service';
+import { MailService } from '../../mail/mail.service';
 
 @Injectable()
 export class ProductService {

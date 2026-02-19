@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ProductService } from 'src/modules/product/product.service';
-import { StoreService } from 'src/modules/store/store.service';
+import { ProductService } from '../modules/product/product.service';
+import { StoreService } from '../modules/store/store.service';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 @Injectable()

@@ -16,7 +16,7 @@ import {
   LoginUserDto,
   RequestPasswordResetDto,
   ResetPasswordDto,
-} from 'src/modules/users/user.dto';
+} from '../users/user.dto';
 import { ResetPasswordGuard } from './guards/resetpass-guard.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthGuard as JwtAuthGuard } from './guards/auth-guard.guard';

@@ -2,13 +2,13 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from 'src/Entities/users.entity';
+import { Users } from '../../Entities/users.entity';
 import { Repository, MoreThan } from 'typeorm';
-import { MailService } from 'src/mail/mail.service';
+import { MailService } from '../../mail/mail.service';
 import { v4 as uuidv4 } from 'uuid';
-import { CryptoService } from 'src/crypto/crypto.service';
+import { CryptoService } from '../../crypto/crypto.service';
 import { UserRepository } from '../users/users.repository';
-import { CompanyService } from 'src/company/company.service';
+import { CompanyService } from '../../company/company.service';
 import axios from 'axios';
 import { ChangePasswordDto, CreateUserDto } from '../users/user.dto';
 

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from 'src/Entities/users.entity';
+import { Users } from '../Entities/users.entity';
 import { UserRepository } from '../modules/users/users.repository'; // Asegúrate de la ruta correcta
 import { FileUploadRepository } from './file-upload.repository'; // Asume que existe para manejar la subida
 import { Repository } from 'typeorm';

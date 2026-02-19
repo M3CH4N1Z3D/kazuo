@@ -6,7 +6,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Product } from 'src/Entities/product.entity';
+import { Product } from '../../../Entities/product.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()

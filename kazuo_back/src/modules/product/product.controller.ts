@@ -16,8 +16,8 @@ import {
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { AuthGuard } from 'src/modules/auth/guards/auth-guard.guard';
-import { Product } from 'src/Entities/product.entity';
+import { AuthGuard } from '../auth/guards/auth-guard.guard';
+import { Product } from '../../Entities/product.entity';
 import {
   ApiBody,
   ApiOperation,

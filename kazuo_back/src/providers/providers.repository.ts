@@ -4,8 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { Provider } from 'src/Entities/providers.entity';
-import { ProductService } from 'src/modules/product/product.service';
+import { Provider } from '../Entities/providers.entity';
+import { ProductService } from '../modules/product/product.service';
 
 @Injectable()
 export class ProvidersRepository extends Repository<Provider> {

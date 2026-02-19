@@ -12,7 +12,7 @@ import {
 import { FileUploadService } from './file-upload.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiBody, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
-import { AuthGuard } from 'src/modules/auth/guards/auth-guard.guard';
+import { AuthGuard } from '../modules/auth/guards/auth-guard.guard';
 import { UserId } from '../decorators/user-id.decorator';
 
 @ApiTags('files')

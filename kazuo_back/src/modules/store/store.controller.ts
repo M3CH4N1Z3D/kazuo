@@ -17,13 +17,13 @@ import { StoreService } from './store.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 import { Request } from 'express';
-import { Role } from 'src/decorators/roles.enum';
-import { Roles } from 'src/decorators/roles.decorators';
+import { Role } from '../../decorators/roles.enum';
+import { Roles } from '../../decorators/roles.decorators';
 import { AuthGuard } from '../auth/guards/auth-guard.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { ApiBadRequestResponse, ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Users } from 'src/Entities/users.entity';
-import { Store } from 'src/Entities/store.entity';
+import { Users } from '../../Entities/users.entity';
+import { Store } from '../../Entities/store.entity';
 
 @Controller('store')
 export class StoreController {

@@ -23,11 +23,11 @@ import {
   CreateCompanyDto,
   UpdateCompanyDto,
 } from './company.dto';
-import { Roles } from 'src/decorators/roles.decorators';
-import { Role } from 'src/decorators/roles.enum';
-import { RolesGuard } from 'src/modules/auth/guards/roles.guard';
-import { AuthGuard } from 'src/modules/auth/guards/auth-guard.guard';
-import { Company } from 'src/Entities/company.entity';
+import { Roles } from '../decorators/roles.decorators';
+import { Role } from '../decorators/roles.enum';
+import { RolesGuard } from '../modules/auth/guards/roles.guard';
+import { AuthGuard } from '../modules/auth/guards/auth-guard.guard';
+import { Company } from '../Entities/company.entity';
 
 @ApiTags('companies')
 @ApiBearerAuth()

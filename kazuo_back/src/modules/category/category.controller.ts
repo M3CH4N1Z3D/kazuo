@@ -14,9 +14,9 @@ import {
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { AuthGuard } from 'src/modules/auth/guards/auth-guard.guard';
-import { Roles } from 'src/decorators/roles.decorators';
-import { Role } from 'src/decorators/roles.enum';
+import { AuthGuard } from '../auth/guards/auth-guard.guard';
+import { Roles } from '../../decorators/roles.decorators';
+import { Role } from '../../decorators/roles.enum';
 
 @Controller('category')
 export class CategoryController {

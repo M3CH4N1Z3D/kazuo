@@ -18,11 +18,11 @@ import {
 } from '@nestjs/swagger';
 import { ProvidersService } from './providers.service';
 import { AddProductToProviderDto, CreateProviderDto } from './providers.dto';
-import { Provider } from 'src/Entities/providers.entity';
-import { AuthGuard } from 'src/modules/auth/guards/auth-guard.guard';
-import { RolesGuard } from 'src/modules/auth/guards/roles.guard';
-import { Roles } from 'src/decorators/roles.decorators';
-import { Role } from 'src/decorators/roles.enum';
+import { Provider } from '../Entities/providers.entity';
+import { AuthGuard } from '../modules/auth/guards/auth-guard.guard';
+import { RolesGuard } from '../modules/auth/guards/roles.guard';
+import { Roles } from '../decorators/roles.decorators';
+import { Role } from '../decorators/roles.enum';
 
 @ApiTags('providers')
 @Controller('providers')

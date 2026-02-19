@@ -12,7 +12,7 @@ import {
   IsEmpty,
   IsOptional,
 } from 'class-validator';
-import { MatchPass } from 'src/decorators/matchPass.decorator';
+import { MatchPass } from '../../decorators/matchPass.decorator';
 
 export class CreateUserDto {
   /**

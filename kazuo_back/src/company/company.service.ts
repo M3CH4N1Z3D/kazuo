@@ -11,12 +11,12 @@ import { CreateCompanyDto, UpdateCompanyDto } from './company.dto';
 import { Company } from '../Entities/company.entity';
 import { UsersService } from '../modules/users/users.service';
 import { Repository, In } from 'typeorm';
-import { Users } from 'src/Entities/users.entity';
-import { MailService } from 'src/mail/mail.service';
+import { Users } from '../Entities/users.entity';
+import { MailService } from '../mail/mail.service';
 import { validate as isUUID } from 'uuid';
-import { Store } from 'src/Entities/store.entity';
-import { Product } from 'src/Entities/product.entity';
-import { Provider } from 'src/Entities/providers.entity';
+import { Store } from '../Entities/store.entity';
+import { Product } from '../Entities/product.entity';
+import { Provider } from '../Entities/providers.entity';
 
 @Injectable()
 export class CompanyService {

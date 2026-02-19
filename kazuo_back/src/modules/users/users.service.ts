@@ -7,7 +7,7 @@ import { UserRepository } from './users.repository';
 import { UpdateUserDto } from './user.dto';
 import { CreateUserDto } from './user.dto';
 import * as bcrypt from 'bcrypt';
-import { Users } from 'src/Entities/users.entity';
+import { Users } from '../../Entities/users.entity';
 @Injectable()
 export class UsersService {
   constructor(private readonly userRepository: UserRepository) {}

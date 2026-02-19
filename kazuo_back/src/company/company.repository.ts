@@ -1,6 +1,6 @@
   import { ConflictException, Injectable } from '@nestjs/common';
   import { DataSource, Repository } from 'typeorm';
-  import { Company } from 'src/Entities/company.entity';
+  import { Company } from '../Entities/company.entity';
 
   @Injectable()
   export class CompanyRepository extends Repository<Company> {
