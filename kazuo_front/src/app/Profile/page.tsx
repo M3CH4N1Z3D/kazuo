@@ -12,6 +12,7 @@ export default function ProfilePage() {
   const { userData, isLoggedIn, setUserData } = useAppContext();
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
+  const [companyName, setCompanyName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -19,6 +20,46 @@ export default function ProfilePage() {
       router.push("/Login");
     }
   }, [isLoggedIn, router]);
+
+  useEffect(() => {
+    const fetchCompanyData = async () => {
+      if (userData?.company && userData.token) {
+        try {
+          // Si el campo company parece un nombre (no UUID), úsalo directamente
+          // UUID regex simple (8-4-4-4-12 hex digits)
+          const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+          if (!uuidRegex.test(userData.company)) {
+             setCompanyName(userData.company);
+             return;
+          }
+
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+          const response = await fetch(`${apiUrl}/companies/${userData.company}`, {
+            headers: {
+              'Authorization': `Bearer ${userData.token}`
+            }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            setCompanyName(data.CompanyName || data.name || "Empresa no encontrada");
+          } else {
+            console.error("Error fetching company details");
+            setCompanyName(userData.company); // Fallback al ID si falla
+          }
+        } catch (error) {
+          console.error("Error fetching company", error);
+          setCompanyName(userData.company); // Fallback
+        }
+      } else if (userData?.company) {
+         setCompanyName(userData.company);
+      }
+    };
+
+    if (userData) {
+      fetchCompanyData();
+    }
+  }, [userData]);
 
   const handleImageClick = () => {
     fileInputRef.current?.click();
@@ -175,7 +216,7 @@ export default function ProfilePage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground font-medium">Empresa / Organización</p>
-                <p className="text-lg font-semibold">{userData.company || "No especificada"}</p>
+                <p className="text-lg font-semibold">{companyName || userData.company || "No especificada"}</p>
               </div>
             </div>
           </div>
