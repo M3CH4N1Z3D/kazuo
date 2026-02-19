@@ -182,11 +182,10 @@ function NavLinks({
         >
           <Building size={18} /> Gestion de empresa
         </Link>
-        {/* Nota: Perfil redirige a GestionInventario en el original, se mantiene asi pero podria ser un error o intencional */}
         <Link
-          href="/GestionInventario"
+          href="/Profile"
           onClick={onLinkClick}
-          className={getLinkClasses("/GestionInventario")}
+          className={getLinkClasses("/Profile")}
         >
           <User size={18} /> Perfil
         </Link>
