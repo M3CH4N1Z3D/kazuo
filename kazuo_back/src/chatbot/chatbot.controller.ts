@@ -11,13 +11,15 @@ export class ChatBotController {
     @Body('message') message: string,
     @Body('history') history: any[] = [],
     @Body('userId') userId: string, // Mantenemos userId para el contexto de las tools
+    @Body('language') language: string,
     @Res() res: Response,
   ) {
     try {
       const response = await this.chatBotService.chat(
         message,
         history,
-        userId
+        userId,
+        language,
       );
       return res.status(HttpStatus.OK).json(response);
     } catch (error) {

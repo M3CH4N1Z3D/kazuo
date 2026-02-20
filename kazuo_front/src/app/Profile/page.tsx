@@ -7,8 +7,10 @@ import { User, Mail, Building, Shield, KeyRound, Edit, Camera } from "lucide-rea
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 export default function ProfilePage() {
+  const { t } = useTranslation("global");
   const { userData, isLoggedIn, setUserData } = useAppContext();
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
@@ -42,9 +44,9 @@ export default function ProfilePage() {
           
           if (response.ok) {
             const data = await response.json();
-            setCompanyName(data.CompanyName || data.name || "Empresa no encontrada");
-          } else {
-            console.error("Error fetching company details");
+              setCompanyName(data.CompanyName || data.name || t("profile.companyNotFound"));
+            } else {
+              console.error("Error fetching company details");
             setCompanyName(userData.company); // Fallback al ID si falla
           }
         } catch (error) {
@@ -71,12 +73,12 @@ export default function ProfilePage() {
 
     // Validar tipo y tamaño
     if (!file.type.startsWith('image/')) {
-      Swal.fire('Error', 'Por favor selecciona un archivo de imagen válido', 'error');
+      Swal.fire(t("profile.alerts.errorTitle"), t("profile.alerts.invalidFile"), 'error');
       return;
     }
 
     if (file.size > 2 * 1024 * 1024) { // 2MB
-      Swal.fire('Error', 'La imagen debe ser menor a 2MB', 'error');
+      Swal.fire(t("profile.alerts.errorTitle"), t("profile.alerts.fileTooBig"), 'error');
       return;
     }
 
@@ -105,7 +107,7 @@ export default function ProfilePage() {
       // Actualizar el contexto y localStorage con la nueva URL
       // Asumiendo que el backend devuelve la URL de la imagen en data.imgUrl o similar
       // Si el backend devuelve solo el string de la url:
-      const newImgUrl = data.imgUrl || data.url || data; 
+      const newImgUrl = data.imgUrl || data.url || data;
 
       const updatedUser = { ...userData, igmUrl: newImgUrl };
       setUserData(updatedUser);
@@ -113,15 +115,15 @@ export default function ProfilePage() {
       
       Swal.fire({
         icon: 'success',
-        title: 'Imagen actualizada',
-        text: 'Tu foto de perfil ha sido actualizada correctamente',
+        title: t("profile.alerts.successTitle"),
+        text: t("profile.alerts.successText"),
         timer: 2000,
         showConfirmButton: false
       });
 
     } catch (error) {
       console.error(error);
-      Swal.fire('Error', 'No se pudo actualizar la imagen de perfil', 'error');
+      Swal.fire(t("profile.alerts.errorTitle"), t("profile.alerts.updateError"), 'error');
     } finally {
       setIsUploading(false);
       // Limpiar input
@@ -144,7 +146,7 @@ export default function ProfilePage() {
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="bg-primary px-6 py-4">
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <User className="h-6 w-6" /> Perfil de Usuario
+            <User className="h-6 w-6" /> {t("profile.title")}
           </h1>
         </div>
         
@@ -154,9 +156,9 @@ export default function ProfilePage() {
             <div className="relative group cursor-pointer" onClick={handleImageClick}>
               <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-slate-100 shadow-md bg-slate-200 flex items-center justify-center">
                  {userData.igmUrl ? (
-                  <img 
-                    src={userData.igmUrl} 
-                    alt="Foto de perfil" 
+                  <img
+                    src={userData.igmUrl}
+                    alt="Foto de perfil"
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       // Fallback si la imagen falla
@@ -178,15 +180,15 @@ export default function ProfilePage() {
                 <Edit size={16} />
               </div>
               
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={handleFileChange} 
-                className="hidden" 
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
                 accept="image/*"
               />
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">Click para cambiar foto</p>
+            <p className="mt-2 text-sm text-muted-foreground">{t("profile.changePhoto")}</p>
           </div>
 
           <div className="grid gap-6">
@@ -195,8 +197,8 @@ export default function ProfilePage() {
                 <User className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground font-medium">Nombre</p>
-                <p className="text-lg font-semibold">{userData.name || "Sin nombre"}</p>
+                <p className="text-sm text-muted-foreground font-medium">{t("profile.name")}</p>
+                <p className="text-lg font-semibold">{userData.name || t("profile.noName")}</p>
               </div>
             </div>
 
@@ -205,7 +207,7 @@ export default function ProfilePage() {
                 <Mail className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground font-medium">Correo Electrónico</p>
+                <p className="text-sm text-muted-foreground font-medium">{t("profile.email")}</p>
                 <p className="text-lg font-semibold">{userData.email}</p>
               </div>
             </div>
@@ -215,8 +217,8 @@ export default function ProfilePage() {
                 <Building className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground font-medium">Empresa / Organización</p>
-                <p className="text-lg font-semibold">{companyName || userData.company || "No especificada"}</p>
+                <p className="text-sm text-muted-foreground font-medium">{t("profile.company")}</p>
+                <p className="text-lg font-semibold">{companyName || userData.company || t("profile.noCompany")}</p>
               </div>
             </div>
           </div>
@@ -225,12 +227,12 @@ export default function ProfilePage() {
             <Link href="/UpdatePass" className="w-full sm:w-auto">
               <Button variant="outline" className="w-full flex gap-2">
                 <KeyRound size={18} />
-                Cambiar Contraseña
+                {t("profile.changePassword")}
               </Button>
             </Link>
              <Link href="/GestionInventario" className="w-full sm:w-auto">
               <Button className="w-full">
-                Ir al Inventario
+                {t("profile.goToInventory")}
               </Button>
             </Link>
           </div>

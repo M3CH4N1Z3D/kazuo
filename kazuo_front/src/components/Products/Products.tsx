@@ -18,8 +18,10 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loader from "../Loader/Loader";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
+  const { t } = useTranslation("global");
   const router = useRouter();
   const { userData } = useAppContext();
   const { user, isAuthenticated } = useAuth0();
@@ -46,7 +48,7 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
       });
 
       if (!response.ok) {
-        throw new Error("Error al obtener los productos");
+        throw new Error(t("products.fetchError"));
       }
 
       const data = await response.json();
@@ -80,7 +82,7 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
           },
         });
         if (!response.ok) {
-          throw new Error("Error al obtener los datos de la bodega");
+          throw new Error(t("products.storeFetchError"));
         }
         const data = await response.json();
         setStoreName(data.storeFound.name);
@@ -142,11 +144,11 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
       doc.setFontSize(20);
 
       // Título y fecha
-      doc.text(`Reporte de Inventario - ${storeName}`, 20, 20);
+      doc.text(`${t("products.reportTitle")} - ${storeName}`, 20, 20);
       doc.setFontSize(12);
-      doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 20, 30);
+      doc.text(`${t("products.date")}: ${new Date().toLocaleDateString()}`, 20, 30);
       doc.text(
-        `Ganancias estimadas: ${estimatedProfits.toFixed(2)} ${
+        `${t("products.estimatedProfits")}: ${estimatedProfits.toFixed(2)} ${
           products[0]?.bange || ""
         }`,
         20,
@@ -155,12 +157,12 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
 
       // Tabla de productos
       const headers = [
-        "Producto",
-        "Cantidad",
-        "U. Medida",
-        "P. Compra",
-        "P. Venta",
-        "Stock Min.",
+        t("products.name"),
+        t("products.quantity"),
+        t("products.unit"),
+        t("products.buyPrice"),
+        t("products.sellPrice"),
+        t("products.minStock"),
       ];
       let y = 50;
 
@@ -196,7 +198,7 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
       // Resumen
       y += 10;
       doc.setFontSize(10);
-      doc.text(`Total de productos: ${products.length}`, 20, y);
+      doc.text(`${t("products.totalProducts")}: ${products.length}`, 20, y);
 
       // Descargar PDF
       doc.save(
@@ -204,18 +206,18 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
       );
 
       Swal.fire({
-        title: "¡Éxito!",
-        text: "El informe se ha generado y descargado correctamente.",
+        title: t("products.reportSuccessTitle"),
+        text: t("products.reportSuccessDesc"),
         icon: "success",
-        confirmButtonText: "Aceptar",
+        confirmButtonText: t("products.accept"),
       });
     } catch (error) {
       console.error("Error:", error);
       Swal.fire({
-        title: "Error",
-        text: "No se pudo generar el informe. Por favor, inténtalo de nuevo.",
+        title: t("products.reportErrorTitle"),
+        text: t("products.reportErrorDesc"),
         icon: "error",
-        confirmButtonText: "Aceptar",
+        confirmButtonText: t("products.accept"),
       });
     }
   };
@@ -230,15 +232,17 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
 
   const handleAddProduct = (productId: string) => {
     Swal.fire({
-      title: "¿Cuántos Productos se añadirán?",
+      title: t("products.modalAddTitle"),
       input: "number",
-      inputLabel: "Añadir productos",
-      inputPlaceholder: "Ingrese la cantidad",
+      inputLabel: t("products.modalAddLabel"),
+      inputPlaceholder: t("products.modalInputPlaceholder"),
       showCancelButton: true,
+      confirmButtonText: t("inventory.save"),
+      cancelButtonText: t("inventory.cancel"),
       inputValidator: (value) => {
         const numValue = Number(value);
         if (isNaN(numValue) || numValue <= 0) {
-          return "Por favor, ingrese una cantidad válida";
+          return t("products.invalidQuantity");
         }
       },
     }).then((result) => {
@@ -252,14 +256,16 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
 
   const handleNewOrderProduct = (productId: string) => {
     Swal.fire({
-      title: "¿Cuántos productos se despacharán?",
+      title: t("products.modalDispatchTitle"),
       input: "number",
-      inputLabel: "Generar despacho",
-      inputPlaceholder: "Ingrese la cantidad",
+      inputLabel: t("products.modalDispatchLabel"),
+      inputPlaceholder: t("products.modalInputPlaceholder"),
       showCancelButton: true,
+      confirmButtonText: t("inventory.save"),
+      cancelButtonText: t("inventory.cancel"),
       inputValidator: (value) => {
         if (!value || Number(value) <= 0) {
-          return "Por favor, ingrese una cantidad válida";
+          return t("products.invalidQuantity");
         }
       },
     }).then((result) => {
@@ -296,13 +302,21 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
             p.id === productId ? { ...p, quantity: newQuantity } : p
           )
         );
-        Swal.fire("Éxito", "Cantidad actualizada correctamente", "success");
+        Swal.fire(
+          t("products.reportSuccessTitle"),
+          t("products.quantityUpdated"),
+          "success"
+        );
       } else {
-        throw new Error("Error al actualizar la cantidad");
+        throw new Error(t("products.updateError"));
       }
     } catch (error) {
       console.error("Error:", error);
-      Swal.fire("Error", "No se pudo actualizar la cantidad", "error");
+      Swal.fire(
+        t("products.reportErrorTitle"),
+        t("products.updateError"),
+        "error"
+      );
     }
   };
 
@@ -312,7 +326,7 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
         <div className="rounded-md p-8 md:w-2/3 mx-auto">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-3xl font-bold text-gray-800">
-              {storeName || "Cargando el nombre de la bodega"}
+              {storeName || t("inventory.storeNameLoading")}
             </h2>
             <div className="flex flex-col sm:flex-row gap-4">
               <button
@@ -324,7 +338,7 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
                 onClick={handleGenerateReport}
                 disabled={!userData?.isAdmin}
               >
-                Generar Informe
+                {t("products.generateReport")}
               </button>
               <button
                 className={`w-full sm:w-52 px-4 py-2 rounded text-sm text-white transition duration-300 ease-in-out flex items-center justify-center ${
@@ -335,25 +349,24 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
                 onClick={handleNavigateToStatistics}
                 disabled={!userData?.isAdmin}
               >
-                Estadisticas por Bodega
+                {t("products.statsByStore")}
               </button>
               <button
                 className="w-full sm:w-52 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm transition duration-300 ease-in-out flex items-center justify-center"
                 onClick={handleCreateNewProduct}
               >
-                Agregar Producto
+                {t("products.addProduct")}
               </button>
             </div>
           </div>
           <div className="mb-6">
             <input
               type="text"
-              placeholder="Buscar productos por nombre, unidad de medida o moneda"
+              placeholder={t("products.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="border border-gray-300 rounded-md p-3 w-full"
             />
-
           </div>
           {isLoading ? (
             <div className="flex justify-center items-center h-32">
@@ -365,31 +378,31 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      Nombre
+                      {t("products.name")}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Cantidad
+                      {t("products.quantity")}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Unidad
+                      {t("products.unit")}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Cap. Max
+                      {t("products.maxCap")}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Precio Compra
+                      {t("products.buyPrice")}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Moneda
+                      {t("products.currency")}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Precio Venta
+                      {t("products.sellPrice")}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Stock Min
+                      {t("products.minStock")}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Acciones
+                      {t("products.actions")}
                     </th>
                   </tr>
                 </thead>
@@ -427,7 +440,7 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
                               <FontAwesomeIcon
                                 icon={faEdit}
                                 className="text-blue-500 hover:text-blue-600 cursor-pointer mx-1"
-                                title="Editar producto"
+                                title={t("products.editProduct")}
                                 onClick={() =>
                                   handleNavigateToProductPage(product.id!)
                                 }
@@ -435,18 +448,18 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
                               <FontAwesomeIcon
                                 icon={faChartLine}
                                 className="text-green-500 hover:text-green-600"
-                                title="Ver estadísticas"
+                                title={t("products.viewStats")}
                               />
                               <FontAwesomeIcon
                                 icon={faPlus}
                                 className="text-yellow-500 hover:text-yellow-600 cursor-pointer"
-                                title="Añadir stock"
+                                title={t("products.addStock")}
                                 onClick={() => handleAddProduct(product.id!)}
                               />
                               <FontAwesomeIcon
                                 icon={faMinus}
                                 className="text-red-500 hover:text-red-600 cursor-pointer"
-                                title="Despachar producto"
+                                title={t("products.dispatchProduct")}
                                 onClick={() =>
                                   handleNewOrderProduct(product.id!)
                                 }
@@ -459,8 +472,7 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
                   ) : (
                     <tr>
                       <td colSpan={9} className="text-center py-4">
-                        No se encontraron productos que coincidan con su
-                        búsqueda.
+                        {t("products.noProducts")}
                       </td>
                     </tr>
                   )}

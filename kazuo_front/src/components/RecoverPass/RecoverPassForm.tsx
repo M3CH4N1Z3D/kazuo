@@ -3,8 +3,10 @@ import { useState } from "react";
 import { validateEmail } from "@/helpers/validate";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 const RecoverPassForm = () => {
+  const [t] = useTranslation("global");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
@@ -15,7 +17,7 @@ const RecoverPassForm = () => {
     e.preventDefault();
 
     if (!validateEmail(email)) {
-      setError("El email no es valido, por favor ingresa un email valido");
+      setError(t("recoverPass.invalidEmail"));
       return;
     }
     try {
@@ -31,9 +33,8 @@ const RecoverPassForm = () => {
       );
       if (response.ok) {
         Swal.fire({
-          title:
-            "¡Correo enviado, revisa tu bandeja de entrada y sigue las instrucciones!",
-          text: "Revisa tu bandeja de entrada y sigue las instrucciones",
+          title: t("recoverPass.successTitle"),
+          text: t("recoverPass.successText"),
           icon: "warning",
           timer: 3000,
           timerProgressBar: true,
@@ -45,10 +46,10 @@ const RecoverPassForm = () => {
       }
     } catch (error) {
       Swal.fire({
-        title: "Error al procesar tu solicitud",
-        text: "Inténtalo nuevamente",
+        title: t("recoverPass.errorTitle"),
+        text: t("recoverPass.errorText"),
         icon: "error",
-        confirmButtonText: "Aceptar",
+        confirmButtonText: t("company.alerts.accept"),
       });
     } finally {
       console.log({ email });
@@ -59,7 +60,7 @@ const RecoverPassForm = () => {
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg mt-6 mb-6 rounded-lg">
         <h2 className="text-2xl font-bold text-center text-gray-700 uppercase">
-          Recupera tu contraseña
+          {t("recoverPass.title")}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
@@ -67,7 +68,7 @@ const RecoverPassForm = () => {
               htmlFor="email"
               className="block text-sm font-bold text-gray-700"
             >
-              Email:
+              {t("recoverPass.emailLabel")}
             </label>
             <input
               type="email"
@@ -85,7 +86,7 @@ const RecoverPassForm = () => {
             //   disabled={!isFormValid}
             className="w-full py-2 px-4 text-white font-semibold rounded-md shadow-sm bg-gray-900 hover:bg-gray-800 cursor-pointer"
           >
-            Enviar correo de recuperación
+            {t("recoverPass.button")}
           </button>
         </form>
       </div>

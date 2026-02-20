@@ -163,16 +163,15 @@ export class CompanyService {
           `Usuario ${user.email} agregado a la compañía ${company.CompanyName} exitosamente.`,
         );
 
-        await this.mailService.sendMail(
+        await this.mailService.sendCompanyUserAdded(
           user.email,
-          'Fuiste agregado a una Compañía',
-          `Hola ${user.name}, te informamos que has sido agregado a la compañía ${company.CompanyName}.`,
+          user.name,
+          company.CompanyName,
         );
 
-        await this.mailService.sendMail(
+        await this.mailService.sendCompanyOwnerNotification(
           company.email,
-          'Nuevo usuario agregado a tu Compañía',
-          `Hola, te informamos que el usuario ${user.name} (${user.email}) ha sido agregado a tu compañía ${company.CompanyName}.`,
+          `El usuario ${user.name} (${user.email}) ha sido agregado a tu compañía ${company.CompanyName}.`,
         );
       } else {
         console.log(
@@ -187,28 +186,7 @@ export class CompanyService {
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
         const invitationLink = `${frontendUrl}/Register?token=${token}&email=${userEmail}&name=${encodeURIComponent(userName)}`;
 
-        const htmlContent = `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
-            <div style="text-align: center; margin-bottom: 20px;">
-               <h2 style="color: #333;">Invitación a unirse a ${company.CompanyName}</h2>
-            </div>
-            <p style="color: #555; font-size: 16px;">Hola ${userName},</p>
-            <p style="color: #555; font-size: 16px;">Hemos recibido una solicitud para que te unas a la compañía <strong>${company.CompanyName}</strong>.</p>
-            <p style="color: #555; font-size: 16px;">Por favor, regístrate en nuestro sitio para completar el proceso haciendo clic en el siguiente botón:</p>
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${invitationLink}" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">Registrarse ahora</a>
-            </div>
-            <p style="color: #999; font-size: 14px; text-align: center;">Si el botón no funciona, copia y pega el siguiente enlace en tu navegador:</p>
-            <p style="color: #4F46E5; font-size: 12px; text-align: center; word-break: break-all;">${invitationLink}</p>
-          </div>
-        `;
-
-        await this.mailService.sendMail(
-          userEmail,
-          'Invitación a registrarte',
-          `Hola ${userName}, hemos recibido una solicitud para que te unas a la compañía ${company.CompanyName}. Por favor, regístrate en nuestro sitio para poder agregarte usando el siguiente enlace: ${invitationLink}`,
-          htmlContent,
-        );
+        await this.mailService.sendCompanyInvitation(userEmail, invitationLink);
       }
     } else {
       console.log(

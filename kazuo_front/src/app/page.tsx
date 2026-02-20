@@ -1,33 +1,37 @@
+"use client";
+
 import Image from 'next/image';
 
 import Link from 'next/link';
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 export default function LandingPage() {
+  const { t } = useTranslation("global");
+
   return (
     <div className="bg-background min-h-[calc(100vh-4rem)] flex items-center">
       <main className="container mx-auto px-4 py-12 md:py-24 flex flex-col md:flex-row items-center gap-12">
         <div className="flex-1 text-center md:text-left space-y-6">
           <p className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">
-            Sistema de Gestión para PYMES
+            {t("landing.managementSystem")}
           </p>
           
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
-            Descubre la <span className="text-primary">Gestión Eficiente</span>{" "}
-            con IA
+            {t("landing.discover")} <span className="text-primary">{t("landing.efficientManagement")}</span>{" "}
+            {t("landing.withAI")}
           </h1>
           
           <p className="text-xl text-muted-foreground md:pr-12 leading-relaxed">
-            Organiza tu inventario en solo 2 clicks. Olvídate de los procesos manuales con nuestro Sistema de Gestión
-            Empresarial que automatiza tu facturación, inventario, reportes y mucho más.
+            {t("landing.organizeInventory")} {t("landing.description")}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start pt-4">
             <Button asChild size="lg" className="w-full sm:w-auto text-lg px-8 py-6 shadow-lg hover:scale-105 transition-transform">
               <Link href="/Register">
-                Empieza tus 15 días gratis
+                {t("landing.startFreeTrial")}
               </Link>
             </Button>
           </div>
@@ -54,7 +58,7 @@ export default function LandingPage() {
                 <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
               </svg>
             </div>
-            <span className="ml-2 text-gray-600">4.2</span>
+            <span className="ml-2 text-gray-600">{t("landing.rating")}</span>
           </div>
         </div>
 

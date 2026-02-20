@@ -1,6 +1,7 @@
 "use client";
 import { useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import {
   IEditStoreProps,
@@ -17,6 +18,7 @@ import { FaDownload } from "react-icons/fa";
 import Loader1 from "../Loader/Loader1";
 
 const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, isModal }) => {
+  const { t } = useTranslation("global");
   const { userData } = useAppContext();
   const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
@@ -136,10 +138,10 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
 
     if (!userData) {
       Swal.fire({
-        title: "Error",
-        text: "No se encontró información de sesión. Por favor inicie sesión nuevamente.",
+        title: t("productForm.alerts.sessionErrorTitle"),
+        text: t("productForm.alerts.sessionErrorText"),
         icon: "error",
-        confirmButtonText: "Aceptar",
+        confirmButtonText: t("products.accept"),
       });
       setLoadingTemplate(false);
       return;
@@ -150,10 +152,10 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
 
     if (!userToken) {
       Swal.fire({
-        title: "Error",
-        text: "Token de sesión inválido. Por favor inicie sesión nuevamente.",
+        title: t("productForm.alerts.sessionErrorTitle"),
+        text: t("productForm.alerts.tokenErrorText"),
         icon: "error",
-        confirmButtonText: "Aceptar",
+        confirmButtonText: t("products.accept"),
       });
       setLoadingTemplate(false);
       return;
@@ -170,27 +172,29 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
       });
       console.log(userToken);
       if (response.ok) {
-      Swal.fire({
-        title: "Productos Añadidos con éxito",
-        text: "Los productos han sido almacenados",
-        icon: "success",
-        confirmButtonText: "Aceptar",
-      });
-      if (onSuccess) {
-        onSuccess();
+        Swal.fire({
+          title: t("productForm.alerts.productsAddedTitle"),
+          text: t("productForm.alerts.productsAddedText"),
+          icon: "success",
+          confirmButtonText: t("products.accept"),
+        });
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          router.push(`/Products/${storeId}`);
+        }
       } else {
-        router.push(`/Products/${storeId}`);
-      }
-    } else {
         const errorData = await response.json();
-        throw new Error(errorData.message || "No se pudo cargar los productos");
+        throw new Error(
+          errorData.message || t("productForm.alerts.loadProductsError")
+        );
       }
     } catch (error) {
       Swal.fire({
-        title: "Error",
-        text: "No se pudo cargar los productos. Por favor, inténtalo de nuevo.",
+        title: t("productForm.alerts.sessionErrorTitle"),
+        text: t("productForm.alerts.loadErrorText"),
         icon: "error",
-        confirmButtonText: "Aceptar",
+        confirmButtonText: t("products.accept"),
       });
     } finally {
       setLoadingTemplate(false);
@@ -284,10 +288,10 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
 
           if (response.ok) {
             Swal.fire({
-              title: "¡Producto creado!",
-              text: "El producto se ha creado correctamente.",
+              title: t("productForm.alerts.productCreatedTitle"),
+              text: t("productForm.alerts.productCreatedText"),
               icon: "success",
-              confirmButtonText: "Aceptar",
+              confirmButtonText: t("products.accept"),
             });
             if (onSuccess) {
               onSuccess();
@@ -297,15 +301,17 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
           } else {
             const errorData = await response.json();
             console.error("Error en la respuesta del servidor:", errorData);
-            throw new Error(errorData.message || "Error al crear el producto");
+            throw new Error(
+              errorData.message || t("productForm.alerts.createError")
+            );
           }
         }
       } catch (error) {
         Swal.fire({
-          title: "Error",
-          text: "Credenciales incorrectas. Por favor, inténtalo de nuevo.",
+          title: t("productForm.alerts.sessionErrorTitle"),
+          text: t("productForm.alerts.credentialsErrorText"),
           icon: "error",
-          confirmButtonText: "Aceptar",
+          confirmButtonText: t("products.accept"),
         });
       } finally {
         setLoading(false);
@@ -324,7 +330,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
       });
 
       if (!response.ok) {
-        throw new Error("Error al generar el informe");
+        throw new Error(t("productForm.alerts.reportError"));
       }
 
       const blob = await response.blob();
@@ -358,7 +364,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
         }
       >
         <h2 className="text-2xl font-bold text-center text-blue-700">
-          Registrar
+          {t("productForm.title")}
         </h2>
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-2">
@@ -366,7 +372,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
               htmlFor="name"
               className="block text-sm font-medium text-gray-700"
             >
-              Nombre del Producto:
+              {t("productForm.nameLabel")}
             </label>
             <input
               type="text"
@@ -376,7 +382,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
               onChange={handleChange}
               onBlur={handleBlur}
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Ingrese el nombre del producto"
+              placeholder={t("productForm.namePlaceholder")}
               required
             />
             {errors.name && <p className="text-red-600">{errors.name}</p>}
@@ -387,7 +393,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
               htmlFor="quantity"
               className="block text-sm font-medium text-gray-700"
             >
-              Cantidad:
+              {t("productForm.quantityLabel")}
             </label>
             <input
               type="number"
@@ -397,7 +403,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
               onChange={handleChange}
               onBlur={handleBlur}
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Ingrese la cantidad"
+              placeholder={t("productForm.quantityPlaceholder")}
               min="0"
               required
             />
@@ -411,7 +417,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
               htmlFor="unids"
               className="block text-sm font-medium text-gray-700"
             >
-              Unidad de medida:
+              {t("productForm.unitLabel")}
             </label>
             <input
               type="text"
@@ -421,7 +427,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
               onChange={handleChange}
               onBlur={handleBlur}
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Ingresa el valor como lo cuentas"
+              placeholder={t("productForm.unitPlaceholder")}
               required
             />
           </div>
@@ -431,7 +437,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
               htmlFor="maxCapacity"
               className="block text-sm font-medium text-gray-700"
             >
-              Capacidad máxima:
+              {t("productForm.maxCapacityLabel")}
             </label>
             <input
               type="number"
@@ -441,7 +447,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
               onChange={handleChange}
               onBlur={handleBlur}
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Ingresa la capacidad máxima de almacenamiento"
+              placeholder={t("productForm.maxCapacityPlaceholder")}
               required
             />
           </div>
@@ -453,7 +459,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
               htmlFor="bange"
               className="block text-sm font-medium text-gray-700"
             >
-              Moneda de uso:
+              {t("productForm.currencyLabel")}
             </label>
             <select
               name="bange"
@@ -463,7 +469,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               required
             >
-              <option value="">Seleccione una moneda</option>
+              <option value="">{t("productForm.selectCurrency")}</option>
               <option value="USD">USD</option>
               <option value="MXN">MXN</option>
               <option value="BOB">BOB</option>
@@ -479,7 +485,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
               htmlFor="inPrice"
               className="block text-sm font-medium text-gray-700"
             >
-              Precio de compra: ({formData.bange})
+              {t("productForm.buyPriceLabel", { currency: formData.bange })}
             </label>
             <input
               type="number"
@@ -489,7 +495,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
               onChange={handleChange}
               onBlur={handleBlur}
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Ingresa el valor por el que lo compraste"
+              placeholder={t("productForm.buyPricePlaceholder")}
               required
             />
             {errors.inPrice && <p className="text-red-600">{errors.inPrice}</p>}
@@ -500,7 +506,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
               htmlFor="outPrice"
               className="block text-sm font-medium text-gray-700"
             >
-              Valor de venta ({formData.bange}):
+              {t("productForm.sellPriceLabel", { currency: formData.bange })}
             </label>
             <input
               type="number"
@@ -510,7 +516,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
               onChange={handleChange}
               onBlur={handleBlur}
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Ingresa el valor de venta"
+              placeholder={t("productForm.sellPricePlaceholder")}
               required
             />
           </div>
@@ -520,7 +526,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
               htmlFor="minStock"
               className="block text-sm font-medium text-gray-700"
             >
-              Cantidad Mínima:
+              {t("productForm.minStockLabel")}
             </label>
             <input
               type="number"
@@ -530,7 +536,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
               onChange={handleChange}
               onBlur={handleBlur}
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Ingrese la cantidad mínima"
+              placeholder={t("productForm.minStockPlaceholder")}
               min="0"
               required
             />
@@ -548,7 +554,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
                 : "bg-gray-300 cursor-not-allowed"
             } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
           >
-            {loading ? <Loader /> : "Registrar Producto"}
+            {loading ? <Loader /> : t("productForm.submitButton")}
           </button>
 
           <p className="text-center"></p>
@@ -564,7 +570,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
                 <Loader1 />
               </div>
             ) : (
-              "Descargar Plantilla"
+              t("productForm.downloadTemplate")
             )}
           </button>
 

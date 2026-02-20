@@ -5,8 +5,10 @@ import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { ICategory, IEditStoreProps } from "@/interfaces/types";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 const EditStoreForm: React.FC<IEditStoreProps> = ({ storeId }) => {
+  const [t] = useTranslation("global");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -69,10 +71,10 @@ const EditStoreForm: React.FC<IEditStoreProps> = ({ storeId }) => {
       console.log(userData.token);
       if (response.ok) {
         Swal.fire({
-          title: "¡Bodega actualizada!",
-          text: "La bodega se ha actualizado correctamente.",
+          title: t("storeForm.alerts.updatedTitle"),
+          text: t("storeForm.alerts.updatedText"),
           icon: "success",
-          confirmButtonText: "Aceptar",
+          confirmButtonText: t("products.accept"),
         });
         router.push("/GestionInventario");
       } else {
@@ -80,10 +82,10 @@ const EditStoreForm: React.FC<IEditStoreProps> = ({ storeId }) => {
       }
     } catch (error) {
       Swal.fire({
-        title: "Error",
-        text: "No se pudo actualizar la bodega. Por favor, inténtalo de nuevo.",
+        title: t("storeForm.alerts.errorTitle"),
+        text: t("storeForm.alerts.updateError"),
         icon: "error",
-        confirmButtonText: "Aceptar",
+        confirmButtonText: t("products.accept"),
       });
     } finally {
       setLoading(false);
@@ -95,7 +97,7 @@ const EditStoreForm: React.FC<IEditStoreProps> = ({ storeId }) => {
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
       <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-lg">
         <h2 className="text-2xl font-bold text-center text-blue-700">
-          Actualizar Bodega
+          {t("storeForm.editTitle")}
         </h2>
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-2">
@@ -103,7 +105,7 @@ const EditStoreForm: React.FC<IEditStoreProps> = ({ storeId }) => {
               htmlFor="name"
               className="block text-sm font-medium text-gray-700"
             >
-              Nuevo nombre de la Bodega:
+              {t("storeForm.newNameLabel")}
             </label>
             <input
               type="text"
@@ -112,7 +114,7 @@ const EditStoreForm: React.FC<IEditStoreProps> = ({ storeId }) => {
               value={name}
               onChange={handleNombreBodegaChange}
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Ingrese el nombre de la bodega"
+              placeholder={t("storeForm.namePlaceholder")}
             />
           </div>
 
@@ -121,7 +123,7 @@ const EditStoreForm: React.FC<IEditStoreProps> = ({ storeId }) => {
               htmlFor="categoryName"
               className="block text-sm font-medium text-gray-700"
             >
-              Seleccione la nueva categoría:
+              {t("storeForm.newCategoryLabel")}
             </label>
             <select
               name="categoryName"
@@ -130,7 +132,7 @@ const EditStoreForm: React.FC<IEditStoreProps> = ({ storeId }) => {
               onChange={handleCategoryChange}
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             >
-              <option value="">Selecciona una categoría</option>
+              <option value="">{t("storeForm.selectCategory")}</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.name}>
                   {category.name}
@@ -145,7 +147,7 @@ const EditStoreForm: React.FC<IEditStoreProps> = ({ storeId }) => {
               isButtonDisabled ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-900"
             } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-md`}
           >
-            {loading ? <Loader /> : "Actualizar bodega"}
+            {loading ? <Loader /> : t("storeForm.updateButton")}
           </button>
         </form>
       </div>

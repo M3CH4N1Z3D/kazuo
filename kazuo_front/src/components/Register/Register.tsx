@@ -9,8 +9,11 @@ import Loader from "../Loader/Loader";
 import { useAppContext } from "@/context/AppContext";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { useTranslation } from "react-i18next";
 
 const Register = () => {
+  const [t] = useTranslation("global");
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAppContext();
@@ -70,10 +73,10 @@ const Register = () => {
           const loginData = await response.json();
           await login(loginData);
           Swal.fire({
-            title: `¡Bienvenido, ${loginData.name}!`,
-            text: "Has iniciado sesión con Google exitosamente.",
+            title: t("register.welcomeTitle", { name: loginData.name }),
+            text: t("register.googleSuccess"),
             icon: "success",
-            confirmButtonText: "Aceptar",
+            confirmButtonText: t("company.alerts.accept"),
           });
           router.push("/GestionInventario");
         } else {
@@ -82,10 +85,10 @@ const Register = () => {
       } catch (error) {
         console.error(error);
         Swal.fire({
-          title: "Error",
-          text: "No se pudo iniciar sesión con Google. Inténtalo de nuevo.",
+          title: t("register.googleErrorTitle"),
+          text: t("register.googleErrorText"),
           icon: "error",
-          confirmButtonText: "Aceptar",
+          confirmButtonText: t("company.alerts.accept"),
         });
       } finally {
         setLoading(false);
@@ -93,10 +96,10 @@ const Register = () => {
     },
     onError: () => {
       Swal.fire({
-        title: "Error",
-        text: "Error al conectar con Google.",
+        title: t("register.googleErrorTitle"),
+        text: t("register.googleConnectError"),
         icon: "error",
-        confirmButtonText: "Aceptar",
+        confirmButtonText: t("company.alerts.accept"),
       });
     },
   });
@@ -150,10 +153,10 @@ const Register = () => {
 
         if (response.ok) {
           Swal.fire({
-            title: "¡Te has registrado exitosamente!",
-            text: "Ahora puedes iniciar sesión.",
+            title: t("register.registerSuccessTitle"),
+            text: t("register.registerSuccessText"),
             icon: "success",
-            confirmButtonText: "Aceptar",
+            confirmButtonText: t("company.alerts.accept"),
           });
           setDataUser(initialState);
           setTouched({
@@ -169,10 +172,10 @@ const Register = () => {
         }
       } catch (error: any) {
         Swal.fire({
-          title: "Error al hacer tu registro",
-          text: error.message || "Intentalo de nuevo",
+          title: t("register.registerErrorTitle"),
+          text: error.message || t("register.registerErrorText"),
           icon: "error",
-          confirmButtonText: "Aceptar",
+          confirmButtonText: t("company.alerts.accept"),
         });
       } finally {
         setLoading(false);
@@ -187,7 +190,7 @@ const Register = () => {
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg mt-6 mb-6 rounded-lg">
         <h2 className="text-2xl font-bold text-center text-gray-700 uppercase">
-          Registrarse
+          {t("register.title")}
         </h2>
         {!token && (
           <>
@@ -218,7 +221,7 @@ const Register = () => {
                     fill="#EA4335"
                   />
                 </svg>
-                Registrarse con Google
+                {t("register.googleRegister")}
               </button>
             </div>
 
@@ -227,7 +230,7 @@ const Register = () => {
                 <div className="w-full border-t border-gray-300"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">O</span>
+                <span className="px-2 bg-white text-gray-500">{t("register.or")}</span>
               </div>
             </div>
           </>
@@ -238,7 +241,7 @@ const Register = () => {
               htmlFor="email"
               className="block text-sm font-bold text-gray-700"
             >
-              Email:
+              {t("register.emailLabel")}
             </label>
             <input
               type="email"
@@ -261,9 +264,9 @@ const Register = () => {
               htmlFor="password"
               className="block text-sm font-bold text-gray-700"
             >
-              Contraseña:
+              {t("register.passwordLabel")}
             </label>
-            <input
+            <Input
               type="password"
               name="password"
               id="password"
@@ -281,9 +284,9 @@ const Register = () => {
               htmlFor="confirmPass"
               className="block text-sm font-bold text-gray-700"
             >
-              Confirma la contraseña:
+              {t("register.confirmPasswordLabel")}
             </label>
-            <input
+            <Input
               type="password"
               name="confirmPass"
               id="confirmPass"
@@ -302,7 +305,7 @@ const Register = () => {
               htmlFor="name"
               className="block text-sm font-bold text-gray-700"
             >
-              Nombre:
+              {t("register.nameLabel")}
             </label>
             <input
               type="text"
@@ -329,7 +332,7 @@ const Register = () => {
                 : "bg-gray-400 cursor-not-allowed"
             }`}
           >
-            {loading ? <Loader /> : "Registrarse"}
+            {loading ? <Loader /> : t("register.submitButton")}
           </button>
         </form>
       </div>

@@ -4,8 +4,10 @@ import { useRouter } from "next/navigation";
 import { IProduct, IStore, IUpdateProduct } from "@/interfaces/types";
 import { useAppContext } from "@/context/AppContext";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 const EditProductForm: React.FC<{ productId: string }> = ({ productId }) => {
+  const [t] = useTranslation("global");
   const [product, setProduct] = useState<IProduct | null>(null);
   const [formValues, setFormValues] = useState<Partial<IUpdateProduct>>({});
   const [stores, setStores] = useState<IStore[]>([]);
@@ -108,7 +110,7 @@ const EditProductForm: React.FC<{ productId: string }> = ({ productId }) => {
 
     if (Object.keys(changedValues).length === 1) {
       // Solo contiene el id
-      alert("No hay cambios para guardar");
+      alert(t("productForm.noChanges"));
       return;
     }
 
@@ -124,65 +126,69 @@ const EditProductForm: React.FC<{ productId: string }> = ({ productId }) => {
 
       if (response.ok) {
         Swal.fire({
-          title: "Producto actualizado",
+          title: t("productForm.alerts.updatedTitle"),
           icon: "success",
-          confirmButtonText: "Ok",
+          confirmButtonText: t("products.accept"),
         });
         router.push(`/Products/${selectedStore}`);
       } else {
         Swal.fire({
-          title: "Error al actualizar el producto",
+          title: t("productForm.alerts.updateError"),
           icon: "error",
-          confirmButtonText: "Ok",
+          confirmButtonText: t("products.accept"),
         });
-        alert("Error al actualizar el producto");
+        alert(t("productForm.alerts.updateError"));
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Error al conectar con el servidor");
+      alert(t("productForm.alerts.serverError"));
     }
   };
 
-  if (!product) return <div>Cargando...</div>;
+  if (!product) return <div>{t("productForm.loading")}</div>;
 
   return (
     <div className="container mx-auto p-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 bg-gray-100 rounded-md">
         <h2 className="text-xl font-bold col-span-full mb-2">
-          Información Actual del Producto
+          {t("productForm.currentInfoTitle")}
         </h2>
         <p>
-          <strong>Nombre:</strong> {product.name}
+          <strong>{t("productForm.nameLabel")}</strong> {product.name}
         </p>
         <p>
-          <strong>Cantidad:</strong> {product.quantity}
+          <strong>{t("productForm.quantityLabel")}</strong> {product.quantity}
         </p>
         <p>
-          <strong>Unidad de medida:</strong> {product.unids}
+          <strong>{t("productForm.unitLabel")}</strong> {product.unids}
         </p>
         <p>
-          <strong>Capacidad máxima:</strong> {product.maxCapacity}
+          <strong>{t("productForm.maxCapacityLabel")}</strong>{" "}
+          {product.maxCapacity}
         </p>
         <p>
-          <strong>Precio de compra:</strong> {product.inPrice}
+          <strong>{t("productForm.buyPriceLabelSimple")}</strong>{" "}
+          {product.inPrice}
         </p>
         <p>
-          <strong>Precio de venta:</strong> {product.outPrice}
+          <strong>{t("productForm.sellPriceLabelSimple")}</strong>{" "}
+          {product.outPrice}
         </p>
         <p>
-          <strong>Ubicación:</strong> {product.store?.name || "No disponible"}
+          <strong>{t("productForm.locationLabel")}</strong>{" "}
+          {product.store?.name || t("productForm.notAvailable")}
         </p>
       </div>
 
       <div className="bg-white p-4 rounded-md shadow">
         <h2 className="text-xl font-bold mb-4">
-          Modificar Información del Producto
+          {t("productForm.editTitle")}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="name" className="block mb-1">
-                Nombre:
+                {t("productForm.nameLabel")}
               </label>
               <input
                 type="text"
@@ -197,7 +203,7 @@ const EditProductForm: React.FC<{ productId: string }> = ({ productId }) => {
 
             <div>
               <label htmlFor="unids" className="block mb-1">
-                Unidad de medida:
+                {t("productForm.unitLabel")}
               </label>
               <input
                 type="text"
@@ -211,7 +217,7 @@ const EditProductForm: React.FC<{ productId: string }> = ({ productId }) => {
 
             <div>
               <label htmlFor="maxCapacity" className="block mb-1">
-                Capacidad máxima:
+                {t("productForm.maxCapacityLabel")}
               </label>
               <input
                 type="number"
@@ -226,7 +232,7 @@ const EditProductForm: React.FC<{ productId: string }> = ({ productId }) => {
 
             <div>
               <label htmlFor="inPrice" className="block mb-1">
-                Precio de compra:
+                {t("productForm.buyPriceLabelSimple")}
               </label>
               <input
                 type="number"
@@ -241,7 +247,7 @@ const EditProductForm: React.FC<{ productId: string }> = ({ productId }) => {
 
             <div>
               <label htmlFor="outPrice" className="block mb-1">
-                Precio de venta:
+                {t("productForm.sellPriceLabelSimple")}
               </label>
               <input
                 type="number"
@@ -256,7 +262,7 @@ const EditProductForm: React.FC<{ productId: string }> = ({ productId }) => {
 
             <div>
               <label htmlFor="store" className="block mb-1">
-                Bodega:
+                {t("productForm.storeLabel")}
               </label>
               <select
                 id="store"
@@ -266,7 +272,7 @@ const EditProductForm: React.FC<{ productId: string }> = ({ productId }) => {
                 className="w-full p-2 border rounded"
               >
                 <option value={product.storeId}>
-                  {product.store?.name || "Bodega actual"}
+                  {product.store?.name || t("productForm.currentStore")}
                 </option>
                 {Array.isArray(stores) &&
                   stores
@@ -285,7 +291,7 @@ const EditProductForm: React.FC<{ productId: string }> = ({ productId }) => {
               type="submit"
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
-              Actualizar Producto
+              {t("productForm.updateButton")}
             </button>
           </div>
         </form>

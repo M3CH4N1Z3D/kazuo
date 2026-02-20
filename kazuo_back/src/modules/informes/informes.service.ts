@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import * as PDFDocument from 'pdfkit';
-import { createTransport } from 'nodemailer';
+import { MailService } from '../../mail/mail.service';
 
 @Injectable()
 export class InformesService {
+  constructor(private readonly mailService: MailService) {}
+
   async generarPdf(informe: any): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       if (!informe.datos || informe.datos.length === 0) {
@@ -167,31 +169,13 @@ export class InformesService {
 
   // La función enviarCorreoElectronico permanece sin cambios
   async enviarCorreoElectronico(pdf: Buffer) {
-    const transporter = createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      logger: true,
-      debug: true,
-    });
-
-    const mailOptions = {
-      from: `"Kazuo" <${process.env.EMAIL_USER}>`,
-      to: 'xsaul.ortizx@gmail.com',
-      subject: 'Informe generado',
-      text: 'Adjunto encontrarás el informe generado.',
-      attachments: [
-        {
-          filename: 'informe.pdf',
-          content: pdf,
-        },
-      ],
-    };
-
     try {
-      const info = await transporter.sendMail(mailOptions);
+      const info = await this.mailService.sendReport(
+        'xsaul.ortizx@gmail.com',
+        'Adjunto encontrarás el informe generado.',
+        pdf,
+        'informe.pdf',
+      );
       console.log('Correo enviado exitosamente');
       console.log('Información de envío:', info);
       return info;

@@ -5,10 +5,11 @@ import { useEffect, useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { useRouter, usePathname } from "next/navigation";
 import Swal from "sweetalert2";
+import LanguageSwitcher from "../LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 import {
   Menu,
   X,
-  Globe,
   Home,
   Lightbulb,
   ClipboardList,
@@ -35,19 +36,20 @@ export default function Navbar() {
   const { isLoggedIn, logout } = useAppContext();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
+  const { t } = useTranslation("global");
 
   const handleLogout = async () => {
     // Cerrar el menú si está abierto
     setIsMenuOpen(false);
 
     const result = await Swal.fire({
-      title: "¿Estás seguro que quieres cerrar sesión?",
+      title: t("navbar.logoutConfirmTitle"),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Sí, cerrar sesión",
-      cancelButtonText: "Cancelar",
+      confirmButtonText: t("navbar.logoutConfirmButton"),
+      cancelButtonText: t("navbar.cancel"),
     });
 
     if (result.isConfirmed) {
@@ -87,6 +89,7 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden lg:flex items-center space-x-4">
+          <LanguageSwitcher />
           <AuthButtons
             isLoggedIn={isLoggedIn}
             handleLogout={handleLogout}
@@ -110,7 +113,7 @@ export default function Navbar() {
           {/* Drawer Panel */}
           <div className="fixed inset-y-0 left-0 z-[99999] h-screen w-3/4 max-w-sm !bg-white dark:!bg-slate-900 !opacity-100 p-6 shadow-xl transition-transform duration-300 ease-in-out border-r overflow-y-auto bg-opacity-100">
             <div className="flex items-center justify-between mb-8">
-              <span className="text-lg font-bold text-foreground">Menu</span>
+              <span className="text-lg font-bold text-foreground">{t("navbar.menu")}</span>
               <button
                 onClick={closeMenu}
                 className="p-2 -mr-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-colors"
@@ -122,6 +125,7 @@ export default function Navbar() {
             
             <nav className="flex flex-col space-y-2">
               <NavLinks onLinkClick={closeMenu} mobile isLoggedIn={isLoggedIn} />
+              <LanguageSwitcher mobile />
             </nav>
             
             <div className="mt-auto pt-8 border-t">
@@ -152,6 +156,7 @@ function NavLinks({
   isLoggedIn: boolean;
 }) {
   const pathname = usePathname();
+  const { t } = useTranslation("global");
   const baseClasses =
     "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground";
   const activeClasses = "bg-accent text-accent-foreground";
@@ -173,42 +178,35 @@ function NavLinks({
           onClick={onLinkClick}
           className={getLinkClasses("/GestionInventario")}
         >
-          <LayoutDashboard size={18} /> Gestion de inventario
+          <LayoutDashboard size={18} /> {t("navbar.inventoryManagement")}
         </Link>
         <Link
           href="/Company"
           onClick={onLinkClick}
           className={getLinkClasses("/Company")}
         >
-          <Building size={18} /> Gestion de empresa
+          <Building size={18} /> {t("navbar.companyManagement")}
         </Link>
         <Link
           href="/Profile"
           onClick={onLinkClick}
           className={getLinkClasses("/Profile")}
         >
-          <User size={18} /> Perfil
-        </Link>
-        <Link
-          href="/GoogleTranslate"
-          onClick={onLinkClick}
-          className={getLinkClasses("/GoogleTranslate")}
-        >
-          <Globe size={18} /> Traducir
+          <User size={18} /> {t("navbar.profile")}
         </Link>
         <Link
           href="/Nosotros"
           onClick={onLinkClick}
           className={getLinkClasses("/Nosotros")}
         >
-          <Users size={18} /> Nosotros
+          <Users size={18} /> {t("navbar.aboutUs")}
         </Link>
         <Link
           href="/Contacto"
           onClick={onLinkClick}
           className={getLinkClasses("/Contacto")}
         >
-          <Phone size={18} /> Contacto
+          <Phone size={18} /> {t("navbar.contact")}
         </Link>
       </>
     );
@@ -217,43 +215,36 @@ function NavLinks({
   return (
     <>
       <Link href="/" onClick={onLinkClick} className={getLinkClasses("/")}>
-        <Home size={18} /> Inicio
+        <Home size={18} /> {t("navbar.home")}
       </Link>
-      <Link
+      {/* <Link
         href="/Soluciones"
         onClick={onLinkClick}
         className={getLinkClasses("/Soluciones")}
       >
         <Lightbulb size={18} /> Soluciones
-      </Link>
-      <Link
+      </Link> */}
+      {/* <Link
         href="/Planes"
         onClick={onLinkClick}
         className={getLinkClasses("/Planes")}
       >
         <ClipboardList size={18} /> Planes
-      </Link>
-      <Link
+      </Link> */}
+      {/* <Link
         href="/Contacto"
         onClick={onLinkClick}
         className={getLinkClasses("/Contacto")}
       >
         <Phone size={18} /> Contacto
-      </Link>
-      <Link
+      </Link> */}
+      {/* <Link
         href="/Nosotros"
         onClick={onLinkClick}
         className={getLinkClasses("/Nosotros")}
       >
         <Users size={18} /> Nosotros
-      </Link>
-      <Link
-        href="/GoogleTranslate"
-        onClick={onLinkClick}
-        className={getLinkClasses("/GoogleTranslate")}
-      >
-        <Globe size={18} /> Traducir
-      </Link>
+      </Link> */}
     </>
   );
 }
@@ -265,6 +256,7 @@ function AuthButtons({
   onLinkClick,
   mobile,
 }: AuthButtonsProps) {
+  const { t } = useTranslation("global");
   return (
     <>
       {isLoggedIn ? (
@@ -275,7 +267,7 @@ function AuthButtons({
               !mobile ? "hidden lg:flex" : ""
             }`}
           >
-            <LogOut size={18} /> Cerrar sesión
+            <LogOut size={18} /> {t("navbar.logout")}
           </button>
         </>
       ) : (
@@ -285,14 +277,14 @@ function AuthButtons({
             onClick={onLinkClick}
             className="w-full lg:w-auto px-4 py-2 text-sm font-medium text-muted-foreground flex items-center justify-center gap-2 hover:text-primary transition-colors"
           >
-            <LogIn size={18} /> Iniciar sesión
+            <LogIn size={18} /> {t("navbar.login")}
           </Link>
           <Link
             href="/Register"
             onClick={onLinkClick}
             className="w-full lg:w-auto px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors shadow-sm"
           >
-            <UserPlus size={18} /> Registrarme
+            <UserPlus size={18} /> {t("navbar.register")}
           </Link>
         </>
       )}

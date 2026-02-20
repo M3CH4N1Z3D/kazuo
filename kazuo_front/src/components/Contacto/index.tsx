@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 import { FaLinkedin, FaInstagram, FaGithub } from "react-icons/fa";
 
@@ -61,6 +62,7 @@ const participants: Record<Platform, Participant[]> = {
 };
 
 export default function Contact() {
+  const [t] = useTranslation("global");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -108,30 +110,28 @@ export default function Contact() {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <main className="flex-grow container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-center mb-8 text-blue-600">
-          Contáctanos
+          {t("contact.title")}
         </h1>
 
         <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
           <div className="md:flex">
             <div className="md:w-1/2 p-6 bg-blue-600 text-white">
               <h2 className="text-2xl font-semibold mb-4">
-                Conéctate con Kazuo
+                {t("contact.connectTitle")}
               </h2>
               <p className="mb-4">
-                Estamos desarrollando soluciones innovadoras para el control de
-                inventario. Nos encantaría escuchar tus ideas y necesidades.
+                {t("contact.connectDesc")}
               </p>
 
               <div className="mb-4">
-                <h3 className="font-semibold mb-2">Comunidad:</h3>
+                <h3 className="font-semibold mb-2">{t("contact.communityTitle")}</h3>
                 <p>
-                  Únete a nuestra comunidad de desarrolladores y usuarios en
-                  Discord para discusiones en tiempo real y soporte.
+                  {t("contact.communityDesc")}
                 </p>
               </div>
               <div className="mb-4">
                 <h3 className="font-semibold mb-2">
-                  Síguenos en redes sociales:
+                  {t("contact.socialTitle")}
                 </h3>
                 <div className="space-y-4">
                   {(Object.keys(participants) as Platform[]).map((platform) => (
@@ -174,7 +174,7 @@ export default function Contact() {
               </div>
               <div className="mt-8 p-6 rounded-lg text-center">
                 <p className=" text-white ">
-                  Tambien podes descargar nuestra App
+                  {t("contact.downloadApp")}
                 </p>
                 <div className="flex justify-center">
                   <img
@@ -192,7 +192,7 @@ export default function Contact() {
             </div>
             <div className="md:w-1/2 p-6">
               <h2 className="text-2xl font-semibold mb-4 text-blue-600">
-                Envíanos un Mensaje
+                {t("contact.formTitle")}
               </h2>
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
@@ -200,7 +200,7 @@ export default function Contact() {
                     htmlFor="name"
                     className="block text-gray-700 font-semibold mb-2"
                   >
-                    Nombre
+                    {t("contact.nameLabel")}
                   </label>
                   <input
                     type="text"
@@ -217,7 +217,7 @@ export default function Contact() {
                     htmlFor="email"
                     className="block text-gray-700 font-semibold mb-2"
                   >
-                    Email
+                    {t("contact.emailLabel")}
                   </label>
                   <input
                     type="email"
@@ -234,7 +234,7 @@ export default function Contact() {
                     htmlFor="subject"
                     className="block text-gray-700 font-semibold mb-2"
                   >
-                    Asunto
+                    {t("contact.subjectLabel")}
                   </label>
                   <select
                     id="subject"
@@ -244,13 +244,13 @@ export default function Contact() {
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">Selecciona un asunto</option>
-                    <option value="feedback">Feedback de la aplicación</option>
-                    <option value="feature">Sugerencia de Funcionalidad</option>
+                    <option value="">{t("contact.subjects.select")}</option>
+                    <option value="feedback">{t("contact.subjects.feedback")}</option>
+                    <option value="feature">{t("contact.subjects.feature")}</option>
                     <option value="partnership">
-                      Propuesta de Colaboración
+                      {t("contact.subjects.partnership")}
                     </option>
-                    <option value="otro">Otro</option>
+                    <option value="otro">{t("contact.subjects.other")}</option>
                   </select>
                 </div>
                 <div className="mb-4">
@@ -258,7 +258,7 @@ export default function Contact() {
                     htmlFor="message"
                     className="block text-gray-700 font-semibold mb-2"
                   >
-                    Mensaje
+                    {t("contact.messageLabel")}
                   </label>
                   <textarea
                     id="message"
@@ -274,7 +274,7 @@ export default function Contact() {
                   type="submit"
                   className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300"
                 >
-                  Enviar Mensaje
+                  {t("contact.sendButton")}
                 </button>
               </form>
             </div>

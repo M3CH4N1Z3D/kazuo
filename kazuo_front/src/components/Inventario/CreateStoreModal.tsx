@@ -3,6 +3,7 @@
 import { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 import { ICategory } from "@/interfaces/types";
 import Loader from "../Loader/Loader";
 import { useAppContext } from "@/context/AppContext";
@@ -18,6 +19,7 @@ const CreateStoreModal: React.FC<CreateStoreModalProps> = ({
   onClose,
   onStoreCreated,
 }) => {
+  const { t } = useTranslation("global");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -44,7 +46,11 @@ const CreateStoreModal: React.FC<CreateStoreModalProps> = ({
     e.preventDefault();
 
     if (!name || !selectedCategory) {
-      Swal.fire("Error", "Todos los campos son obligatorios", "error");
+      Swal.fire(
+        t("storeModal.alerts.errorTitle"),
+        t("storeModal.alerts.fieldsRequired"),
+        "error"
+      );
       return;
     }
 
@@ -73,22 +79,22 @@ const CreateStoreModal: React.FC<CreateStoreModalProps> = ({
 
       if (response.ok) {
         Swal.fire({
-          title: "¡Bodega creada!",
-          text: "La bodega se ha creado correctamente.",
+          title: t("storeModal.alerts.createdTitle"),
+          text: t("storeModal.alerts.createdText"),
           icon: "success",
-          confirmButtonText: "Aceptar",
+          confirmButtonText: t("storeModal.accept"),
         });
         onStoreCreated();
         onClose();
       } else {
-        throw new Error("Error en la creación de la bodega");
+        throw new Error(t("storeModal.alerts.creationFailed"));
       }
     } catch (error) {
       Swal.fire({
-        title: "Error",
-        text: "No se pudo crear la bodega. Por favor, inténtalo de nuevo.",
+        title: t("storeModal.alerts.createErrorTitle"),
+        text: t("storeModal.alerts.createErrorText"),
         icon: "error",
-        confirmButtonText: "Aceptar",
+        confirmButtonText: t("storeModal.accept"),
       });
     } finally {
       setLoading(false);
@@ -126,7 +132,7 @@ const CreateStoreModal: React.FC<CreateStoreModalProps> = ({
                   as="h3"
                   className="text-lg font-medium leading-6 text-gray-900 mb-6 text-center"
                 >
-                  Crear Bodega
+                  {t("storeModal.title")}
                 </Dialog.Title>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -135,7 +141,7 @@ const CreateStoreModal: React.FC<CreateStoreModalProps> = ({
                       htmlFor="name"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      Nombre de la Bodega
+                      {t("storeModal.nameLabel")}
                     </label>
                     <input
                       type="text"
@@ -143,7 +149,7 @@ const CreateStoreModal: React.FC<CreateStoreModalProps> = ({
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      placeholder="Ingrese el nombre de la bodega"
+                      placeholder={t("storeModal.namePlaceholder")}
                     />
                   </div>
 
@@ -152,7 +158,7 @@ const CreateStoreModal: React.FC<CreateStoreModalProps> = ({
                       htmlFor="category"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      Categoría
+                      {t("storeModal.categoryLabel")}
                     </label>
                     <select
                       id="category"
@@ -161,7 +167,7 @@ const CreateStoreModal: React.FC<CreateStoreModalProps> = ({
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                     >
                       <option value="" disabled>
-                        Seleccione una categoría
+                        {t("storeModal.selectCategory")}
                       </option>
                       {categories.map((category) => (
                         <option key={category.id} value={category.name}>
@@ -177,14 +183,14 @@ const CreateStoreModal: React.FC<CreateStoreModalProps> = ({
                       className="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                       onClick={onClose}
                     >
-                      Cancelar
+                      {t("storeModal.cancel")}
                     </button>
                     <button
                       type="submit"
                       disabled={loading || !name || !selectedCategory}
                       className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:bg-blue-300"
                     >
-                      {loading ? <Loader /> : "Aceptar"}
+                      {loading ? <Loader /> : t("storeModal.accept")}
                     </button>
                   </div>
                 </form>

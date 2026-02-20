@@ -1,3 +1,6 @@
+"use client";
+import { useTranslation } from "react-i18next";
+
 type Platform = "instagram" | "linkedin" | "github";
 type Participant = { name: string; url: string };
 
@@ -56,58 +59,41 @@ const participants: Record<Platform, Participant[]> = {
 };
 
 export default function AboutUs() {
+  const [t] = useTranslation("global");
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <main className="flex-grow container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-center mb-8 text-blue-600">
-          Sobre Nosotros
+          {t("about.title")}
         </h1>
 
         <div className="bg-white shadow-md rounded-lg p-6 mb-8">
           <h2 className="text-2xl font-semibold mb-4 text-blue-600">
-            Nuestra Historia
+            {t("about.historyTitle")}
           </h2>
           <p className="text-gray-600 mb-8">
-            Comenzamos como un grupo de estudiantes de Henry apasionados por la
-            tecnología, con la idea y propósito de ayudar a las pequeñas y
-            medianas empresas a llevar un mejor análisis de su inventario.
-            Nuestra visión era crear una herramienta que no solo simplificara la
-            gestión de inventarios, sino que también proporcionara soluciones
-            valiosoas para impulsar el crecimiento de los negocios.
+            {t("about.historyP1")}
           </p>
           <p className="text-gray-600 mb-8">
-            A medida que profundizamos en las necesidades de las PyMEs, nos
-            dimos cuenta de que podíamos ofrecer mucho más. Expandimos nuestra
-            plataforma para incluir funcionalidades de facturación electrónica,
-            punto de venta y análisis de datos, convirtiéndonos en una solución
-            integral para la gestión empresarial.
+            {t("about.historyP2")}
           </p>
           <p className="text-gray-600 mb-8">
-            Hoy, Kazuo es el resultado de nuestra pasión por la innovación y
-            nuestro compromiso con el éxito de las pequeñas y medianas empresas.
-            Continuamos evolucionando y mejorando nuestras soluciones, siempre
-            con el objetivo de empoderar a los emprendedores y ayudarles a
-            alcanzar su máximo potencial.
+            {t("about.historyP3")}
           </p>
         </div>
 
         <div className="bg-white shadow-md rounded-lg p-6">
           <h2 className="text-2xl font-semibold mb-4 text-blue-600">
-            Nuestra Misión
+            {t("about.missionTitle")}
           </h2>
           <p className="text-gray-600 mb-8">
-            En Kazuo, nuestra misión es proporcionar soluciones tecnológicas
-            innovadoras y accesibles que permitan a las pequeñas y medianas
-            empresas optimizar sus operaciones, tomar decisiones informadas y
-            crecer de manera sostenible. Nos esforzamos por ser más que un
-            proveedor de software; aspiramos a ser un socio estratégico en el
-            éxito de cada negocio que confía en nosotros.
+            {t("about.missionText")}
           </p>
         </div>
       </main>
 
       <h2 className="text-3xl font-bold mb-6 text-blue-600 ml-8">
-        Nuestro Equipo
+        {t("about.teamTitle")}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {Object.values(participants.linkedin).map((member, index) => (

@@ -68,11 +68,7 @@ export class AuthService {
       }
     }
 
-    await this.mailService.sendMail(
-      createdUser.email,
-      'Bienvenido a Kazuo',
-      `Hola ${createdUser.name}, gracias por registrarte en nuestra aplicación.`,
-    );
+    await this.mailService.sendWelcome(createdUser.email, createdUser.name);
 
     return {};
   }
@@ -90,13 +86,7 @@ export class AuthService {
       resetPasswordExpires: expirationTime,
     });
 
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    const resetUrl = `${frontendUrl}/UpdatePass?token=${token}`;
-    await this.mailService.sendMail(
-      email,
-      'Restablecimiento de contraseña',
-      `Haga clic en el siguiente enlace para restablecer su contraseña: ${resetUrl}`,
-    );
+    await this.mailService.sendPasswordReset(email, user.name, token);
 
     return token;
   }

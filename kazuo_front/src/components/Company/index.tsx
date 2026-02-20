@@ -7,8 +7,10 @@ import Swal from "sweetalert2";
 import CompanyRegistrationForm from "../RegisterCompany";
 import { useAppContext } from "@/context/AppContext";
 import { PERMISSIONS, PERMISSION_LABELS, PERMISSION_DESCRIPTIONS } from "@/constants/permissions";
+import { useTranslation } from "react-i18next";
 
 export default function MiEmpresa() {
+  const { t } = useTranslation("global");
   const { logout } = useAppContext();
   const [companyData, setCompanyData] = useState<CompanyData | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
@@ -73,8 +75,8 @@ export default function MiEmpresa() {
               name: user.name,
               email: user.email,
               position: user.isAdmin
-                ? "Administrador"
-                : user.position || "Miembro del equipo",
+                ? t("company.admin")
+                : user.position || t("company.member"),
               imgUrl: user.imgUrl,
               isAdmin: user.isAdmin,
               permissions: user.permissions || [],
@@ -85,10 +87,10 @@ export default function MiEmpresa() {
     } catch (error) {
       console.error("Error al obtener los datos de la empresa:", error);
       Swal.fire({
-        title: "Error",
-        text: "No se pudo cargar la información de la empresa.",
+        title: t("company.alerts.errorTitle"),
+        text: t("company.alerts.loadError"),
         icon: "error",
-        confirmButtonText: "Aceptar",
+        confirmButtonText: t("company.alerts.accept"),
       });
     } finally {
       setIsLoading(false);
@@ -117,10 +119,10 @@ export default function MiEmpresa() {
 
       if (response.status === 401) {
         Swal.fire({
-          title: "Sesión expirada",
-          text: "Su sesión ha expirado. Por favor inicie sesión nuevamente.",
+          title: t("company.alerts.sessionExpiredTitle"),
+          text: t("company.alerts.sessionExpiredText"),
           icon: "warning",
-          confirmButtonText: "Aceptar",
+          confirmButtonText: t("company.alerts.accept"),
         }).then(() => {
           logout();
         });
@@ -187,20 +189,20 @@ export default function MiEmpresa() {
         setEditingPermissionsUser(null);
         await fetchCompanyData();
         Swal.fire(
-          "¡Éxito!",
-          "Permisos actualizados correctamente.",
+          t("company.alerts.successGeneric"),
+          t("company.alerts.permissionsUpdated"),
           "success"
         );
       } else {
         Swal.fire(
-          "Error",
-          "No se pudieron actualizar los permisos.",
+          t("company.alerts.errorTitle"),
+          t("company.alerts.permissionsError"),
           "error"
         );
       }
     } catch (error) {
       console.error("Error updating permissions:", error);
-      Swal.fire("Error", "Error de conexión", "error");
+      Swal.fire(t("company.alerts.errorTitle"), t("company.alerts.connectionError"), "error");
     }
   };
 
@@ -214,14 +216,14 @@ export default function MiEmpresa() {
 
   const handleRemoveTeamMember = async (id: string) => {
     const result = await Swal.fire({
-      title: "¿Estás seguro?",
-      text: "Se eliminará el usuario. Si tiene datos asociados, se te pedirá confirmar qué hacer con ellos.",
+      title: t("company.alerts.confirmDeleteTitle"),
+      text: t("company.alerts.confirmDeleteText"),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
+      confirmButtonText: t("company.alerts.confirmDeleteBtn"),
+      cancelButtonText: t("company.cancel"),
     });
 
     if (!result.isConfirmed) return;
@@ -239,7 +241,7 @@ export default function MiEmpresa() {
 
       if (response.ok) {
         setTeamMembers(teamMembers.filter((member) => member.id !== id));
-        Swal.fire("¡Eliminado!", "El usuario ha sido eliminado.", "success");
+        Swal.fire(t("company.alerts.deletedTitle"), t("company.alerts.deletedText"), "success");
         return;
       }
 
@@ -248,35 +250,35 @@ export default function MiEmpresa() {
         const { stores, products, providers } = errorData.dependencies || {};
 
         const action = await Swal.fire({
-          title: "El usuario tiene datos asociados",
+          title: t("company.alerts.hasDataTitle"),
           html: `
-            <p>Se encontraron:</p>
+            <p>${t("company.alerts.found")}</p>
             <ul style="text-align: left; margin-left: 20px;">
-              ${stores > 0 ? `<li>${stores} Tiendas</li>` : ""}
-              ${products > 0 ? `<li>${products} Productos</li>` : ""}
-              ${providers > 0 ? `<li>${providers} Proveedores</li>` : ""}
+              ${stores > 0 ? `<li>${stores} ${t("company.alerts.stores")}</li>` : ""}
+              ${products > 0 ? `<li>${products} ${t("company.alerts.products")}</li>` : ""}
+              ${providers > 0 ? `<li>${providers} ${t("company.alerts.providers")}</li>` : ""}
             </ul>
-            <p>¿Qué deseas hacer?</p>
+            <p>${t("company.alerts.whatToDo")}</p>
           `,
           icon: "warning",
           showDenyButton: true,
           showCancelButton: true,
-          confirmButtonText: "Migrar Datos",
-          denyButtonText: "Eliminar Todo",
-          cancelButtonText: "Cancelar",
+          confirmButtonText: t("company.alerts.migrate"),
+          denyButtonText: t("company.alerts.deleteAll"),
+          cancelButtonText: t("company.cancel"),
         });
 
         if (action.isConfirmed) {
           // Migrar
           const { value: email } = await Swal.fire({
-            title: "Ingrese el correo del nuevo dueño",
+            title: t("company.alerts.enterEmailTitle"),
             input: "email",
-            inputLabel: "Correo electrónico",
-            inputPlaceholder: "nuevo@correo.com",
+            inputLabel: t("company.alerts.emailLabel"),
+            inputPlaceholder: t("company.alerts.emailPlaceholder"),
             showCancelButton: true,
             inputValidator: (value) => {
               if (!value) {
-                return "Debes escribir un correo!";
+                return t("company.alerts.emailRequired");
               }
             },
           });
@@ -293,24 +295,24 @@ export default function MiEmpresa() {
             if (migrateResponse.ok) {
               setTeamMembers(teamMembers.filter((member) => member.id !== id));
               Swal.fire(
-                "¡Migrado!",
-                `Datos migrados a ${email} y usuario eliminado.`,
+                t("company.alerts.migratedTitle"),
+                t("company.alerts.migratedText", { email }),
                 "success"
               );
             } else {
               const err = await migrateResponse.json();
-              Swal.fire("Error", err.message || "Error al migrar", "error");
+              Swal.fire(t("company.alerts.errorTitle"), err.message || t("company.alerts.migrateError"), "error");
             }
           }
         } else if (action.isDenied) {
           // Force Delete
           const confirmForce = await Swal.fire({
-            title: "¿Estás absolutamente seguro?",
-            text: "Esta acción no se puede deshacer. Se eliminarán todas las tiendas, productos y relaciones del usuario.",
+            title: t("company.alerts.forceDeleteTitle"),
+            text: t("company.alerts.forceDeleteText"),
             icon: "error",
             showCancelButton: true,
-            confirmButtonText: "Sí, eliminar todo",
-            cancelButtonText: "Cancelar",
+            confirmButtonText: t("company.alerts.forceDeleteBtn"),
+            cancelButtonText: t("company.cancel"),
           });
 
           if (confirmForce.isConfirmed) {
@@ -325,21 +327,21 @@ export default function MiEmpresa() {
             if (forceResponse.ok) {
               setTeamMembers(teamMembers.filter((member) => member.id !== id));
               Swal.fire(
-                "¡Eliminado!",
-                "Usuario y todos sus datos eliminados.",
+                t("company.alerts.deletedTitle"),
+                t("company.alerts.forceDeleteSuccess"),
                 "success"
               );
             } else {
-              Swal.fire("Error", "No se pudo eliminar el usuario.", "error");
+              Swal.fire(t("company.alerts.errorTitle"), t("company.alerts.forceDeleteError"), "error");
             }
           }
         }
       } else {
-        Swal.fire("Error", "Ocurrió un error inesperado", "error");
+        Swal.fire(t("company.alerts.errorTitle"), t("company.alerts.unexpectedError"), "error");
       }
     } catch (error) {
       console.error(error);
-      Swal.fire("Error", "Error de conexión", "error");
+      Swal.fire(t("company.alerts.errorTitle"), t("company.alerts.connectionError"), "error");
     }
   };
 
@@ -350,14 +352,13 @@ export default function MiEmpresa() {
   if (!companyData) {
     return (
       <div className="container mx-auto py-10 px-4">
-        <h1 className="text-3xl font-bold text-center mb-10">Mi Empresa</h1>
+        <h1 className="text-3xl font-bold text-center mb-10">{t("company.title")}</h1>
         <div className="bg-white shadow-md rounded-lg overflow-hidden mb-8 p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">
-            Aún no tienes una empresa registrada
+            {t("company.noCompanyTitle")}
           </h2>
           <p className="text-center text-gray-600 mb-6">
-            Para gestionar miembros y acceder a todas las funciones, por favor
-            registra tu empresa.
+            {t("company.noCompanyDesc")}
           </p>
           <CompanyRegistrationForm onSuccess={fetchCompanyData} />
         </div>
@@ -367,29 +368,29 @@ export default function MiEmpresa() {
 
   return (
     <div className="container mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold text-center mb-10">Mi Empresa</h1>
+      <h1 className="text-3xl font-bold text-center mb-10">{t("company.title")}</h1>
       {/* Sección de información de la empresa */}
       <div className="bg-white shadow-md rounded-lg overflow-hidden mb-8">
           <div className="px-6 py-4 bg-gray-50 border-b flex justify-between items-center">
             <h2 className="text-xl font-semibold text-gray-800">
-              Información de la Empresa
+              {t("company.infoTitle")}
             </h2>
           </div>
 
           <div className="p-6 space-y-2">
-            <p><span className="font-semibold">Nombre:</span> {companyData?.CompanyName}</p>
-            <p><span className="font-semibold">País:</span> {companyData?.country}</p>
-            <p><span className="font-semibold">Dirección:</span> {companyData?.address}</p>
-            <p><span className="font-semibold">Teléfono:</span> {companyData?.contactPhone}</p>
-            <p><span className="font-semibold">Email:</span> {companyData?.email}</p>
-            <p><span className="font-semibold">Industria:</span> {companyData?.industry}</p>
+            <p><span className="font-semibold">{t("company.name")}:</span> {companyData?.CompanyName}</p>
+            <p><span className="font-semibold">{t("company.country")}:</span> {companyData?.country}</p>
+            <p><span className="font-semibold">{t("company.address")}:</span> {companyData?.address}</p>
+            <p><span className="font-semibold">{t("company.phone")}:</span> {companyData?.contactPhone}</p>
+            <p><span className="font-semibold">{t("company.email")}:</span> {companyData?.email}</p>
+            <p><span className="font-semibold">{t("company.industry")}:</span> {companyData?.industry}</p>
           </div>
         </div>
         {/* Sección de equipo */}
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <div className="px-6 py-4 bg-gray-50 border-b">
             <h2 className="text-xl font-semibold text-gray-800">
-              Nuestro Equipo
+              {t("company.teamTitle")}
             </h2>
           </div>
           <div className="p-6">
@@ -415,7 +416,7 @@ export default function MiEmpresa() {
                       <p className="font-semibold text-gray-900">{member.name}</p>
                       {member.isAdmin && (
                         <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full border border-blue-200">
-                          Admin
+                          {t("company.admin")}
                         </span>
                       )}
                     </div>
@@ -428,16 +429,16 @@ export default function MiEmpresa() {
                       <button
                         onClick={() => handleOpenPermissionsModal(member)}
                         className="flex-1 md:flex-none px-3 py-1 bg-yellow-500 text-white text-sm rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition duration-300 flex items-center justify-center"
-                        title="Gestionar Permisos"
+                        title={t("company.managePermissions")}
                       >
-                        <FaKey className="inline mr-1" /> Permisos
+                        <FaKey className="inline mr-1" /> {t("company.permissions")}
                       </button>
                     )}
                     <button
                       onClick={() => handleRemoveTeamMember(member.id)}
                       className="flex-1 md:flex-none px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-300 flex items-center justify-center"
                     >
-                      <FaTrash className="inline mr-1" /> Eliminar
+                      <FaTrash className="inline mr-1" /> {t("company.delete")}
                     </button>
                   </div>
                 )}
@@ -447,11 +448,11 @@ export default function MiEmpresa() {
             {/* Formulario para agregar miembro */}
             {isAdmin && (
               <div className="mt-6 p-4 border-t">
-                <h3 className="font-semibold text-lg mb-4">Agregar Miembro</h3>
+                <h3 className="font-semibold text-lg mb-4">{t("company.addMemberTitle")}</h3>
                 <div className="space-y-4">
                   <input
                     type="text"
-                    placeholder="Nombre"
+                    placeholder={t("company.namePlaceholder")}
                   value={newMember.name}
                   onChange={(e) =>
                     setNewMember({ ...newMember, name: e.target.value })
@@ -460,7 +461,7 @@ export default function MiEmpresa() {
                 />
                 <input
                   type="text"
-                  placeholder="Posición"
+                  placeholder={t("company.positionPlaceholder")}
                   value={newMember.position}
                   onChange={(e) =>
                     setNewMember({ ...newMember, position: e.target.value })
@@ -469,7 +470,7 @@ export default function MiEmpresa() {
                 />
                 <input
                   type="email"
-                  placeholder="Correo Electrónico"
+                  placeholder={t("company.emailPlaceholder")}
                   value={newMember.email}
                   onChange={(e) =>
                     setNewMember({ ...newMember, email: e.target.value })
@@ -480,7 +481,7 @@ export default function MiEmpresa() {
                   onClick={handleAddTeamMember}
                   className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300"
                 >
-                  <FaPlus className="inline mr-2" /> Agregar Miembro
+                  <FaPlus className="inline mr-2" /> {t("company.addButton")}
                 </button>
               </div>
             </div>
@@ -492,7 +493,7 @@ export default function MiEmpresa() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 shadow-xl">
             <h3 className="text-xl font-bold mb-4">
-              Permisos para {editingPermissionsUser.name}
+              {t("company.permissionsFor")} {editingPermissionsUser.name}
             </h3>
             <div className="space-y-3 mb-6">
               {Object.entries(PERMISSION_LABELS).map(([key, label]) => (
@@ -527,13 +528,13 @@ export default function MiEmpresa() {
                 onClick={() => setEditingPermissionsUser(null)}
                 className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none"
               >
-                Cancelar
+                {t("company.cancel")}
               </button>
               <button
                 onClick={handleSavePermissions}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
               >
-                Guardar
+                {t("company.save")}
               </button>
             </div>
           </div>

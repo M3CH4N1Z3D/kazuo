@@ -4,8 +4,10 @@ import React, { useState, useEffect } from "react";
 import { MessageCircle, X } from "lucide-react";
 import ChatBot from "./ChatBot";
 import { useAppContext } from "@/context/AppContext";
+import { useTranslation } from "react-i18next";
 
 export default function ChatButton() {
+  const { t } = useTranslation("global");
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const { isLoggedIn } = useAppContext();
@@ -41,9 +43,9 @@ export default function ChatButton() {
             <MessageCircle className="w-6 h-6 text-white" />
           </div>
           <div className="px-4 py-2">
-            <p className="font-semibold text-gray-800">Asistente Virtual</p>
+            <p className="font-semibold text-gray-800">{t("chatbot.title")}</p>
             <p className="text-sm text-gray-600 truncate">
-              ¿En qué puedo ayudarte hoy?
+              {t("chatbot.greeting")}
             </p>
           </div>
         </div>

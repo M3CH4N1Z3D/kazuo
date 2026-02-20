@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Send, GripHorizontal, X } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
+import { useTranslation } from "react-i18next";
 
 interface ChatBotProps {
   onClose: () => void;
@@ -13,6 +14,7 @@ interface Message {
   content: string;
 }
 export default function ChatBot({ onClose }: ChatBotProps) {
+  const { t, i18n } = useTranslation("global");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -92,6 +94,7 @@ export default function ChatBot({ onClose }: ChatBotProps) {
             message: currentInput,
             history: historyFormatted,
             userId: userData?.id,
+            language: i18n.language || "es",
           }),
         });
 
@@ -130,7 +133,7 @@ export default function ChatBot({ onClose }: ChatBotProps) {
         console.error("Error al procesar la solicitud:", error);
         const errorMessage: Message = {
           role: "model",
-          content: "Lo siento, ha ocurrido un error al procesar tu solicitud.",
+          content: t("chatbot.errorProcessing"),
         };
         setMessages([...updatedMessages, errorMessage]);
       } finally {
@@ -166,7 +169,7 @@ export default function ChatBot({ onClose }: ChatBotProps) {
         >
           <X className="w-5 h-5" />
         </button>
-        <h2 className="text-lg font-semibold ml-8">Tu asistente virtual</h2>
+        <h2 className="text-lg font-semibold ml-8">{t("chatbot.windowTitle")}</h2>
         <GripHorizontal className="w-5 h-5" />
       </div>
       <div className="h-64 overflow-y-auto p-4">
@@ -196,7 +199,7 @@ export default function ChatBot({ onClose }: ChatBotProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             className="flex-1 border rounded-full py-2 px-4 mr-2 focus:outline-none focus:ring-2 focus:ring-[#0084ff]"
-            placeholder="¿En qué puedo ayudarte?"
+            placeholder={t("chatbot.placeholder")}
             disabled={isLoading}
           />
           <button

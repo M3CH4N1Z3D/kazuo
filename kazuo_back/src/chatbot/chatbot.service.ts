@@ -16,8 +16,20 @@ export class ChatBotService {
     this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
   }
 
-  async chat(message: string, history: any[], userId?: string) {
+  async chat(message: string, history: any[], userId?: string, language?: string) {
     try {
+      const languageMap: Record<string, string> = {
+        en: 'English',
+        es: 'Spanish',
+        fr: 'French',
+        pt: 'Portuguese',
+      };
+      // Normalizamos el código de idioma (ej: es-ES -> es)
+      const langCode = (language || 'es').substring(0, 2).toLowerCase();
+      const selectedLanguage = languageMap[langCode] || 'Spanish';
+      
+      console.log(`[ChatBot] Language requested: ${language}, using: ${selectedLanguage}`);
+
       // 1. Definir las herramientas (Tools) que Gemini puede usar
       const tools: any = [
         {
@@ -64,6 +76,7 @@ export class ChatBotService {
       const model = this.genAI.getGenerativeModel({
         model: 'gemini-2.5-pro',
         tools: tools,
+        systemInstruction: `You are a helpful virtual assistant for the Kazuo inventory management system. You must respond in ${selectedLanguage}. be concise and direct.`,
       });
 
       // 3. Iniciar el chat con el historial proporcionado

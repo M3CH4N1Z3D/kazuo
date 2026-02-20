@@ -5,6 +5,7 @@ import { validateUpdatePass } from "@/helpers/validate";
 import Swal from "sweetalert2";
 // import { register } from "@/helpers/auth.helper";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Input } from "@/components/ui/input";
 
 const UpdatePassForm = () => {
   const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
@@ -22,11 +23,10 @@ const UpdatePassForm = () => {
     confirmNewPass: "",
     token: token || "",
   });
-  const [errors, setErrors] = useState<TUpdatePassError>(initialState);
+  const [errors, setErrors] = useState<TUpdatePassError>({});
   const [touched, setTouched] = useState<{ [key: string]: boolean }>({
     newPassword: false,
     confirmNewPass: false,
-    token: token ? true : false,
   });
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -117,7 +117,7 @@ const UpdatePassForm = () => {
             >
               Nueva contraseña:
             </label>
-            <input
+            <Input
               type="password"
               name="newPassword"
               id="newPassword"
@@ -137,7 +137,7 @@ const UpdatePassForm = () => {
             >
               Confirma la nueva contraseña:
             </label>
-            <input
+            <Input
               type="password"
               name="confirmNewPass"
               id="confirmNewPass"

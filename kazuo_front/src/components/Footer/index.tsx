@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { FaLinkedin, FaInstagram, FaGithub } from "react-icons/fa";
 import { usePathname } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 type Platform = "instagram" | "linkedin" | "github";
 
@@ -13,6 +14,7 @@ type Participant = {
 };
 
 export default function Footer() {
+  const [t] = useTranslation("global");
   const pathname = usePathname();
   const [dropdownOpen, setDropdownOpen] = useState<{
     instagram: boolean;
@@ -97,7 +99,7 @@ export default function Footer() {
     <footer className="bg-blue-900 text-white py-12 px-4">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
-          <h3 className="font-bold text-lg mb-4">Síguenos</h3>
+          <h3 className="font-bold text-lg mb-4">{t("footer.followUs")}</h3>
           <div className="space-y-4">
             {Object.keys(participants).map((platform) => (
               <div key={platform}>
@@ -140,49 +142,49 @@ export default function Footer() {
 
         {/* Secciones adicionales de Kazuo, Soluciones y Recursos */}
         <div>
-          <h3 className="font-bold text-lg mb-4">Kazuo</h3>
+          <h3 className="font-bold text-lg mb-4">{t("footer.kazuo")}</h3>
           <ul className="space-y-2">
             <li>
               <a href="/Nosotros" className="hover:underline">
-                Quiénes somos
+                {t("footer.whoWeAre")}
               </a>
             </li>
             <li>
               <a href="/Ubicacion" className="hover:underline">
-                Ubicación
+                {t("footer.location")}
               </a>
             </li>
 
             <li>
               <a href="/Contacto" className="hover:underline">
-                Contáctanos
+                {t("footer.contactUs")}
               </a>
             </li>
           </ul>
         </div>
 
         <div>
-          <h3 className="font-bold text-lg mb-4">Soluciones</h3>
+          <h3 className="font-bold text-lg mb-4">{t("footer.solutions")}</h3>
           <ul className="space-y-2">
             <li>
               <a href="/Soluciones" className="hover:underline">
-                Sistema de gestión
+                {t("footer.managementSystem")}
               </a>
             </li>
           </ul>
         </div>
 
         <div>
-          <h3 className="font-bold text-lg mb-4">Recursos</h3>
+          <h3 className="font-bold text-lg mb-4">{t("footer.resources")}</h3>
           <ul className="space-y-2">
             <li>
               <a href="/Contacto" className="hover:underline">
-                Soporte
+                {t("footer.support")}
               </a>
             </li>
             <li>
               <a href="/Sobre Nosotros" className="hover:underline">
-                Desarrolladores
+                {t("footer.developers")}
               </a>
             </li>
           </ul>
@@ -191,13 +193,12 @@ export default function Footer() {
 
       <div className="mt-12 text-sm text-blue-300">
         <p>
-          Al navegar en los sitios webs propiedad de Kazuo, se acepta el uso de
-          Cookies según nuestros{" "}
+          {t("footer.cookiesDisclaimer")}{" "}
           <a href="#" className="underline">
-            términos y condiciones
+            {t("footer.termsConditions")}
           </a>
         </p>
-        <p className="mt-2">© 2024 Kazuo Project. All rights reserved.</p>
+        <p className="mt-2">{t("footer.rightsReserved")}</p>
       </div>
     </footer>
   );

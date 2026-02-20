@@ -11,8 +11,8 @@ import { In, Repository } from 'typeorm';
 import { Category } from '../../Entities/category.entity';
 import { Users } from '../../Entities/users.entity';
 import PDFDocument from 'pdfkit';
-import { createTransport } from 'nodemailer';
 import { CompanyRepository } from '../../company/company.repository';
+import { MailService } from '../../mail/mail.service';
 
 @Injectable()
 export class StoreService {
@@ -22,7 +22,7 @@ export class StoreService {
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
     private readonly companyRepository: CompanyRepository,
-
+    private readonly mailService: MailService,
   ) {}
 
   async create(createStore: CreateStoreDto, request: any) {
@@ -281,29 +281,13 @@ export class StoreService {
   }
 
   async enviarCorreoElectronico(pdf: Buffer) {
-    const transporter = createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    const mailOptions = {
-      from: `"Kazuo" <${process.env.EMAIL_USER}>`,
-      to: 'xsaul.ortizx@gmail.com',
-      subject: 'Informe de Bodega',
-      text: 'Adjunto encontrarás el informe de la bodega.',
-      attachments: [
-        {
-          filename: 'informe_bodega.pdf',
-          content: pdf,
-        },
-      ],
-    };
-
     try {
-      const info = await transporter.sendMail(mailOptions);
+      const info = await this.mailService.sendReport(
+        'xsaul.ortizx@gmail.com',
+        'Adjunto encontrarás el informe de la bodega.',
+        pdf,
+        'informe_bodega.pdf',
+      );
       console.log('Correo enviado exitosamente:', info);
       return info;
     } catch (error) {

@@ -93,10 +93,11 @@ export class ProductService {
   
     if (companyEmail) {
       try {
-        await this.mailService.sendMail(
+        await this.mailService.sendProductNotification(
           companyEmail,
-          'Bienvenido a Kazuo',
-          `El producto ${product.name} ha sido modificado.`,
+          product.name,
+          'modificado',
+          'Se han realizado cambios en los detalles del producto.',
         );
       } catch (error) {
         console.error('Error enviando el correo:', error);
@@ -121,10 +122,11 @@ export class ProductService {
     if (!deleteProduct) throw new NotFoundException('Producto no encontrado');
 
     if (deleteProduct.user && deleteProduct.user.email) {
-      await this.mailService.sendMail(
+      await this.mailService.sendProductNotification(
         deleteProduct.user.email,
-        'Producto eliminado',
-        `El producto con ID ${id} y nombre ${deleteProduct.name} fue eliminado`,
+        deleteProduct.name,
+        'eliminado',
+        'El producto ha sido eliminado permanentemente del sistema.',
       );
     }
 

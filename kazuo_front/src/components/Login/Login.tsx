@@ -13,8 +13,10 @@ import Loader from "../Loader/Loader";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { useTranslation } from "react-i18next";
 
 const Login: React.FC = () => {
+  const { t } = useTranslation("global");
   const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
   
@@ -54,8 +56,8 @@ const Login: React.FC = () => {
         if (response.ok) {
           const loginData = await response.json();
           await login(loginData);
-          toast.success(`¡Bienvenido, ${loginData.name}!`, {
-            description: "Has iniciado sesión con Google exitosamente.",
+          toast.success(t("login.welcome", { name: loginData.name }), {
+            description: t("login.googleLoginSuccess"),
           });
           router.push("/GestionInventario");
         } else {
@@ -63,8 +65,8 @@ const Login: React.FC = () => {
         }
       } catch (error) {
         console.error(error);
-        toast.error("Error al iniciar sesión", {
-          description: "No se pudo iniciar sesión con Google. Inténtalo de nuevo.",
+        toast.error(t("login.authError"), {
+          description: t("login.googleLoginError"),
         });
       } finally {
         setLoading(false);
@@ -160,18 +162,18 @@ const Login: React.FC = () => {
         if (response.ok) {
           const loginData = await response.json();
           await login(loginData);
-          toast.success(`¡Bienvenido, ${loginData.name}!`, {
-            description: "Has iniciado sesión correctamente.",
+          toast.success(t("login.welcome", { name: loginData.name }), {
+            description: t("login.loginSuccess"),
           });
           router.push(`/GestionInventario`);
         } else {
           const errorData = await response.json();
-          toast.error("Error de autenticación", {
+          toast.error(t("login.authError"), {
             description: errorData.message || "Credenciales incorrectas. Por favor, inténtalo de nuevo.",
           });
         }
       } catch (error) {
-        toast.error("Error inesperado", {
+        toast.error(t("login.unexpectedError"), {
           description: "Ocurrió un error al procesar tu solicitud. Por favor, inténtalo de nuevo.",
         });
       } finally {
@@ -199,18 +201,18 @@ const Login: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
         </div>
         <div className="absolute bottom-10 left-10 text-white z-10">
-          <h3 className="text-3xl font-bold mb-2">Gestiona tu negocio con Kazuo</h3>
+          <h3 className="text-3xl font-bold mb-2">{t("login.manageBusiness")}</h3>
           <p className="text-lg text-gray-300">
-            La plataforma integral para el control de inventario y gestión empresarial.
+            {t("login.platformDescription")}
           </p>
         </div>
       </div>
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">
-            <h1 className="text-3xl font-bold text-gray-900">Iniciar Sesión</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{t("login.title")}</h1>
             <p className="text-balance text-muted-foreground">
-              Ingresa tu email para acceder a tu cuenta
+              {t("login.subtitle")}
             </p>
           </div>
 
@@ -219,7 +221,7 @@ const Login: React.FC = () => {
               variant="outline"
               onClick={handleGoogleLogin}
               className="w-full flex items-center gap-2"
-              aria-label="Iniciar sesión con Google"
+              aria-label={t("login.googleLogin")}
             >
               <svg
                 className="w-5 h-5"
@@ -253,7 +255,7 @@ const Login: React.FC = () => {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-background px-2 text-muted-foreground">
-                  O continua con
+                  {t("login.orContinueWith")}
                 </span>
               </div>
             </div>
@@ -264,13 +266,13 @@ const Login: React.FC = () => {
                   htmlFor="email"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  Email
+                  {t("login.emailLabel")}
                 </label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder={t("login.emailPlaceholder")}
                   value={dataUser.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -286,13 +288,13 @@ const Login: React.FC = () => {
                     htmlFor="password"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    Contraseña
+                    {t("login.passwordLabel")}
                   </label>
                   <Link
                     href="/RecoverPass"
                     className="ml-auto inline-block text-sm underline text-primary hover:text-primary/90"
                   >
-                    ¿Olvidaste tu contraseña?
+                    {t("login.forgotPassword")}
                   </Link>
                 </div>
                 <Input
@@ -309,16 +311,16 @@ const Login: React.FC = () => {
                 )}
               </div>
               <Button type="submit" className="w-full" disabled={isButtonDisabled}>
-                {loading ? <Loader /> : "Iniciar sesión"}
+                {loading ? <Loader /> : t("login.submitButton")}
               </Button>
             </form>
             <div className="mt-4 text-center text-sm">
-              ¿No tienes una cuenta?{" "}
+              {t("login.noAccount")}{" "}
               <Link
                 href="/Register"
                 className="underline text-primary hover:text-primary/90"
               >
-                Regístrate
+                {t("login.registerLink")}
               </Link>
             </div>
           </div>

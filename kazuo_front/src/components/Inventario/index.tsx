@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Menu, Transition, Dialog } from "@headlessui/react";
 import { BiDotsHorizontal, BiSearch, BiMenu } from "react-icons/bi";
+import { useTranslation } from "react-i18next";
 
 import Loader from "../Loader/Loader";
 import Link from "next/link";
@@ -25,8 +26,10 @@ import {
   Globe,
 } from "lucide-react";
 import CreateStoreModal from "./CreateStoreModal";
+import { Input } from "../ui/input";
 
 const Inventario: React.FC = () => {
+  const { t } = useTranslation("global");
   const [store, setStore] = useState<IStore[]>([]);
   const [isCreateStoreOpen, setIsCreateStoreOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,13 +66,13 @@ const Inventario: React.FC = () => {
 
   const handleLogout = async () => {
     const result = await Swal.fire({
-      title: "¿Estás seguro que quieres cerrar sesión?",
+      title: t("inventory.logoutConfirmTitle"),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Sí, cerrar sesión",
-      cancelButtonText: "Cancelar",
+      confirmButtonText: t("inventory.logoutConfirmButton"),
+      cancelButtonText: t("inventory.cancel"),
     });
 
     if (result.isConfirmed) {
@@ -88,19 +91,28 @@ const Inventario: React.FC = () => {
       !changePasswordData.newPassword ||
       !changePasswordData.confirmPassword
     ) {
-      Swal.fire("Error", "Todos los campos son obligatorios", "error");
+      Swal.fire(
+        t("inventory.reportErrorTitle"),
+        t("inventory.requiredFields"),
+        "error"
+      );
       return;
     }
     if (changePasswordData.newPassword !== changePasswordData.confirmPassword) {
-      Swal.fire("Error", "Las contraseñas no coinciden", "error");
+      Swal.fire(
+        t("inventory.reportErrorTitle"),
+        t("inventory.passwordsMismatch"),
+        "error"
+      );
       return;
     }
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,15}$/;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,15}$/;
     if (!passwordRegex.test(changePasswordData.newPassword)) {
       Swal.fire(
-        "Error",
-        "La contraseña debe tener entre 8-15 caracteres, mayúscula, minúscula, número y especial",
+        t("inventory.reportErrorTitle"),
+        t("inventory.passwordInvalid"),
         "error"
       );
       return;
@@ -122,10 +134,16 @@ const Inventario: React.FC = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Error al cambiar contraseña");
+        throw new Error(
+          errorData.message || t("inventory.changePassError")
+        );
       }
 
-      Swal.fire("Éxito", "Contraseña actualizada correctamente", "success");
+      Swal.fire(
+        t("products.reportSuccessTitle"),
+        t("inventory.changePassSuccess"),
+        "success"
+      );
       setIsChangePasswordOpen(false);
       setChangePasswordData({
         oldPassword: "",
@@ -134,7 +152,7 @@ const Inventario: React.FC = () => {
       });
     } catch (error: any) {
       console.error(error);
-      Swal.fire("Error", error.message, "error");
+      Swal.fire(t("inventory.reportErrorTitle"), error.message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -142,7 +160,11 @@ const Inventario: React.FC = () => {
 
   const handleSaveProfile = async () => {
     if (!editFormData.name || !editFormData.email) {
-      Swal.fire("Error", "Todos los campos son obligatorios", "error");
+      Swal.fire(
+        t("inventory.reportErrorTitle"),
+        t("inventory.requiredFields"),
+        "error"
+      );
       return;
     }
 
@@ -160,7 +182,7 @@ const Inventario: React.FC = () => {
         }),
       });
 
-      if (!response.ok) throw new Error("Error al actualizar perfil");
+      if (!response.ok) throw new Error(t("inventory.updateProfileError"));
 
       const updatedUser = await response.json();
 
@@ -181,10 +203,18 @@ const Inventario: React.FC = () => {
       );
 
       setIsEditing(false);
-      Swal.fire("Éxito", "Perfil actualizado correctamente", "success");
+      Swal.fire(
+        t("products.reportSuccessTitle"),
+        t("inventory.updateProfileSuccess"),
+        "success"
+      );
     } catch (error) {
       console.error(error);
-      Swal.fire("Error", "No se pudo actualizar el perfil", "error");
+      Swal.fire(
+        t("inventory.reportErrorTitle"),
+        t("inventory.updateProfileError"),
+        "error"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -219,7 +249,7 @@ const Inventario: React.FC = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Error al subir la imagen");
+        throw new Error(t("inventory.uploadImageError"));
       }
 
       const data = await response.json();
@@ -237,7 +267,7 @@ const Inventario: React.FC = () => {
       }
       window.location.reload();
     } catch (error: any) {
-      setError(error.message || "Hubo un error al cargar la imagen");
+      setError(error.message || t("inventory.uploadImageGenericError"));
     } finally {
       setIsLoading(false);
     }
@@ -254,14 +284,14 @@ const Inventario: React.FC = () => {
     storeId: string
   ) => {
     const confirmed = await Swal.fire({
-      title: "¿Estás seguro que desea eliminar la bodega?",
-      text: "No podrás deshacer esta acción.",
+      title: t("inventory.deleteStoreTitle"),
+      text: t("inventory.deleteStoreDesc"),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
+      confirmButtonText: t("inventory.confirmDelete"),
+      cancelButtonText: t("inventory.cancel"),
     });
 
     if (confirmed.isConfirmed) {
@@ -281,16 +311,23 @@ const Inventario: React.FC = () => {
           setStore((prevStore) =>
             prevStore.filter((bodega) => bodega.id !== storeId)
           );
-          Swal.fire("Eliminado", "La bodega ha sido eliminada.", "success");
+          Swal.fire(
+            t("inventory.delete"),
+            t("inventory.storeDeleted"),
+            "success"
+          );
         } else {
           Swal.fire(
-            "Error",
-            "No puedes eliminar esta bodega, por que tiene productos. Vacia la bodega",
+            t("inventory.reportErrorTitle"),
+            t("inventory.deleteError"),
             "error"
           );
         }
       } catch (error) {
-        Swal.fire("Error", "Ocurrió un error al eliminar la bodega.");
+        Swal.fire(
+          t("inventory.reportErrorTitle"),
+          t("inventory.deleteErrorGeneric")
+        );
       } finally {
         setLoading(false);
       }
@@ -302,7 +339,7 @@ const Inventario: React.FC = () => {
       localStorage.getItem("Categorias") || "[]"
     );
     const category = categoriesFromStorage.find((cat) => cat.id === categoryId);
-    return category ? category.name : "Categoría no encontrada";
+    return category ? category.name : t("inventory.categoryNotFound");
   };
 
   // FUNCION POR PETICION0ES CRUD
@@ -400,14 +437,14 @@ const Inventario: React.FC = () => {
       {/* Header con Menú Hamburguesa */}
       <div className="flex justify-between items-center mb-8 gap-4">
         <h2 className="text-2xl font-bold text-gray-800">
-          Gestión de Inventario
+          {t("inventory.title")}
         </h2>
         <div className="flex items-center gap-4">
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-sm transition-colors font-medium flex items-center gap-2"
             onClick={handleNavigateToCreateStore}
           >
-            <span>+</span> Crear Bodega
+            <span>+</span> {t("inventory.createStore")}
           </button>
         </div>
       </div>
@@ -449,9 +486,9 @@ const Inventario: React.FC = () => {
                   as="h3"
                   className="text-lg font-medium leading-6 text-gray-900 mb-4"
                 >
-                  Perfil de Usuario
+                  {t("inventory.profileTitle")}
                 </Dialog.Title>
-                
+
                 <div className="flex flex-col items-center gap-4">
                   {/* Avatar Section */}
                   <div className="relative group shrink-0">
@@ -473,7 +510,7 @@ const Inventario: React.FC = () => {
                     <button
                       onClick={handlePencilClick}
                       className="absolute bottom-1 right-1 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg transition-colors z-10"
-                      title="Cambiar foto de perfil"
+                      title={t("inventory.changeProfilePic")}
                     >
                       <FaPencilAlt size={14} />
                     </button>
@@ -491,7 +528,7 @@ const Inventario: React.FC = () => {
                     <div className="w-full space-y-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700">
-                          Nombre
+                          {t("inventory.name")}
                         </label>
                         <input
                           type="text"
@@ -507,7 +544,7 @@ const Inventario: React.FC = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700">
-                          Email
+                          {t("inventory.email")}
                         </label>
                         <input
                           type="email"
@@ -526,14 +563,16 @@ const Inventario: React.FC = () => {
                           onClick={handleCancelEdit}
                           className="px-3 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm"
                         >
-                          Cancelar
+                          {t("inventory.cancel")}
                         </button>
                         <button
                           onClick={handleSaveProfile}
                           disabled={isLoading}
                           className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
                         >
-                          {isLoading ? "Guardando..." : "Guardar"}
+                          {isLoading
+                            ? t("inventory.saving")
+                            : t("inventory.save")}
                         </button>
                       </div>
                     </div>
@@ -566,13 +605,13 @@ const Inventario: React.FC = () => {
                             onClick={handleEditClick}
                             className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
                           >
-                            Editar Perfil
+                            {t("inventory.editProfile")}
                           </button>
                           <button
                             onClick={() => setIsChangePasswordOpen(true)}
                             className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
                           >
-                            Cambiar Contraseña
+                            {t("inventory.changePassword")}
                           </button>
                         </div>
                       )}
@@ -589,7 +628,9 @@ const Inventario: React.FC = () => {
                               disabled={isLoading}
                               className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md shadow-sm transition-colors"
                             >
-                              {isLoading ? "Subiendo..." : "Confirmar Cambio"}
+                              {isLoading
+                                ? t("inventory.uploading")
+                                : t("inventory.confirmChange")}
                             </button>
                             <button
                               onClick={() => setFile(null)}
@@ -611,7 +652,7 @@ const Inventario: React.FC = () => {
                           className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                           onClick={() => setIsProfileOpen(false)}
                           >
-                          Cerrar
+                          {t("inventory.close")}
                           </button>
                       </div>
                     </>
@@ -659,15 +700,15 @@ const Inventario: React.FC = () => {
                   as="h3"
                   className="text-lg font-medium leading-6 text-gray-900 mb-4"
                 >
-                  Cambiar Contraseña
+                  {t("inventory.changePassword")}
                 </Dialog.Title>
 
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
-                      Contraseña Actual
+                      {t("inventory.currentPassword")}
                     </label>
-                    <input
+                    <Input
                       type="password"
                       value={changePasswordData.oldPassword}
                       onChange={(e) =>
@@ -681,9 +722,9 @@ const Inventario: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
-                      Nueva Contraseña
+                      {t("inventory.newPassword")}
                     </label>
-                    <input
+                    <Input
                       type="password"
                       value={changePasswordData.newPassword}
                       onChange={(e) =>
@@ -695,15 +736,14 @@ const Inventario: React.FC = () => {
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Mínimo 8 caracteres, mayúscula, minúscula, número y
-                      caracter especial.
+                      {t("inventory.passwordRequirements")}
                     </p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
-                      Confirmar Nueva Contraseña
+                      {t("inventory.confirmNewPassword")}
                     </label>
-                    <input
+                    <Input
                       type="password"
                       value={changePasswordData.confirmPassword}
                       onChange={(e) =>
@@ -723,7 +763,7 @@ const Inventario: React.FC = () => {
                     className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
                     onClick={() => setIsChangePasswordOpen(false)}
                   >
-                    Cancelar
+                    {t("inventory.cancel")}
                   </button>
                   <button
                     type="button"
@@ -731,7 +771,9 @@ const Inventario: React.FC = () => {
                     onClick={handleChangePassword}
                     disabled={isLoading}
                   >
-                    {isLoading ? "Guardando..." : "Guardar"}
+                    {isLoading
+                      ? t("inventory.saving")
+                      : t("inventory.save")}
                   </button>
                 </div>
               </Dialog.Panel>
@@ -748,7 +790,7 @@ const Inventario: React.FC = () => {
         </div>
         <input
           type="text"
-          placeholder="Buscar bodegas por nombre o categoría..."
+          placeholder={t("inventory.searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
@@ -758,24 +800,28 @@ const Inventario: React.FC = () => {
       {/* Stores Grid */}
       {loading ? (
         <div className="flex justify-center py-12">
-           <Loader message="Cargando bodegas..." />
+          <Loader message={t("inventory.loading")} />
         </div>
       ) : (
         <>
-           {(() => {
-             const displayStores = searchQuery === "" ? store : filteredStores;
-             
-             if (displayStores.length === 0) {
-               return (
-                 <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100">
-                   <div className="text-gray-400 mb-3 text-5xl">📦</div>
-                   <h3 className="text-lg font-medium text-gray-900">No se encontraron bodegas</h3>
-                   <p className="text-gray-500">
-                     {searchQuery ? "Intenta con otra búsqueda." : "Comienza creando tu primera bodega."}
-                   </p>
-                 </div>
-               );
-             }
+          {(() => {
+            const displayStores = searchQuery === "" ? store : filteredStores;
+
+            if (displayStores.length === 0) {
+              return (
+                <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100">
+                  <div className="text-gray-400 mb-3 text-5xl">📦</div>
+                  <h3 className="text-lg font-medium text-gray-900">
+                    {t("inventory.noStoresTitle")}
+                  </h3>
+                  <p className="text-gray-500">
+                    {searchQuery
+                      ? t("inventory.noStoresDesc")
+                      : t("inventory.noStoresEmpty")}
+                  </p>
+                </div>
+              );
+            }
 
              return (
                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -814,7 +860,7 @@ const Inventario: React.FC = () => {
                                          onClick={(e) => handleNavigateToEditStore(e, bodega.id)}
                                          disabled={!userData?.isAdmin}
                                        >
-                                          Modificar
+                                          {t("inventory.modify")}
                                        </button>
                                      )}
                                    </Menu.Item>
@@ -825,7 +871,7 @@ const Inventario: React.FC = () => {
                                             className={`${active ? "bg-red-50 text-red-700" : "text-red-600"} flex w-full items-center rounded-md px-2 py-2 text-sm`}
                                             onClick={(e) => handleDeleteStore(e, bodega.id)}
                                           >
-                                            Eliminar
+                                            {t("inventory.delete")}
                                           </button>
                                         )}
                                       </Menu.Item>
@@ -842,7 +888,7 @@ const Inventario: React.FC = () => {
                            onClick={(e) => handleNavigateToStorePage(e, bodega.id)}
                            className="text-sm font-medium text-blue-600 hover:text-blue-800 w-full text-left"
                         >
-                          Ver inventario →
+                          {t("inventory.viewInventory")} →
                         </button>
                      </div>
                    </div>
