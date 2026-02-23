@@ -5,7 +5,6 @@ import { FaPencilAlt } from "react-icons/fa";
 import { useAppContext } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import { useAuth0 } from "@auth0/auth0-react";
 import { Menu, Transition } from "@headlessui/react";
 import { BiDotsHorizontal } from "react-icons/bi";
 import Loader from "../Loader/Loader";
@@ -17,7 +16,6 @@ const Inventario: React.FC = () => {
   const { userData, setUserData } = useAppContext();
   const [profileImage, setProfileImage] = useState(userData?.igmUrl);
 
-  const { user, isAuthenticated } = useAuth0();
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
   const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
@@ -169,8 +167,8 @@ const Inventario: React.FC = () => {
   // FUNCION POR PETICION0ES CRUD
   useEffect(() => {
     const fetchStores = async () => {
-      if (userData || isAuthenticated) {
-        const userId = userData ? userData.id : user?.sub;
+      if (userData) {
+        const userId = userData?.id;
 
         try {
           const response = await fetch(`${kazuo_back}/store/user/${userId}`);
@@ -236,7 +234,7 @@ const Inventario: React.FC = () => {
   }, []);
 
   const handleNavigateToCreateStore = () => {
-    if (userData || isAuthenticated) {
+    if (userData) {
       router.push("/storeform");
     } else {
       router.push("/login");
@@ -247,7 +245,7 @@ const Inventario: React.FC = () => {
     event: React.MouseEvent<HTMLButtonElement>,
     storeId: string
   ) => {
-    if (userData || isAuthenticated) {
+    if (userData) {
       router.push(`/storeform/${storeId}`);
     } else {
       router.push("/login");
@@ -258,7 +256,7 @@ const Inventario: React.FC = () => {
     event: React.MouseEvent<HTMLButtonElement>,
     storeId: string
   ) => {
-    if (userData || isAuthenticated) {
+    if (userData) {
       router.push(`/Products/${storeId}`);
     } else {
       router.push("/login");
@@ -275,12 +273,6 @@ const Inventario: React.FC = () => {
             {profileImage ? (
               <img
                 src={profileImage}
-                alt="Profile"
-                className="object-cover w-full h-full"
-              />
-            ) : user?.picture ? (
-              <img
-                src={user.picture}
                 alt="Profile"
                 className="object-cover w-full h-full"
               />
@@ -306,11 +298,11 @@ const Inventario: React.FC = () => {
 
         <p>
           <strong>Nombre: </strong>
-          {isAuthenticated ? user?.name : userData?.name}
+          {userData?.name}
         </p>
         <p>
           <strong>Email: </strong>
-          {isAuthenticated ? user?.email : userData?.email}
+          {userData?.email}
         </p>
         <p>
           <strong>Plan:</strong> Spot-On Pro

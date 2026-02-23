@@ -1,7 +1,6 @@
 "use client";
 
 import { IEditStoreProps, IProduct } from "@/interfaces/types";
-import { useAuth0 } from "@auth0/auth0-react";
 
 import { useEffect, useState, useRef, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
@@ -24,7 +23,6 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
   const { t } = useTranslation("global");
   const router = useRouter();
   const { userData } = useAppContext();
-  const { user, isAuthenticated } = useAuth0();
 
   const [activeTab, setActiveTab] = useState("stock");
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -223,7 +221,7 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
   };
 
   const handleNavigateToProductPage = (productId: string) => {
-    if (userData || isAuthenticated) {
+    if (userData) {
       router.push(`/Products/${storeId}/${productId}`);
     } else {
       router.push("/login");

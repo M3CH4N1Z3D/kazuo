@@ -5,7 +5,6 @@ import { FaPencilAlt, FaTimes } from "react-icons/fa";
 import { useAppContext } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import { useAuth0 } from "@auth0/auth0-react";
 import { Menu, Transition, Dialog } from "@headlessui/react";
 import { BiDotsHorizontal, BiSearch, BiMenu } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
@@ -35,7 +34,6 @@ const Inventario: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { userData, setUserData, logout } = useAppContext();
-  const { user, isAuthenticated } = useAuth0();
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
   const [file, setFile] = useState<File | null>(null);
@@ -344,9 +342,7 @@ const Inventario: React.FC = () => {
 
   // FUNCION POR PETICION0ES CRUD
   const fetchStores = async () => {
-    if (userData || isAuthenticated) {
-      const userId = userData ? userData.id : user?.sub;
-
+    if (userData) {
       if (!userData?.company) return;
 
       try {
@@ -373,7 +369,7 @@ const Inventario: React.FC = () => {
 
   useEffect(() => {
     fetchStores();
-  }, [userData, isAuthenticated]);
+  }, [userData]);
 
   const filteredStores = Array.isArray(store)
     ? store.filter(
@@ -403,7 +399,7 @@ const Inventario: React.FC = () => {
   }, []);
 
   const handleNavigateToCreateStore = () => {
-    if (userData || isAuthenticated) {
+    if (userData) {
       setIsCreateStoreOpen(true);
     } else {
       router.push("/login");
@@ -414,7 +410,7 @@ const Inventario: React.FC = () => {
     event: React.MouseEvent<HTMLButtonElement>,
     storeId: string
   ) => {
-    if (userData || isAuthenticated) {
+    if (userData) {
       router.push(`/storeform/${storeId}`);
     } else {
       router.push("/login");
@@ -425,7 +421,7 @@ const Inventario: React.FC = () => {
     event: React.MouseEvent<HTMLButtonElement>,
     storeId: string
   ) => {
-    if (userData || isAuthenticated) {
+    if (userData) {
       router.push(`/Products/${storeId}`);
     } else {
       router.push("/login");
@@ -501,9 +497,7 @@ const Inventario: React.FC = () => {
                         />
                       ) : (
                         <span className="text-4xl text-gray-400 font-bold">
-                          {(isAuthenticated ? user?.name : userData?.name)
-                            ?.charAt(0)
-                            .toUpperCase()}
+                          {userData?.name?.charAt(0).toUpperCase()}
                         </span>
                       )}
                     </div>
@@ -580,10 +574,10 @@ const Inventario: React.FC = () => {
                     <>
                       <div className="text-center space-y-2">
                         <h2 className="text-2xl font-bold text-gray-800">
-                          {isAuthenticated ? user?.name : userData?.name}
+                          {userData?.name}
                         </h2>
                         <p className="text-gray-500 font-medium">
-                          {isAuthenticated ? user?.email : userData?.email}
+                          {userData?.email}
                         </p>
 
                         <div className="flex justify-center">
@@ -599,22 +593,20 @@ const Inventario: React.FC = () => {
                         </div>
                       </div>
                       
-                      {!isAuthenticated && (
-                        <div className="flex flex-col items-center gap-2 mt-2">
-                          <button
-                            onClick={handleEditClick}
-                            className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                          >
-                            {t("inventory.editProfile")}
-                          </button>
-                          <button
-                            onClick={() => setIsChangePasswordOpen(true)}
-                            className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                          >
-                            {t("inventory.changePassword")}
-                          </button>
-                        </div>
-                      )}
+                      <div className="flex flex-col items-center gap-2 mt-2">
+                        <button
+                          onClick={handleEditClick}
+                          className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                        >
+                          {t("inventory.editProfile")}
+                        </button>
+                        <button
+                          onClick={() => setIsChangePasswordOpen(true)}
+                          className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                        >
+                          {t("inventory.changePassword")}
+                        </button>
+                      </div>
 
                       {/* Upload Confirmation */}
                       {file && (

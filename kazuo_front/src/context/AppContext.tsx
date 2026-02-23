@@ -3,7 +3,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { userData } from "@/interfaces/types";
 import { AppContextType } from "@/interfaces/types";
-import { useAuth0 } from "@auth0/auth0-react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -11,13 +10,6 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const {
-    logout: logoutAuth0,
-    user,
-    isAuthenticated,
-    getAccessTokenSilently,
-  } = useAuth0();
-
   const [isLoggedIn, setIsLoggedIn] = useLocalStorage<boolean>(
     "isLoggedIn",
     false
@@ -39,28 +31,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     console.log(
       `Estado de la sesión: ${isLoggedIn ? "Iniciada" : "No iniciada"}`
     );
-    if (isAuthenticated && user) {
-      const auth0Id = user.sub || "";
-      const newUserData: userData = {
-        id: "",
-        password: "", // Manejar según tus necesidades
-        company: user.email || "", // Usar el email o algún otro campo como compañía
-        token: "", // Establecer el token si lo tienes
-        email: user.email || "", // Asegúrate de incluir el email
-        name: user.name || "",
-        userId: "",
-        igmUrl: "",
-        auth0Id: auth0Id,
-      };
-
-      setIsLoggedIn(true);
-      setUserData(newUserData);
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("userData", JSON.stringify(newUserData));
-      localStorage.setItem("token", userData?.token!);
-      localStorage.setItem("igmUrl", userData?.igmUrl!);
-    }
-  }, [isAuthenticated, user]); // Incluido isAuthenticated y user
+  }, []);
 
   const login = async (loginData: any) => {
     try {
@@ -89,16 +60,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.removeItem("token");
     localStorage.removeItem("igmUrl");
     sessionStorage.removeItem("chatConversation");
-
-    // Cerrar sesión con Auth0
-    if (
-      process.env.NEXT_PUBLIC_AUTH0_DOMAIN &&
-      process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID
-    ) {
-      logoutAuth0({ logoutParams: { returnTo: window.location.origin } });
-    } else {
-      window.location.href = "/";
-    }
+    window.location.href = "/Login";
   };
 
   const value: AppContextType = {
