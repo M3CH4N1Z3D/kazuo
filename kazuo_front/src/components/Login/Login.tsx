@@ -195,7 +195,7 @@ const Login: React.FC = () => {
         <div className="absolute inset-0 bg-zinc-900 object-cover opacity-90">
           <img
             src="/assets/estadisticas.jpg"
-            alt="Kazuo Dashboard"
+            alt="Spot-On Dashboard"
             className="h-full w-full object-cover dark:brightness-[0.2] grayscale hover:grayscale-0 transition-all duration-700"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />

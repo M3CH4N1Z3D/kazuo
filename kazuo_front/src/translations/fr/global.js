@@ -44,7 +44,7 @@ export const French = {
     unexpectedError: "Erreur inattendue",
     googleLoginSuccess: "Connecté avec Google avec succès.",
     googleLoginError: "Impossible de se connecter avec Google. Veuillez réessayer.",
-    manageBusiness: "Gérez votre entreprise avec Kazuo",
+    manageBusiness: "Gérez votre entreprise avec Spot-On",
     platformDescription: "La plateforme complète pour le contrôle des stocks et la gestion d'entreprise.",
   },
   features: [
@@ -70,12 +70,12 @@ export const French = {
       {
         name: "Ana González",
         comment:
-          "Kazuo a transformé la façon dont nous gérons l'inventaire de notre magasin. Hautement recommandé !",
+          "Spot-On a transformé la façon dont nous gérons l'inventaire de notre magasin. Hautement recommandé !",
       },
       {
         name: "Luis Martínez",
         comment:
-          "L'efficacité de notre entreprise s'est remarquablement améliorée grâce à la plateforme intuitive de Kazuo.",
+          "L'efficacité de notre entreprise s'est remarquablement améliorée grâce à la plateforme intuitive de Spot-On.",
       },
     ],
   },
@@ -84,7 +84,7 @@ export const French = {
     privacy_policy: "Politique de Confidentialité",
     terms_of_service: "Conditions d'Utilisation",
     followUs: "Suivez-nous",
-    kazuo: "Kazuo",
+    kazuo: "Spot-On",
     solutions: "Solutions",
     resources: "Ressources",
     whoWeAre: "Qui sommes-nous",
@@ -93,19 +93,19 @@ export const French = {
     support: "Support",
     developers: "Développeurs",
     cookiesDisclaimer:
-      "En naviguant sur les sites Web appartenant à Kazuo, vous acceptez l'utilisation de cookies conformément à nos",
+      "En naviguant sur les sites Web appartenant à Spot-On, vous acceptez l'utilisation de cookies conformément à nos",
     termsConditions: "termes et conditions",
-    rightsReserved: "© 2024 Kazuo Project. Tous droits réservés.",
+    rightsReserved: "© 2024 Spot-On Project. Tous droits réservés.",
   },
   solutions: {
-    title: "Contrôle d'Inventaire Kazuo",
+    title: "Contrôle d'Inventaire Spot-On",
     description:
-      "Kazuo offre une solution complète de contrôle d'inventaire spécifiquement conçue pour les petites et moyennes entreprises. Optimisez la gestion de votre stock, réduisez les pertes et améliorez l'efficacité de votre entreprise avec nos outils intuitifs et puissants.",
+      "Spot-On offre une solution complète de contrôle d'inventaire spécifiquement conçue pour les petites et moyennes entreprises. Optimisez la gestion de votre stock, réduisez les pertes et améliorez l'efficacité de votre entreprise avec nos outils intuitifs et puissants.",
     optimize_inventory: "Prêt à optimiser votre inventaire ?",
     transform:
-      "Découvrez comment Kazuo peut transformer la gestion de votre inventaire et améliorer l'efficacité de votre entreprise.",
+      "Découvrez comment Spot-On peut transformer la gestion de votre inventaire et améliorer l'efficacité de votre entreprise.",
     cta_button: "Commencez votre essai gratuit",
-    why_choose_kazuo: "Pourquoi choisir Kazuo pour votre inventaire ?",
+    why_choose_kazuo: "Pourquoi choisir Spot-On pour votre inventaire ?",
     features_list: [
       {
         title: "Contrôle d'Inventaire",
@@ -353,7 +353,7 @@ export const French = {
   },
   contact: {
     title: "Contactez-nous",
-    connectTitle: "Connectez-vous avec Kazuo",
+    connectTitle: "Connectez-vous avec Spot-On",
     connectDesc:
       "Nous développons des solutions innovantes pour le contrôle des stocks. Nous serions ravis d'entendre vos idées et besoins.",
     communityTitle: "Communauté :",
@@ -383,10 +383,10 @@ export const French = {
     historyP2:
       "En approfondissant les besoins des PME, nous avons réalisé que nous pouvions offrir beaucoup plus. Nous avons élargi notre plateforme pour inclure des fonctionnalités de facturation électronique, de point de vente et d'analyse de données, devenant ainsi une solution complète pour la gestion d'entreprise.",
     historyP3:
-      "Aujourd'hui, Kazuo est le résultat de notre passion pour l'innovation et de notre engagement envers le succès des petites et moyennes entreprises. Nous continuons d'évoluer et d'améliorer nos solutions, toujours dans le but de donner aux entrepreneurs les moyens d'atteindre leur plein potentiel.",
+      "Aujourd'hui, Spot-On est le résultat de notre passion pour l'innovation et de notre engagement envers le succès des petites et moyennes entreprises. Nous continuons d'évoluer et d'améliorer nos solutions, toujours dans le but de donner aux entrepreneurs les moyens d'atteindre leur plein potentiel.",
     missionTitle: "Notre Mission",
     missionText:
-      "Chez Kazuo, notre mission est de fournir des solutions technologiques innovantes et accessibles qui permettent aux petites et moyennes entreprises d'optimiser leurs opérations, de prendre des décisions éclairées et de croître de manière durable. Nous nous efforçons d'être plus qu'un simple fournisseur de logiciels ; nous aspirons à être un partenaire stratégique dans la réussite de chaque entreprise qui nous fait confiance.",
+      "Chez Spot-On, notre mission est de fournir des solutions technologiques innovantes et accessibles qui permettent aux petites et moyennes entreprises d'optimiser leurs opérations, de prendre des décisions éclairées et de croître de manière durable. Nous nous efforçons d'être plus qu'un simple fournisseur de logiciels ; nous aspirons à être un partenaire stratégique dans la réussite de chaque entreprise qui nous fait confiance.",
     teamTitle: "Notre Équipe",
   },
   recoverPass: {

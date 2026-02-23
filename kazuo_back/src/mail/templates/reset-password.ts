@@ -5,7 +5,7 @@ export const resetPasswordTemplate = (name: string, url: string) => {
     const content = `
         <h1 class="title">${title}</h1>
         <p>Hola <strong>${name}</strong>,</p>
-        <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en Kazuo.</p>
+        <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en Spot-On.</p>
         
         <div class="info-box">
             <p style="margin: 0;">Para continuar con el proceso, haz clic en el siguiente botón. Este enlace expirará en 24 horas.</p>

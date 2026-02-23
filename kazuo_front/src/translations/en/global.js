@@ -44,7 +44,7 @@ export const English = {
     unexpectedError: "Unexpected error",
     googleLoginSuccess: "Successfully logged in with Google.",
     googleLoginError: "Could not login with Google. Please try again.",
-    manageBusiness: "Manage your business with Kazuo",
+    manageBusiness: "Manage your business with Spot-On",
     platformDescription: "The comprehensive platform for inventory control and business management.",
   },
   features: [
@@ -70,12 +70,12 @@ export const English = {
       {
         name: "Ana González",
         comment:
-          "Kazuo has transformed the way we manage our store inventory. Highly recommended!",
+          "Spot-On has transformed the way we manage our store inventory. Highly recommended!",
       },
       {
         name: "Luis Martínez",
         comment:
-          "Our business efficiency has improved remarkably thanks to Kazuo’s intuitive platform.",
+          "Our business efficiency has improved remarkably thanks to Spot-On’s intuitive platform.",
       },
     ],
   },
@@ -84,7 +84,7 @@ export const English = {
     privacy_policy: "Privacy Policy",
     terms_of_service: "Terms of Service",
     followUs: "Follow Us",
-    kazuo: "Kazuo",
+    kazuo: "Spot-On",
     solutions: "Solutions",
     resources: "Resources",
     whoWeAre: "Who We Are",
@@ -93,19 +93,19 @@ export const English = {
     support: "Support",
     developers: "Developers",
     cookiesDisclaimer:
-      "By browsing Kazuo owned websites, you accept the use of Cookies according to our",
+      "By browsing Spot-On owned websites, you accept the use of Cookies according to our",
     termsConditions: "terms and conditions",
-    rightsReserved: "© 2024 Kazuo Project. All rights reserved.",
+    rightsReserved: "© 2024 Spot-On Project. All rights reserved.",
   },
   solutions: {
-    title: "Kazuo Inventory Control",
+    title: "Spot-On Inventory Control",
     description:
-      "Kazuo offers a comprehensive inventory control solution specifically designed for small and medium-sized businesses. Optimize your stock management, reduce losses, and enhance your business efficiency with our intuitive and powerful tools.",
+      "Spot-On offers a comprehensive inventory control solution specifically designed for small and medium-sized businesses. Optimize your stock management, reduce losses, and enhance your business efficiency with our intuitive and powerful tools.",
     optimize_inventory: "Ready to optimize your inventory?",
     transform:
-      "Discover how Kazuo can transform your inventory management and improve your business efficiency.",
+      "Discover how Spot-On can transform your inventory management and improve your business efficiency.",
     cta_button: "Start your free trial",
-    why_choose_kazuo: "Why choose Kazuo for your inventory?",
+    why_choose_kazuo: "Why choose Spot-On for your inventory?",
     features_list: [
       {
         title: "Inventory Control",
@@ -347,7 +347,7 @@ export const English = {
   },
   contact: {
     title: "Contact Us",
-    connectTitle: "Connect with Kazuo",
+    connectTitle: "Connect with Spot-On",
     connectDesc:
       "We are developing innovative solutions for inventory control. We would love to hear your ideas and needs.",
     communityTitle: "Community:",
@@ -377,10 +377,10 @@ export const English = {
     historyP2:
       "As we delved deeper into the needs of SMEs, we realized we could offer much more. We expanded our platform to include electronic invoicing, point of sale, and data analytics functionalities, becoming a comprehensive solution for business management.",
     historyP3:
-      "Today, Kazuo is the result of our passion for innovation and our commitment to the success of small and medium-sized businesses. We continue to evolve and improve our solutions, always with the goal of empowering entrepreneurs and helping them reach their full potential.",
+      "Today, Spot-On is the result of our passion for innovation and our commitment to the success of small and medium-sized businesses. We continue to evolve and improve our solutions, always with the goal of empowering entrepreneurs and helping them reach their full potential.",
     missionTitle: "Our Mission",
     missionText:
-      "At Kazuo, our mission is to provide innovative and accessible technological solutions that enable small and medium-sized businesses to optimize their operations, make informed decisions, and grow sustainably. We strive to be more than just a software provider; we aspire to be a strategic partner in the success of every business that trusts us.",
+      "At Spot-On, our mission is to provide innovative and accessible technological solutions that enable small and medium-sized businesses to optimize their operations, make informed decisions, and grow sustainably. We strive to be more than just a software provider; we aspire to be a strategic partner in the success of every business that trusts us.",
     teamTitle: "Our Team",
   },
   recoverPass: {

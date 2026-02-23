@@ -1,7 +1,7 @@
 import { baseTemplate } from './base';
 
 export const welcomeTemplate = (name: string) => {
-    const title = "¡Bienvenido a Kazuo!";
+    const title = "¡Bienvenido a Spot-On!";
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     
     const content = `
@@ -11,7 +11,7 @@ export const welcomeTemplate = (name: string) => {
         <p>Hola <strong>${name}</strong>,</p>
         <p>Tu cuenta ha sido creada exitosamente. Ahora puedes comenzar a utilizar todos nuestros servicios para gestionar tu inventario y empresa de manera eficiente.</p>
         
-        <img src="${frontendUrl}/assets/estadisticas.jpg" alt="Bienvenido a Kazuo" class="hero-image" style="width: 100%; max-width: 400px; margin: 20px auto; display: block; border-radius: 8px;">
+        <img src="${frontendUrl}/assets/estadisticas.jpg" alt="Bienvenido a Spot-On" class="hero-image" style="width: 100%; max-width: 400px; margin: 20px auto; display: block; border-radius: 8px;">
 
         <div class="steps">
             <h2 style="margin-top: 0;">Próximos pasos</h2>

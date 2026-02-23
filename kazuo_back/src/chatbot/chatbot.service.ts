@@ -76,7 +76,7 @@ export class ChatBotService {
       const model = this.genAI.getGenerativeModel({
         model: 'gemini-2.5-pro',
         tools: tools,
-        systemInstruction: `You are a helpful virtual assistant for the Kazuo inventory management system. You must respond in ${selectedLanguage}. be concise and direct.`,
+        systemInstruction: `You are a helpful virtual assistant for the Spot-On inventory management system. You must respond in ${selectedLanguage}. be concise and direct.`,
       });
 
       // 3. Iniciar el chat con el historial proporcionado

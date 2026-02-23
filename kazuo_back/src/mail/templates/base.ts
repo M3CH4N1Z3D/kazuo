@@ -194,7 +194,7 @@ export const baseTemplate = (title: string, content: string) => {
     <body>
         <div class="container">
             <div class="header">
-                <img src="${frontendUrl}/images/icons/icon-128x128.png" alt="Kazuo" class="logo">
+                <img src="${frontendUrl}/images/icons/icon-128x128.png" alt="Spot-On" class="logo">
             </div>
             
             <div class="content">
@@ -202,8 +202,8 @@ export const baseTemplate = (title: string, content: string) => {
             </div>
             
             <div class="footer">
-                <p>© ${new Date().getFullYear()} Kazuo. Todos los derechos reservados.</p>
-                <p>Si tienes alguna pregunta, contáctanos en <a href="mailto:soporte@kazuo.com" style="color: #2563EB; text-decoration: none;">soporte@kazuo.com</a></p>
+                <p>© ${new Date().getFullYear()} Spot-On. Todos los derechos reservados.</p>
+                <p>Si tienes alguna pregunta, contáctanos en <a href="mailto:soporte@spot-on.com" style="color: #2563EB; text-decoration: none;">soporte@spot-on.com</a></p>
                 <p><small>Este es un mensaje automático, por favor no respondas.</small></p>
             </div>
         </div>

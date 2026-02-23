@@ -594,7 +594,7 @@ const Inventario: React.FC = () => {
                                 : "bg-gray-100 text-gray-600"
                             }`}
                           >
-                            Plan: {userData?.isAdmin ? "Kazuo Pro" : "Free"}
+                            Plan: {userData?.isAdmin ? "Spot-On Pro" : "Free"}
                           </span>
                         </div>
                       </div>

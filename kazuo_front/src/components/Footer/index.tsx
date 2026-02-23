@@ -140,7 +140,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Secciones adicionales de Kazuo, Soluciones y Recursos */}
+        {/* Secciones adicionales de Spot-On, Soluciones y Recursos */}
         <div>
           <h3 className="font-bold text-lg mb-4">{t("footer.kazuo")}</h3>
           <ul className="space-y-2">

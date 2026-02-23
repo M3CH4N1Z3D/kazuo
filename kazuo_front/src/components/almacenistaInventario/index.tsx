@@ -313,7 +313,7 @@ const Inventario: React.FC = () => {
           {isAuthenticated ? user?.email : userData?.email}
         </p>
         <p>
-          <strong>Plan:</strong> Kazuo Pro
+          <strong>Plan:</strong> Spot-On Pro
         </p>
       </div>
 

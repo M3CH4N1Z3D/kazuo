@@ -1,6 +1,6 @@
-# Sistema de Diseño - Kazuo
+# Sistema de Diseño - Spot-On
 
-Este documento define las directrices visuales y técnicas para la interfaz de usuario de Kazuo, asegurando consistencia, accesibilidad y una estética moderna y profesional.
+Este documento define las directrices visuales y técnicas para la interfaz de usuario de Spot-On, asegurando consistencia, accesibilidad y una estética moderna y profesional.
 
 ## 1. Colores
 
@@ -55,7 +55,7 @@ Fuente base: **Inter** (ya configurada en `layout.tsx`).
 Utilizamos la escala de Tailwind (rem based).
 
 ### Radius (Bordes)
-Para un look moderno y amigable ("Kazuo" sugiere armonía).
+Para un look moderno y amigable ("Spot-On" sugiere armonía).
 - **Small:** `0.375rem` (6px) - Inputs, Botones internos, Badges.
 - **Medium:** `0.5rem` (8px) - Tarjetas de contenido denso, Botones estándar.
 - **Large:** `1rem` (16px) - Contenedores principales, Modales.
@@ -71,7 +71,7 @@ Para un look moderno y amigable ("Kazuo" sugiere armonía).
 ## 4. Componentes Base (Átomos)
 
 ### Botones (`Button`)
-Estandarización basada en Shadcn UI pero con branding Kazuo.
+Estandarización basada en Shadcn UI pero con branding Spot-On.
 
 *   **Variant Default (Primary):**
     *   Bg: `blue-600` -> Hover: `blue-700`

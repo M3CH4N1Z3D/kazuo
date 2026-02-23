@@ -1,7 +1,7 @@
 import { baseTemplate } from './base';
 
 export const invitationTemplate = (link: string) => {
-    const title = "Invitación a Kazuo";
+    const title = "Invitación a Spot-On";
     const content = `
         <h1 class="title">${title}</h1>
         

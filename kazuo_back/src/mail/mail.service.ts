@@ -27,7 +27,7 @@ export class MailService {
   async sendMail(to: string, subject: string, text: string, html?: string, attachments?: any[]) {
     try {
       const info = await this.transporter.sendMail({
-        from: `"Kazuo" <${process.env.EMAIL_USER}>`,
+        from: `"Spot-On" <${process.env.EMAIL_USER}>`,
         to,
         subject,
         text,
@@ -44,7 +44,7 @@ export class MailService {
 
   async sendWelcome(email: string, name: string) {
     const html = welcomeTemplate(name);
-    return this.sendMail(email, 'Bienvenido a Kazuo', 'Bienvenido a Kazuo', html);
+    return this.sendMail(email, 'Bienvenido a Spot-On', 'Bienvenido a Spot-On', html);
   }
 
   async sendPasswordReset(email: string, name: string, token: string) {
@@ -61,7 +61,7 @@ export class MailService {
 
   async sendCompanyInvitation(email: string, link: string) {
     const html = invitationTemplate(link);
-    return this.sendMail(email, 'Invitación a Kazuo', 'Has sido invitado a Kazuo', html);
+    return this.sendMail(email, 'Invitación a Spot-On', 'Has sido invitado a Spot-On', html);
   }
 
   async sendCompanyUserAdded(email: string, userName: string, companyName: string) {

@@ -51,7 +51,7 @@ async function bootstrap() {
   await categoriesSeed.seed();
 
   const options = new DocumentBuilder()
-    .setTitle('Kazuo')
+    .setTitle('Spot-On')
     .setDescription('Proyecto Integrador')
     .setVersion('1.0')
     .addBearerAuth()

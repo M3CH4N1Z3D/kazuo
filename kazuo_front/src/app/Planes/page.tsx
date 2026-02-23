@@ -13,7 +13,7 @@ function planes() {
             Potencia tu negocio con más supervelocidad
           </h2>
           <p className="text-gray-300 font-light w-full lg:w-96 mb-6 mt-2">
-            Con Kazuo tienes todas las herramientas para automatizar cada
+            Con Spot-On tienes todas las herramientas para automatizar cada
             proceso empresarial. Fácil, rápido y siempre en la nube.
           </p>
           <div className="flex flex-col lg:flex-row items-center lg:items-baseline w-full bg-gradient-to-r from-green-600 to-green-800 text-white py-4 px-6 rounded-xl text-center lg:text-left font-semibold shadow-md">

@@ -1,6 +1,6 @@
-# Plan de Mejora UX/UI - Kazuo Front
+# Plan de Mejora UX/UI - Spot-On Front
 
-Este plan detalla las acciones estratégicas para elevar la calidad visual y la experiencia de usuario de la aplicación Kazuo, transformándola de un prototipo funcional a un producto profesional pulido.
+Este plan detalla las acciones estratégicas para elevar la calidad visual y la experiencia de usuario de la aplicación Spot-On, transformándola de un prototipo funcional a un producto profesional pulido.
 
 ## Fase 1: Fundamentos y Limpieza Visual (Quick Wins)
 
