@@ -3,11 +3,12 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { IProduct, IStore, IUpdateProduct } from "@/interfaces/types";
 import { useAppContext } from "@/context/AppContext";
-import Swal from "sweetalert2";
+import { useAlert } from "@/context/AlertContext";
 import { useTranslation } from "react-i18next";
 
 const EditProductForm: React.FC<{ productId: string }> = ({ productId }) => {
   const [t] = useTranslation("global");
+  const { showAlert } = useAlert();
   const [product, setProduct] = useState<IProduct | null>(null);
   const [formValues, setFormValues] = useState<Partial<IUpdateProduct>>({});
   const [stores, setStores] = useState<IStore[]>([]);
@@ -110,7 +111,11 @@ const EditProductForm: React.FC<{ productId: string }> = ({ productId }) => {
 
     if (Object.keys(changedValues).length === 1) {
       // Solo contiene el id
-      alert(t("productForm.noChanges"));
+      showAlert({
+        title: t("productForm.alerts.noChangesTitle") || "Atención",
+        message: t("productForm.noChanges"),
+        variant: "info",
+      });
       return;
     }
 
@@ -125,23 +130,28 @@ const EditProductForm: React.FC<{ productId: string }> = ({ productId }) => {
       });
 
       if (response.ok) {
-        Swal.fire({
+        showAlert({
           title: t("productForm.alerts.updatedTitle"),
-          icon: "success",
-          confirmButtonText: t("products.accept"),
+          variant: "success",
+          confirmText: t("products.accept"),
+          message: "",
         });
         router.push(`/Products/${selectedStore}`);
       } else {
-        Swal.fire({
+        showAlert({
           title: t("productForm.alerts.updateError"),
-          icon: "error",
-          confirmButtonText: t("products.accept"),
+          variant: "danger",
+          confirmText: t("products.accept"),
+          message: "",
         });
-        alert(t("productForm.alerts.updateError"));
       }
     } catch (error) {
       console.error("Error:", error);
-      alert(t("productForm.alerts.serverError"));
+      showAlert({
+        title: t("productForm.alerts.serverError"),
+        variant: "danger",
+        message: "",
+      });
     }
   };
 

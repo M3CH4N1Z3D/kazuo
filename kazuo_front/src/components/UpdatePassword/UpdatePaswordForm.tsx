@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { IUpdatePassProps, TUpdatePassError } from "@/interfaces/types";
 import { validateUpdatePass } from "@/helpers/validate";
-import Swal from "sweetalert2";
+import { useAlert } from "@/context/AlertContext";
 // import { register } from "@/helpers/auth.helper";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -28,6 +28,8 @@ const UpdatePassForm = () => {
     newPassword: false,
     confirmNewPass: false,
   });
+
+  const { showAlert } = useAlert();
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const { name } = event.target;
@@ -72,11 +74,11 @@ const UpdatePassForm = () => {
           body: JSON.stringify(dataUpdatedPass),
         });
         if (response.ok) {
-          Swal.fire({
+          showAlert({
             title: "¡Contraseña actualizada correctamente!",
-            text: "Ahora puedes iniciar sesión con tu nueva contraseña.",
-            icon: "success",
-            confirmButtonText: "Aceptar",
+            message: "Ahora puedes iniciar sesión con tu nueva contraseña.",
+            variant: "success",
+            confirmText: "Aceptar",
           });
           setDataUpdatedPass(initialState);
           setTouched({
@@ -90,11 +92,11 @@ const UpdatePassForm = () => {
           throw new Error("Respuesta no exitosa del servidor");
         }
       } catch (error) {
-        Swal.fire({
+        showAlert({
           title: "Error al hacer tu registro",
-          text: "Inténtalo nuevamente",
-          icon: "error",
-          confirmButtonText: "Aceptar",
+          message: "Inténtalo nuevamente",
+          variant: "danger",
+          confirmText: "Aceptar",
         });
       }
     }

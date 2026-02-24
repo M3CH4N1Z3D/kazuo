@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Swal from "sweetalert2";
+import { useAlert } from "@/context/AlertContext";
 import { validateDataForm } from "@/helpers/validate";
 import { IFormData, IFormErrors } from "@/interfaces/types";
 import Loader from "../Loader/Loader";
@@ -17,6 +17,7 @@ const CompanyRegistrationForm: React.FC<CompanyRegistrationFormProps> = ({
 }) => {
   const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
   const { userData, setUserData, logout } = useAppContext();
+  const { showAlert } = useAlert();
 
   const token = userData?.token;
 
@@ -123,11 +124,11 @@ const CompanyRegistrationForm: React.FC<CompanyRegistrationFormProps> = ({
         console.log(token);
 
         if (response.status === 401) {
-          Swal.fire({
+          showAlert({
             title: "Sesión expirada",
-            text: "Su sesión ha expirado. Por favor inicie sesión nuevamente.",
-            icon: "warning",
-            confirmButtonText: "Aceptar",
+            message: "Su sesión ha expirado. Por favor inicie sesión nuevamente.",
+            variant: "warning",
+            confirmText: "Aceptar",
           }).then(() => {
             logout();
           });
@@ -146,11 +147,11 @@ const CompanyRegistrationForm: React.FC<CompanyRegistrationFormProps> = ({
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
           }
 
-          Swal.fire({
+          showAlert({
             title: "¡Te has registrado exitosamente!",
-            text: "Ya estas registrado.",
-            icon: "success",
-            confirmButtonText: "Aceptar",
+            message: "Ya estas registrado.",
+            variant: "success",
+            confirmText: "Aceptar",
           });
           if (onSuccess) {
             onSuccess();
@@ -162,11 +163,11 @@ const CompanyRegistrationForm: React.FC<CompanyRegistrationFormProps> = ({
           throw new Error(errorData.message || "Error al registrarse");
         }
       } catch (error: any) {
-        Swal.fire({
+        showAlert({
           title: "Error al hacer tu registro",
-          text: error.message || "Inténtalo de nuevo",
-          icon: "error",
-          confirmButtonText: "Aceptar",
+          message: error.message || "Inténtalo de nuevo",
+          variant: "danger",
+          confirmText: "Aceptar",
         });
       } finally {
         setLoading(false);

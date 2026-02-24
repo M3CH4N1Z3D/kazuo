@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { validateEmail } from "@/helpers/validate";
 import { useRouter } from "next/navigation";
-import Swal from "sweetalert2";
+import { useAlert } from "@/context/AlertContext";
 import { useTranslation } from "react-i18next";
 
 const RecoverPassForm = () => {
@@ -10,6 +10,7 @@ const RecoverPassForm = () => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const { showAlert } = useAlert();
 
   const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
 
@@ -32,24 +33,27 @@ const RecoverPassForm = () => {
         }
       );
       if (response.ok) {
-        Swal.fire({
+        showAlert({
           title: t("recoverPass.successTitle"),
-          text: t("recoverPass.successText"),
-          icon: "warning",
-          timer: 3000,
-          timerProgressBar: true,
-          showConfirmButton: false,
+          message: t("recoverPass.successText"),
+          variant: "warning",
+          // timer: 3000, // SpotOnAlert doesn't support timer yet, but okay to omit for now or implement later
+          // timerProgressBar: true,
+          showCancelButton: false,
+          confirmText: "OK", // Added explicit confirm text since we remove showConfirmButton: false logic which auto-closes
+        }).then(() => {
+             router.push("/Login");
         });
-        router.push("/Login");
+       
       } else {
         throw new Error("Error al enviar el correo");
       }
     } catch (error) {
-      Swal.fire({
+      showAlert({
         title: t("recoverPass.errorTitle"),
-        text: t("recoverPass.errorText"),
-        icon: "error",
-        confirmButtonText: t("company.alerts.accept"),
+        message: t("recoverPass.errorText"),
+        variant: "danger",
+        confirmText: t("company.alerts.accept"),
       });
     } finally {
       console.log({ email });

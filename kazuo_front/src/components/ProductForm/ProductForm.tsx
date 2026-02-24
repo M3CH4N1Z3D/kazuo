@@ -1,6 +1,6 @@
 "use client";
 import { useContext, useEffect, useState } from "react";
-import Swal from "sweetalert2";
+import { useAlert } from "@/context/AlertContext";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import {
@@ -18,6 +18,7 @@ import Loader1 from "../Loader/Loader1";
 
 const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, isModal }) => {
   const { t } = useTranslation("global");
+  const { showAlert } = useAlert();
   const { userData } = useAppContext();
   const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
@@ -136,11 +137,11 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
     const userData = localStorage.getItem("userData");
 
     if (!userData) {
-      Swal.fire({
+      showAlert({
         title: t("productForm.alerts.sessionErrorTitle"),
-        text: t("productForm.alerts.sessionErrorText"),
-        icon: "error",
-        confirmButtonText: t("products.accept"),
+        message: t("productForm.alerts.sessionErrorText"),
+        variant: "danger",
+        confirmText: t("products.accept"),
       });
       setLoadingTemplate(false);
       return;
@@ -150,11 +151,11 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
     const userToken = parsedUserDataToken?.token;
 
     if (!userToken) {
-      Swal.fire({
+      showAlert({
         title: t("productForm.alerts.sessionErrorTitle"),
-        text: t("productForm.alerts.tokenErrorText"),
-        icon: "error",
-        confirmButtonText: t("products.accept"),
+        message: t("productForm.alerts.tokenErrorText"),
+        variant: "danger",
+        confirmText: t("products.accept"),
       });
       setLoadingTemplate(false);
       return;
@@ -171,11 +172,11 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
       });
       console.log(userToken);
       if (response.ok) {
-        Swal.fire({
+        showAlert({
           title: t("productForm.alerts.productsAddedTitle"),
-          text: t("productForm.alerts.productsAddedText"),
-          icon: "success",
-          confirmButtonText: t("products.accept"),
+          message: t("productForm.alerts.productsAddedText"),
+          variant: "success",
+          confirmText: t("products.accept"),
         });
         if (onSuccess) {
           onSuccess();
@@ -189,11 +190,11 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
         );
       }
     } catch (error) {
-      Swal.fire({
+      showAlert({
         title: t("productForm.alerts.sessionErrorTitle"),
-        text: t("productForm.alerts.loadErrorText"),
-        icon: "error",
-        confirmButtonText: t("products.accept"),
+        message: t("productForm.alerts.loadErrorText"),
+        variant: "danger",
+        confirmText: t("products.accept"),
       });
     } finally {
       setLoadingTemplate(false);
@@ -286,11 +287,11 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
           console.log(`Datos de usuario: ${userToken}`);
 
           if (response.ok) {
-            Swal.fire({
+            showAlert({
               title: t("productForm.alerts.productCreatedTitle"),
-              text: t("productForm.alerts.productCreatedText"),
-              icon: "success",
-              confirmButtonText: t("products.accept"),
+              message: t("productForm.alerts.productCreatedText"),
+              variant: "success",
+              confirmText: t("products.accept"),
             });
             if (onSuccess) {
               onSuccess();
@@ -306,11 +307,11 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
           }
         }
       } catch (error) {
-        Swal.fire({
+        showAlert({
           title: t("productForm.alerts.sessionErrorTitle"),
-          text: t("productForm.alerts.credentialsErrorText"),
-          icon: "error",
-          confirmButtonText: t("products.accept"),
+          message: t("productForm.alerts.credentialsErrorText"),
+          variant: "danger",
+          confirmText: t("products.accept"),
         });
       } finally {
         setLoading(false);

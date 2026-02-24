@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { useRouter, usePathname } from "next/navigation";
-import Swal from "sweetalert2";
+import { useAlert } from "@/context/AlertContext";
 import LanguageSwitcher from "../LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import {
@@ -37,19 +37,18 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const { t } = useTranslation("global");
+  const { showAlert } = useAlert();
 
   const handleLogout = async () => {
     // Cerrar el menú si está abierto
     setIsMenuOpen(false);
 
-    const result = await Swal.fire({
+    const result = await showAlert({
       title: t("navbar.logoutConfirmTitle"),
-      icon: "warning",
+      variant: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: t("navbar.logoutConfirmButton"),
-      cancelButtonText: t("navbar.cancel"),
+      confirmText: t("navbar.logoutConfirmButton"),
+      cancelText: t("navbar.cancel"),
     });
 
     if (result.isConfirmed) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+import { useAlert } from "@/context/AlertContext";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { ICategory } from "@/interfaces/types";
@@ -10,6 +10,7 @@ import { useAppContext } from "@/context/AppContext";
 
 export const StoreForm = () => {
   const { t } = useTranslation("global");
+  const { showAlert } = useAlert();
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState<string>("");
@@ -68,22 +69,22 @@ export const StoreForm = () => {
       console.log(dataStore);
 
       if (response.ok) {
-        Swal.fire({
+        showAlert({
           title: t("storeForm.alerts.createdTitle"),
-          text: t("storeForm.alerts.createdText"),
-          icon: "success",
-          confirmButtonText: t("storeModal.accept"),
+          message: t("storeForm.alerts.createdText"),
+          variant: "success",
+          confirmText: t("storeModal.accept"),
         });
         router.push("/GestionInventario");
       } else {
         throw new Error(t("storeForm.alerts.creationFailed"));
       }
     } catch (error) {
-      Swal.fire({
+      showAlert({
         title: t("storeForm.alerts.errorTitle"),
-        text: t("storeForm.alerts.errorText"),
-        icon: "error",
-        confirmButtonText: t("storeModal.accept"),
+        message: t("storeForm.alerts.errorText"),
+        variant: "danger",
+        confirmText: t("storeModal.accept"),
       });
     } finally {
       setLoading(false); // Desactiva el loader

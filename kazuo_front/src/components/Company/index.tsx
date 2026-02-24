@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { FaTrash, FaPlus, FaKey } from "react-icons/fa";
 import { CompanyData, TeamMember } from "@/interfaces/types";
 import Loader from "@/components/Loader/Loader";
-import Swal from "sweetalert2";
+import { useAlert } from "@/context/AlertContext";
 import CompanyRegistrationForm from "../RegisterCompany";
 import { useAppContext } from "@/context/AppContext";
 import { PERMISSIONS, PERMISSION_LABELS, PERMISSION_DESCRIPTIONS } from "@/constants/permissions";
@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 
 export default function MiEmpresa() {
   const { t } = useTranslation("global");
+  const { showAlert } = useAlert();
   const { logout } = useAppContext();
   const [companyData, setCompanyData] = useState<CompanyData | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
@@ -54,11 +55,11 @@ export default function MiEmpresa() {
       });
 
       if (response.status === 401) {
-        Swal.fire({
+        showAlert({
           title: "Sesión expirada",
-          text: "Su sesión ha expirado. Por favor inicie sesión nuevamente.",
-          icon: "warning",
-          confirmButtonText: "Aceptar",
+          message: "Su sesión ha expirado. Por favor inicie sesión nuevamente.",
+          variant: "warning",
+          confirmText: "Aceptar",
         }).then(() => {
           logout();
         });
@@ -86,11 +87,11 @@ export default function MiEmpresa() {
       }
     } catch (error) {
       console.error("Error al obtener los datos de la empresa:", error);
-      Swal.fire({
+      showAlert({
         title: t("company.alerts.errorTitle"),
-        text: t("company.alerts.loadError"),
-        icon: "error",
-        confirmButtonText: t("company.alerts.accept"),
+        message: t("company.alerts.loadError"),
+        variant: "danger",
+        confirmText: t("company.alerts.accept"),
       });
     } finally {
       setIsLoading(false);
@@ -118,11 +119,11 @@ export default function MiEmpresa() {
       console.log(response);
 
       if (response.status === 401) {
-        Swal.fire({
+        showAlert({
           title: t("company.alerts.sessionExpiredTitle"),
-          text: t("company.alerts.sessionExpiredText"),
-          icon: "warning",
-          confirmButtonText: t("company.alerts.accept"),
+          message: t("company.alerts.sessionExpiredText"),
+          variant: "warning",
+          confirmText: t("company.alerts.accept"),
         }).then(() => {
           logout();
         });
@@ -145,18 +146,18 @@ export default function MiEmpresa() {
 
         await fetchCompanyData();
 
-        Swal.fire({
+        showAlert({
           title: "¡Operación exitosa!",
-          text: message,
-          icon: "success",
-          confirmButtonText: "Aceptar",
+          message: message,
+          variant: "success",
+          confirmText: "Aceptar",
         });
       } else {
-        Swal.fire({
+        showAlert({
           title: "¡Error!",
-          text: "Ocurrió un error al agregar el miembro del equipo.",
-          icon: "error",
-          confirmButtonText: "Aceptar",
+          message: "Ocurrió un error al agregar el miembro del equipo.",
+          variant: "danger",
+          confirmText: "Aceptar",
         });
       }
     } catch (error) {
@@ -188,21 +189,25 @@ export default function MiEmpresa() {
       if (response.ok) {
         setEditingPermissionsUser(null);
         await fetchCompanyData();
-        Swal.fire(
-          t("company.alerts.successGeneric"),
-          t("company.alerts.permissionsUpdated"),
-          "success"
-        );
+        showAlert({
+          title: t("company.alerts.successGeneric"),
+          message: t("company.alerts.permissionsUpdated"),
+          variant: "success",
+        });
       } else {
-        Swal.fire(
-          t("company.alerts.errorTitle"),
-          t("company.alerts.permissionsError"),
-          "error"
-        );
+        showAlert({
+          title: t("company.alerts.errorTitle"),
+          message: t("company.alerts.permissionsError"),
+          variant: "danger",
+        });
       }
     } catch (error) {
       console.error("Error updating permissions:", error);
-      Swal.fire(t("company.alerts.errorTitle"), t("company.alerts.connectionError"), "error");
+      showAlert({
+        title: t("company.alerts.errorTitle"),
+        message: t("company.alerts.connectionError"),
+        variant: "danger",
+      });
     }
   };
 
@@ -215,15 +220,13 @@ export default function MiEmpresa() {
   };
 
   const handleRemoveTeamMember = async (id: string) => {
-    const result = await Swal.fire({
+    const result = await showAlert({
       title: t("company.alerts.confirmDeleteTitle"),
-      text: t("company.alerts.confirmDeleteText"),
-      icon: "warning",
+      message: t("company.alerts.confirmDeleteText"),
+      variant: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: t("company.alerts.confirmDeleteBtn"),
-      cancelButtonText: t("company.cancel"),
+      confirmText: t("company.alerts.confirmDeleteBtn"),
+      cancelText: t("company.cancel"),
     });
 
     if (!result.isConfirmed) return;
@@ -241,7 +244,11 @@ export default function MiEmpresa() {
 
       if (response.ok) {
         setTeamMembers(teamMembers.filter((member) => member.id !== id));
-        Swal.fire(t("company.alerts.deletedTitle"), t("company.alerts.deletedText"), "success");
+        showAlert({
+          title: t("company.alerts.deletedTitle"),
+          message: t("company.alerts.deletedText"),
+          variant: "success",
+        });
         return;
       }
 
@@ -249,28 +256,30 @@ export default function MiEmpresa() {
         const errorData = await response.json();
         const { stores, products, providers } = errorData.dependencies || {};
 
-        const action = await Swal.fire({
+        const action = await showAlert({
           title: t("company.alerts.hasDataTitle"),
-          html: `
-            <p>${t("company.alerts.found")}</p>
-            <ul style="text-align: left; margin-left: 20px;">
-              ${stores > 0 ? `<li>${stores} ${t("company.alerts.stores")}</li>` : ""}
-              ${products > 0 ? `<li>${products} ${t("company.alerts.products")}</li>` : ""}
-              ${providers > 0 ? `<li>${providers} ${t("company.alerts.providers")}</li>` : ""}
-            </ul>
-            <p>${t("company.alerts.whatToDo")}</p>
-          `,
-          icon: "warning",
+          message: (
+            <div>
+              <p>{t("company.alerts.found")}</p>
+              <ul style={{ textAlign: "left", marginLeft: "20px" }}>
+                {stores > 0 && <li>{stores} {t("company.alerts.stores")}</li>}
+                {products > 0 && <li>{products} {t("company.alerts.products")}</li>}
+                {providers > 0 && <li>{providers} {t("company.alerts.providers")}</li>}
+              </ul>
+              <p>{t("company.alerts.whatToDo")}</p>
+            </div>
+          ),
+          variant: "warning",
           showDenyButton: true,
           showCancelButton: true,
-          confirmButtonText: t("company.alerts.migrate"),
-          denyButtonText: t("company.alerts.deleteAll"),
-          cancelButtonText: t("company.cancel"),
+          confirmText: t("company.alerts.migrate"),
+          denyText: t("company.alerts.deleteAll"),
+          cancelText: t("company.cancel"),
         });
 
         if (action.isConfirmed) {
           // Migrar
-          const { value: email } = await Swal.fire({
+          const { value: email } = await showAlert({
             title: t("company.alerts.enterEmailTitle"),
             input: "email",
             inputLabel: t("company.alerts.emailLabel"),
@@ -280,6 +289,7 @@ export default function MiEmpresa() {
               if (!value) {
                 return t("company.alerts.emailRequired");
               }
+              return undefined;
             },
           });
 
@@ -294,25 +304,29 @@ export default function MiEmpresa() {
 
             if (migrateResponse.ok) {
               setTeamMembers(teamMembers.filter((member) => member.id !== id));
-              Swal.fire(
-                t("company.alerts.migratedTitle"),
-                t("company.alerts.migratedText", { email }),
-                "success"
-              );
+              showAlert({
+                title: t("company.alerts.migratedTitle"),
+                message: t("company.alerts.migratedText", { email }),
+                variant: "success",
+              });
             } else {
               const err = await migrateResponse.json();
-              Swal.fire(t("company.alerts.errorTitle"), err.message || t("company.alerts.migrateError"), "error");
+              showAlert({
+                title: t("company.alerts.errorTitle"),
+                message: err.message || t("company.alerts.migrateError"),
+                variant: "danger",
+              });
             }
           }
         } else if (action.isDenied) {
           // Force Delete
-          const confirmForce = await Swal.fire({
+          const confirmForce = await showAlert({
             title: t("company.alerts.forceDeleteTitle"),
-            text: t("company.alerts.forceDeleteText"),
-            icon: "error",
+            message: t("company.alerts.forceDeleteText"),
+            variant: "danger",
             showCancelButton: true,
-            confirmButtonText: t("company.alerts.forceDeleteBtn"),
-            cancelButtonText: t("company.cancel"),
+            confirmText: t("company.alerts.forceDeleteBtn"),
+            cancelText: t("company.cancel"),
           });
 
           if (confirmForce.isConfirmed) {
@@ -326,22 +340,34 @@ export default function MiEmpresa() {
 
             if (forceResponse.ok) {
               setTeamMembers(teamMembers.filter((member) => member.id !== id));
-              Swal.fire(
-                t("company.alerts.deletedTitle"),
-                t("company.alerts.forceDeleteSuccess"),
-                "success"
-              );
+              showAlert({
+                title: t("company.alerts.deletedTitle"),
+                message: t("company.alerts.forceDeleteSuccess"),
+                variant: "success",
+              });
             } else {
-              Swal.fire(t("company.alerts.errorTitle"), t("company.alerts.forceDeleteError"), "error");
+              showAlert({
+                title: t("company.alerts.errorTitle"),
+                message: t("company.alerts.forceDeleteError"),
+                variant: "danger",
+              });
             }
           }
         }
       } else {
-        Swal.fire(t("company.alerts.errorTitle"), t("company.alerts.unexpectedError"), "error");
+        showAlert({
+          title: t("company.alerts.errorTitle"),
+          message: t("company.alerts.unexpectedError"),
+          variant: "danger",
+        });
       }
     } catch (error) {
       console.error(error);
-      Swal.fire(t("company.alerts.errorTitle"), t("company.alerts.connectionError"), "error");
+      showAlert({
+        title: t("company.alerts.errorTitle"),
+        message: t("company.alerts.connectionError"),
+        variant: "danger",
+      });
     }
   };
 

@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, Fragment } from "react";
 import { FaPencilAlt, FaTimes } from "react-icons/fa";
 import { useAppContext } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
-import Swal from "sweetalert2";
+import { useAlert } from "@/context/AlertContext";
 import { Menu, Transition, Dialog } from "@headlessui/react";
 import { BiDotsHorizontal, BiSearch, BiMenu } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
@@ -29,6 +29,7 @@ import { Input } from "../ui/input";
 
 const Inventario: React.FC = () => {
   const { t } = useTranslation("global");
+  const { showAlert } = useAlert();
   const [store, setStore] = useState<IStore[]>([]);
   const [isCreateStoreOpen, setIsCreateStoreOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,14 +64,12 @@ const Inventario: React.FC = () => {
   };
 
   const handleLogout = async () => {
-    const result = await Swal.fire({
+    const result = await showAlert({
       title: t("inventory.logoutConfirmTitle"),
-      icon: "warning",
+      variant: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: t("inventory.logoutConfirmButton"),
-      cancelButtonText: t("inventory.cancel"),
+      confirmText: t("inventory.logoutConfirmButton"),
+      cancelText: t("inventory.cancel"),
     });
 
     if (result.isConfirmed) {
@@ -89,30 +88,30 @@ const Inventario: React.FC = () => {
       !changePasswordData.newPassword ||
       !changePasswordData.confirmPassword
     ) {
-      Swal.fire(
-        t("inventory.reportErrorTitle"),
-        t("inventory.requiredFields"),
-        "error"
-      );
+      showAlert({
+        title: t("inventory.reportErrorTitle"),
+        message: t("inventory.requiredFields"),
+        variant: "danger",
+      });
       return;
     }
     if (changePasswordData.newPassword !== changePasswordData.confirmPassword) {
-      Swal.fire(
-        t("inventory.reportErrorTitle"),
-        t("inventory.passwordsMismatch"),
-        "error"
-      );
+      showAlert({
+        title: t("inventory.reportErrorTitle"),
+        message: t("inventory.passwordsMismatch"),
+        variant: "danger",
+      });
       return;
     }
 
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,15}$/;
     if (!passwordRegex.test(changePasswordData.newPassword)) {
-      Swal.fire(
-        t("inventory.reportErrorTitle"),
-        t("inventory.passwordInvalid"),
-        "error"
-      );
+      showAlert({
+        title: t("inventory.reportErrorTitle"),
+        message: t("inventory.passwordInvalid"),
+        variant: "danger",
+      });
       return;
     }
 
@@ -137,11 +136,11 @@ const Inventario: React.FC = () => {
         );
       }
 
-      Swal.fire(
-        t("products.reportSuccessTitle"),
-        t("inventory.changePassSuccess"),
-        "success"
-      );
+      showAlert({
+        title: t("products.reportSuccessTitle"),
+        message: t("inventory.changePassSuccess"),
+        variant: "success",
+      });
       setIsChangePasswordOpen(false);
       setChangePasswordData({
         oldPassword: "",
@@ -150,7 +149,11 @@ const Inventario: React.FC = () => {
       });
     } catch (error: any) {
       console.error(error);
-      Swal.fire(t("inventory.reportErrorTitle"), error.message, "error");
+      showAlert({
+        title: t("inventory.reportErrorTitle"),
+        message: error.message,
+        variant: "danger",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -158,11 +161,11 @@ const Inventario: React.FC = () => {
 
   const handleSaveProfile = async () => {
     if (!editFormData.name || !editFormData.email) {
-      Swal.fire(
-        t("inventory.reportErrorTitle"),
-        t("inventory.requiredFields"),
-        "error"
-      );
+      showAlert({
+        title: t("inventory.reportErrorTitle"),
+        message: t("inventory.requiredFields"),
+        variant: "danger",
+      });
       return;
     }
 
@@ -201,18 +204,18 @@ const Inventario: React.FC = () => {
       );
 
       setIsEditing(false);
-      Swal.fire(
-        t("products.reportSuccessTitle"),
-        t("inventory.updateProfileSuccess"),
-        "success"
-      );
+      showAlert({
+        title: t("products.reportSuccessTitle"),
+        message: t("inventory.updateProfileSuccess"),
+        variant: "success",
+      });
     } catch (error) {
       console.error(error);
-      Swal.fire(
-        t("inventory.reportErrorTitle"),
-        t("inventory.updateProfileError"),
-        "error"
-      );
+      showAlert({
+        title: t("inventory.reportErrorTitle"),
+        message: t("inventory.updateProfileError"),
+        variant: "danger",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -281,15 +284,13 @@ const Inventario: React.FC = () => {
     event: React.MouseEvent<HTMLButtonElement>,
     storeId: string
   ) => {
-    const confirmed = await Swal.fire({
+    const confirmed = await showAlert({
       title: t("inventory.deleteStoreTitle"),
-      text: t("inventory.deleteStoreDesc"),
-      icon: "warning",
+      message: t("inventory.deleteStoreDesc"),
+      variant: "danger",
       showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: t("inventory.confirmDelete"),
-      cancelButtonText: t("inventory.cancel"),
+      confirmText: t("inventory.confirmDelete"),
+      cancelText: t("inventory.cancel"),
     });
 
     if (confirmed.isConfirmed) {
@@ -309,23 +310,24 @@ const Inventario: React.FC = () => {
           setStore((prevStore) =>
             prevStore.filter((bodega) => bodega.id !== storeId)
           );
-          Swal.fire(
-            t("inventory.delete"),
-            t("inventory.storeDeleted"),
-            "success"
-          );
+          showAlert({
+            title: t("inventory.delete"),
+            message: t("inventory.storeDeleted"),
+            variant: "success",
+          });
         } else {
-          Swal.fire(
-            t("inventory.reportErrorTitle"),
-            t("inventory.deleteError"),
-            "error"
-          );
+          showAlert({
+            title: t("inventory.reportErrorTitle"),
+            message: t("inventory.deleteError"),
+            variant: "danger",
+          });
         }
       } catch (error) {
-        Swal.fire(
-          t("inventory.reportErrorTitle"),
-          t("inventory.deleteErrorGeneric")
-        );
+        showAlert({
+          title: t("inventory.reportErrorTitle"),
+          message: t("inventory.deleteErrorGeneric"),
+          variant: "danger",
+        });
       } finally {
         setLoading(false);
       }

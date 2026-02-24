@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+import { useAlert } from "@/context/AlertContext";
 import { useRouter } from "next/navigation";
 import { ICategory, IEditStoreProps } from "@/interfaces/types";
 import Loader from "../Loader/Loader";
@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 
 const EditStoreForm: React.FC<IEditStoreProps> = ({ storeId }) => {
   const [t] = useTranslation("global");
+  const { showAlert } = useAlert();
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -70,22 +71,22 @@ const EditStoreForm: React.FC<IEditStoreProps> = ({ storeId }) => {
       });
       console.log(userData.token);
       if (response.ok) {
-        Swal.fire({
+        showAlert({
           title: t("storeForm.alerts.updatedTitle"),
-          text: t("storeForm.alerts.updatedText"),
-          icon: "success",
-          confirmButtonText: t("products.accept"),
+          message: t("storeForm.alerts.updatedText"),
+          variant: "success",
+          confirmText: t("products.accept"),
         });
         router.push("/GestionInventario");
       } else {
         throw new Error("Error en la actualización de la bodega");
       }
     } catch (error) {
-      Swal.fire({
+      showAlert({
         title: t("storeForm.alerts.errorTitle"),
-        text: t("storeForm.alerts.updateError"),
-        icon: "error",
-        confirmButtonText: t("products.accept"),
+        message: t("storeForm.alerts.updateError"),
+        variant: "danger",
+        confirmText: t("products.accept"),
       });
     } finally {
       setLoading(false);

@@ -6,12 +6,13 @@ import { useRouter } from "next/navigation";
 import { User, Mail, Building, Shield, KeyRound, Edit, Camera } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import Swal from "sweetalert2";
+import { useAlert } from "@/context/AlertContext";
 import { useTranslation } from "react-i18next";
 import { SpotOnSpinner } from "@/components/Loader/SpotOnSpinner";
 
 export default function ProfilePage() {
   const { t } = useTranslation("global");
+  const { showAlert } = useAlert();
   const { userData, isLoggedIn, setUserData } = useAppContext();
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
@@ -74,12 +75,20 @@ export default function ProfilePage() {
 
     // Validar tipo y tamaño
     if (!file.type.startsWith('image/')) {
-      Swal.fire(t("profile.alerts.errorTitle"), t("profile.alerts.invalidFile"), 'error');
+      showAlert({
+        title: t("profile.alerts.errorTitle"),
+        message: t("profile.alerts.invalidFile"),
+        variant: "danger",
+      });
       return;
     }
 
     if (file.size > 2 * 1024 * 1024) { // 2MB
-      Swal.fire(t("profile.alerts.errorTitle"), t("profile.alerts.fileTooBig"), 'error');
+      showAlert({
+        title: t("profile.alerts.errorTitle"),
+        message: t("profile.alerts.fileTooBig"),
+        variant: "danger",
+      });
       return;
     }
 
@@ -114,17 +123,20 @@ export default function ProfilePage() {
       setUserData(updatedUser);
       localStorage.setItem("userData", JSON.stringify(updatedUser));
       
-      Swal.fire({
-        icon: 'success',
+      showAlert({
+        variant: 'success',
         title: t("profile.alerts.successTitle"),
-        text: t("profile.alerts.successText"),
-        timer: 2000,
-        showConfirmButton: false
+        message: t("profile.alerts.successText"),
+        confirmText: "OK"
       });
 
     } catch (error) {
       console.error(error);
-      Swal.fire(t("profile.alerts.errorTitle"), t("profile.alerts.updateError"), 'error');
+      showAlert({
+        title: t("profile.alerts.errorTitle"),
+        message: t("profile.alerts.updateError"),
+        variant: "danger",
+      });
     } finally {
       setIsUploading(false);
       // Limpiar input

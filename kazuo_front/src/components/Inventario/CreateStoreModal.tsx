@@ -2,7 +2,7 @@
 
 import { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import Swal from "sweetalert2";
+import { useAlert } from "@/context/AlertContext";
 import { useTranslation } from "react-i18next";
 import { ICategory } from "@/interfaces/types";
 import Loader from "../Loader/Loader";
@@ -20,6 +20,7 @@ const CreateStoreModal: React.FC<CreateStoreModalProps> = ({
   onStoreCreated,
 }) => {
   const { t } = useTranslation("global");
+  const { showAlert } = useAlert();
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -46,11 +47,11 @@ const CreateStoreModal: React.FC<CreateStoreModalProps> = ({
     e.preventDefault();
 
     if (!name || !selectedCategory) {
-      Swal.fire(
-        t("storeModal.alerts.errorTitle"),
-        t("storeModal.alerts.fieldsRequired"),
-        "error"
-      );
+      showAlert({
+        title: t("storeModal.alerts.errorTitle"),
+        message: t("storeModal.alerts.fieldsRequired"),
+        variant: "danger",
+      });
       return;
     }
 
@@ -78,11 +79,11 @@ const CreateStoreModal: React.FC<CreateStoreModalProps> = ({
       });
 
       if (response.ok) {
-        Swal.fire({
+        showAlert({
           title: t("storeModal.alerts.createdTitle"),
-          text: t("storeModal.alerts.createdText"),
-          icon: "success",
-          confirmButtonText: t("storeModal.accept"),
+          message: t("storeModal.alerts.createdText"),
+          variant: "success",
+          confirmText: t("storeModal.accept"),
         });
         onStoreCreated();
         onClose();
@@ -90,11 +91,11 @@ const CreateStoreModal: React.FC<CreateStoreModalProps> = ({
         throw new Error(t("storeModal.alerts.creationFailed"));
       }
     } catch (error) {
-      Swal.fire({
+      showAlert({
         title: t("storeModal.alerts.createErrorTitle"),
-        text: t("storeModal.alerts.createErrorText"),
-        icon: "error",
-        confirmButtonText: t("storeModal.accept"),
+        message: t("storeModal.alerts.createErrorText"),
+        variant: "danger",
+        confirmText: t("storeModal.accept"),
       });
     } finally {
       setLoading(false);

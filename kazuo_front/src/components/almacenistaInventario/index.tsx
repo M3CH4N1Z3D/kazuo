@@ -4,12 +4,13 @@ import { useEffect, useState, useRef } from "react";
 import { FaPencilAlt } from "react-icons/fa";
 import { useAppContext } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
-import Swal from "sweetalert2";
+import { useAlert } from "@/context/AlertContext";
 import { Menu, Transition } from "@headlessui/react";
 import { BiDotsHorizontal } from "react-icons/bi";
 import Loader from "../Loader/Loader";
 
 const Inventario: React.FC = () => {
+  const { showAlert } = useAlert();
   const [store, setStore] = useState<IStore[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -85,22 +86,26 @@ const Inventario: React.FC = () => {
               "Error al actualizar userData o profileImage:",
               error
             );
-            Swal.fire(
-              "Error",
-              "Ocurrió un error al procesar la respuesta del servidor.",
-              "error"
-            );
+            showAlert({
+              title: "Error",
+              message: "Ocurrió un error al procesar la respuesta del servidor.",
+              variant: "danger",
+            });
           }
         } else {
           const errorData = await response.json();
-          Swal.fire(
-            "Error",
-            `Error al subir la imagen: ${errorData.message}`,
-            "error"
-          );
+          showAlert({
+            title: "Error",
+            message: `Error al subir la imagen: ${errorData.message}`,
+            variant: "danger",
+          });
         }
       } catch (error) {
-        Swal.fire("Error", "Ocurrió un error al subir la imagen.", "error");
+        showAlert({
+          title: "Error",
+          message: "Ocurrió un error al subir la imagen.",
+          variant: "danger",
+        });
       }
     }
   };
@@ -115,15 +120,13 @@ const Inventario: React.FC = () => {
     event: React.MouseEvent<HTMLButtonElement>,
     storeId: string
   ) => {
-    const confirmed = await Swal.fire({
+    const confirmed = await showAlert({
       title: "¿Estás seguro que desea eliminar la bodega?",
-      text: "No podrás deshacer esta acción.",
-      icon: "warning",
+      message: "No podrás deshacer esta acción.",
+      variant: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
+      confirmText: "Sí, eliminar",
+      cancelText: "Cancelar",
     });
 
     if (confirmed.isConfirmed) {
@@ -140,16 +143,24 @@ const Inventario: React.FC = () => {
           setStore((prevStore) =>
             prevStore.filter((bodega) => bodega.id !== storeId)
           );
-          Swal.fire("Eliminado", "La bodega ha sido eliminada.", "success");
+          showAlert({
+            title: "Eliminado",
+            message: "La bodega ha sido eliminada.",
+            variant: "success",
+          });
         } else {
-          Swal.fire(
-            "Error",
-            "No puedes eliminar esta bodega, por que tiene productos. Vacia la bodega",
-            "error"
-          );
+          showAlert({
+            title: "Error",
+            message: "No puedes eliminar esta bodega, por que tiene productos. Vacia la bodega",
+            variant: "danger",
+          });
         }
       } catch (error) {
-        Swal.fire("Error", "Ocurrió un error al eliminar la bodega.");
+        showAlert({
+          title: "Error",
+          message: "Ocurrió un error al eliminar la bodega.",
+          variant: "danger",
+        });
       } finally {
         setLoading(false); // Detiene el loader
       }

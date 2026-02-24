@@ -16,13 +16,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loader from "../Loader/Loader";
-import Swal from "sweetalert2";
+import { useAlert } from "@/context/AlertContext";
 import { useTranslation } from "react-i18next";
 
 const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
   const { t } = useTranslation("global");
   const router = useRouter();
   const { userData } = useAppContext();
+  const { showAlert } = useAlert();
 
   const [activeTab, setActiveTab] = useState("stock");
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -203,19 +204,19 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
         `Inventario_${storeName}_${new Date().toLocaleDateString()}.pdf`
       );
 
-      Swal.fire({
+      showAlert({
         title: t("products.reportSuccessTitle"),
-        text: t("products.reportSuccessDesc"),
-        icon: "success",
-        confirmButtonText: t("products.accept"),
+        message: t("products.reportSuccessDesc"),
+        variant: "success",
+        confirmText: t("products.accept"),
       });
     } catch (error) {
       console.error("Error:", error);
-      Swal.fire({
+      showAlert({
         title: t("products.reportErrorTitle"),
-        text: t("products.reportErrorDesc"),
-        icon: "error",
-        confirmButtonText: t("products.accept"),
+        message: t("products.reportErrorDesc"),
+        variant: "danger",
+        confirmText: t("products.accept"),
       });
     }
   };
@@ -229,22 +230,23 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
   };
 
   const handleAddProduct = (productId: string) => {
-    Swal.fire({
+    showAlert({
       title: t("products.modalAddTitle"),
       input: "number",
       inputLabel: t("products.modalAddLabel"),
       inputPlaceholder: t("products.modalInputPlaceholder"),
       showCancelButton: true,
-      confirmButtonText: t("inventory.save"),
-      cancelButtonText: t("inventory.cancel"),
+      confirmText: t("inventory.save"),
+      cancelText: t("inventory.cancel"),
       inputValidator: (value) => {
         const numValue = Number(value);
         if (isNaN(numValue) || numValue <= 0) {
           return t("products.invalidQuantity");
         }
+        return undefined;
       },
     }).then((result) => {
-      if (result.isConfirmed) {
+      if (result.isConfirmed && result.value) {
         const quantityChange = Number(result.value);
         updateProductQuantity(productId, quantityChange);
         console.log(quantityChange);
@@ -253,21 +255,22 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
   };
 
   const handleNewOrderProduct = (productId: string) => {
-    Swal.fire({
+    showAlert({
       title: t("products.modalDispatchTitle"),
       input: "number",
       inputLabel: t("products.modalDispatchLabel"),
       inputPlaceholder: t("products.modalInputPlaceholder"),
       showCancelButton: true,
-      confirmButtonText: t("inventory.save"),
-      cancelButtonText: t("inventory.cancel"),
+      confirmText: t("inventory.save"),
+      cancelText: t("inventory.cancel"),
       inputValidator: (value) => {
         if (!value || Number(value) <= 0) {
           return t("products.invalidQuantity");
         }
+        return undefined;
       },
     }).then((result) => {
-      if (result.isConfirmed) {
+      if (result.isConfirmed && result.value) {
         const quantityChange = Number(result.value);
         updateProductQuantity(productId, -quantityChange);
       }
@@ -300,21 +303,21 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
             p.id === productId ? { ...p, quantity: newQuantity } : p
           )
         );
-        Swal.fire(
-          t("products.reportSuccessTitle"),
-          t("products.quantityUpdated"),
-          "success"
-        );
+        showAlert({
+          title: t("products.reportSuccessTitle"),
+          message: t("products.quantityUpdated"),
+          variant: "success",
+        });
       } else {
         throw new Error(t("products.updateError"));
       }
     } catch (error) {
       console.error("Error:", error);
-      Swal.fire(
-        t("products.reportErrorTitle"),
-        t("products.updateError"),
-        "error"
-      );
+      showAlert({
+        title: t("products.reportErrorTitle"),
+        message: t("products.updateError"),
+        variant: "danger",
+      });
     }
   };
 

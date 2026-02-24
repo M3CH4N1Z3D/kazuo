@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { ILoginError, ILoginProps } from "@/interfaces/types";
 import { validateLoginForm } from "@/helpers/validate";
 import { useRouter } from "next/navigation";
-import Swal from "sweetalert2";
 import Link from "next/link";
 import { useAppContext } from "@/context/AppContext";
 import React from "react";

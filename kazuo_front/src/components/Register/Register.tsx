@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { TRegisterError, IRegisterProps } from "@/interfaces/types";
 import { validateRegisterForm } from "@/helpers/validate";
-import Swal from "sweetalert2";
+import { useAlert } from "@/context/AlertContext";
 // import { register } from "@/helpers/auth.helper";
 import { useRouter, useSearchParams } from "next/navigation";
 import Loader from "../Loader/Loader";
@@ -18,6 +18,7 @@ const Register = () => {
   const searchParams = useSearchParams();
   const { login } = useAppContext();
   const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
+  const { showAlert } = useAlert();
   
   const token = searchParams.get("token");
   const emailParam = searchParams.get("email");
@@ -72,11 +73,11 @@ const Register = () => {
         if (response.ok) {
           const loginData = await response.json();
           await login(loginData);
-          Swal.fire({
+          showAlert({
             title: t("register.welcomeTitle", { name: loginData.name }),
-            text: t("register.googleSuccess"),
-            icon: "success",
-            confirmButtonText: t("company.alerts.accept"),
+            message: t("register.googleSuccess"),
+            variant: "success",
+            confirmText: t("company.alerts.accept"),
           });
           router.push("/GestionInventario");
         } else {
@@ -84,22 +85,22 @@ const Register = () => {
         }
       } catch (error) {
         console.error(error);
-        Swal.fire({
+        showAlert({
           title: t("register.googleErrorTitle"),
-          text: t("register.googleErrorText"),
-          icon: "error",
-          confirmButtonText: t("company.alerts.accept"),
+          message: t("register.googleErrorText"),
+          variant: "danger",
+          confirmText: t("company.alerts.accept"),
         });
       } finally {
         setLoading(false);
       }
     },
     onError: () => {
-      Swal.fire({
+      showAlert({
         title: t("register.googleErrorTitle"),
-        text: t("register.googleConnectError"),
-        icon: "error",
-        confirmButtonText: t("company.alerts.accept"),
+        message: t("register.googleConnectError"),
+        variant: "danger",
+        confirmText: t("company.alerts.accept"),
       });
     },
   });
@@ -152,11 +153,11 @@ const Register = () => {
         });
 
         if (response.ok) {
-          Swal.fire({
+          showAlert({
             title: t("register.registerSuccessTitle"),
-            text: t("register.registerSuccessText"),
-            icon: "success",
-            confirmButtonText: t("company.alerts.accept"),
+            message: t("register.registerSuccessText"),
+            variant: "success",
+            confirmText: t("company.alerts.accept"),
           });
           setDataUser(initialState);
           setTouched({
@@ -171,11 +172,11 @@ const Register = () => {
           throw new Error(errorData.message || "Error al registrarse");
         }
       } catch (error: any) {
-        Swal.fire({
+        showAlert({
           title: t("register.registerErrorTitle"),
-          text: error.message || t("register.registerErrorText"),
-          icon: "error",
-          confirmButtonText: t("company.alerts.accept"),
+          message: error.message || t("register.registerErrorText"),
+          variant: "danger",
+          confirmText: t("company.alerts.accept"),
         });
       } finally {
         setLoading(false);
