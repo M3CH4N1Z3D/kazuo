@@ -80,7 +80,7 @@ export const English = {
     ],
   },
   footer: {
-    contact_us: "Contact Us",
+    contactUs: "Contact Us",
     privacy_policy: "Privacy Policy",
     terms_of_service: "Terms of Service",
     followUs: "Follow Us",
@@ -93,7 +93,7 @@ export const English = {
     support: "Support",
     developers: "Developers",
     cookiesDisclaimer:
-      "By browsing Spot-On owned websites, you accept the use of Cookies according to our",
+      "By browsing SPM INTEGRAL owned websites, you accept the use of Cookies according to our",
     termsConditions: "terms and conditions",
     rightsReserved: "© 2024 Spot-On Project. All rights reserved.",
   },

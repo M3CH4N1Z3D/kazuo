@@ -80,7 +80,7 @@ export const Spanish = {
     ],
   },
   footer: {
-    contact_us: "Contáctanos",
+    contactUs: "Contáctanos",
     privacy_policy: "Política de Privacidad",
     terms_of_service: "Términos del Servicio",
     followUs: "Síguenos",
@@ -93,7 +93,7 @@ export const Spanish = {
     support: "Soporte",
     developers: "Desarrolladores",
     cookiesDisclaimer:
-      "Al navegar en los sitios webs propiedad de Spot-On, se acepta el uso de Cookies según nuestros",
+      "Al navegar en los sitios webs propiedad de SPM INTEGRAL, se acepta el uso de Cookies según nuestros",
     termsConditions: "términos y condiciones",
     rightsReserved: "© 2024 Spot-On Project. All rights reserved.",
   },
