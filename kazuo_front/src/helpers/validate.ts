@@ -76,6 +76,12 @@ export function validateEmail(email: string): boolean {
 export function validateUpdatePass(values: IUpdatePassProps): TUpdatePassError {
   const errors: TUpdatePassError = {};
 
+  if (!values.token) {
+    if (!values.oldPassword) {
+      errors.oldPassword = "La contraseña actual es obligatoria";
+    }
+  }
+
   // Validación de contraseña
   if (!values.newPassword) {
     errors.newPassword = "La contraseña es obligatoria";

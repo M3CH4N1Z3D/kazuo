@@ -23,6 +23,7 @@ export interface IUpdatePassProps {
   newPassword: string;
   confirmNewPass: string;
   token?: string;
+  oldPassword?: string;
 }
 
 export interface IUpdatePassError {

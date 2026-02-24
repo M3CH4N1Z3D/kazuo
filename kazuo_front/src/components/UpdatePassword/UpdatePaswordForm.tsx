@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IUpdatePassProps, TUpdatePassError } from "@/interfaces/types";
 import { validateUpdatePass } from "@/helpers/validate";
 import { useAlert } from "@/context/AlertContext";
+import { useAppContext } from "@/context/AppContext";
 // import { register } from "@/helpers/auth.helper";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -12,24 +13,32 @@ const UpdatePassForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const { userData, isLoggedIn } = useAppContext();
+
   const initialState: IUpdatePassProps = {
     newPassword: "",
     confirmNewPass: "",
     token: token || "",
+    oldPassword: "",
   };
 
-  const [dataUpdatedPass, setDataUpdatedPass] = useState<IUpdatePassProps>({
-    newPassword: "",
-    confirmNewPass: "",
-    token: token || "",
-  });
+  const [dataUpdatedPass, setDataUpdatedPass] = useState<IUpdatePassProps>(initialState);
   const [errors, setErrors] = useState<TUpdatePassError>({});
   const [touched, setTouched] = useState<{ [key: string]: boolean }>({
     newPassword: false,
     confirmNewPass: false,
+    oldPassword: false,
   });
 
   const { showAlert } = useAlert();
+
+  useEffect(() => {
+    if (!token && !isLoggedIn) {
+       // Si no hay token y no está logueado, redirigir a login
+       // o mostrar mensaje de error apropiado
+       // router.push("/Login");
+    }
+  }, [token, isLoggedIn, router]);
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const { name } = event.target;
@@ -66,35 +75,60 @@ const UpdatePassForm = () => {
 
     if (Object.keys(validationErrors).length === 0) {
       try {
-        const response = await fetch(`${kazuo_back}/auth/reset-password`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(dataUpdatedPass),
-        });
+        let response;
+        if (token) {
+            // Reset Password Flow (Forgot Password)
+            response = await fetch(`${kazuo_back}/auth/reset-password`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(dataUpdatedPass),
+            });
+        } else {
+            // Change Password Flow (Logged in)
+            if (!userData?.token) {
+                throw new Error("No estás autenticado");
+            }
+            response = await fetch(`${kazuo_back}/auth/change-password`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${userData.token}`
+                },
+                body: JSON.stringify({
+                    oldPassword: dataUpdatedPass.oldPassword,
+                    newPassword: dataUpdatedPass.newPassword
+                }),
+            });
+        }
+
         if (response.ok) {
           showAlert({
             title: "¡Contraseña actualizada correctamente!",
-            message: "Ahora puedes iniciar sesión con tu nueva contraseña.",
+            message: token ? "Ahora puedes iniciar sesión con tu nueva contraseña." : "Tu contraseña ha sido actualizada.",
             variant: "success",
             confirmText: "Aceptar",
           });
           setDataUpdatedPass(initialState);
           setTouched({
-            email: false,
+            oldPassword: false,
             newPassword: false,
             confirmNewPass: false,
-            name: false,
           });
-          router.push("/Login");
+          if (token) {
+              router.push("/Login");
+          } else {
+              router.push("/Profile");
+          }
         } else {
-          throw new Error("Respuesta no exitosa del servidor");
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Respuesta no exitosa del servidor");
         }
-      } catch (error) {
+      } catch (error: any) {
         showAlert({
-          title: "Error al hacer tu registro",
-          message: "Inténtalo nuevamente",
+          title: "Error al actualizar contraseña",
+          message: error.message || "Inténtalo nuevamente",
           variant: "danger",
           confirmText: "Aceptar",
         });
@@ -103,7 +137,10 @@ const UpdatePassForm = () => {
   };
 
   const isFormValid =
-    Object.keys(errors).length === 0 && Object.values(touched).every((t) => t);
+    Object.keys(errors).length === 0 && 
+    touched.newPassword && 
+    touched.confirmNewPass && 
+    (token ? true : touched.oldPassword);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4 sm:px-6 lg:px-8">
@@ -112,6 +149,29 @@ const UpdatePassForm = () => {
           Actualizar contraseña
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {!token && (
+              <div className="space-y-2">
+                <label
+                  htmlFor="oldPassword"
+                  className="block text-sm font-bold text-gray-700"
+                >
+                  Contraseña actual:
+                </label>
+                <Input
+                  type="password"
+                  name="oldPassword"
+                  id="oldPassword"
+                  value={dataUpdatedPass.oldPassword || ""}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                {touched.oldPassword && errors.oldPassword && (
+                  <p className="text-red-500 text-sm">{errors.oldPassword}</p>
+                )}
+              </div>
+          )}
+
           <div className="space-y-2">
             <label
               htmlFor="newPassword"
