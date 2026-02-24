@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Send, GripHorizontal, X } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { useTranslation } from "react-i18next";
+import { SpotOnSpinner } from "../Loader/SpotOnSpinner";
 
 interface ChatBotProps {
   onClose: () => void;
@@ -208,7 +209,7 @@ export default function ChatBot({ onClose }: ChatBotProps) {
             disabled={isLoading}
           >
             {isLoading ? (
-              <div className="w-5 h-5 border-t-2 border-white rounded-full animate-spin"></div>
+              <SpotOnSpinner size="sm" />
             ) : (
               <Send className="w-5 h-5" />
             )}

@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
+import { SpotOnSpinner } from "@/components/Loader/SpotOnSpinner";
 
 export default function ProfilePage() {
   const { t } = useTranslation("global");
@@ -136,7 +137,7 @@ export default function ProfilePage() {
   if (!userData) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <SpotOnSpinner size="md" />
       </div>
     );
   }
@@ -171,7 +172,7 @@ export default function ProfilePage() {
                 
                 {isUploading && (
                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                    <SpotOnSpinner size="md" />
                   </div>
                 )}
               </div>

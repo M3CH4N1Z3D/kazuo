@@ -13,7 +13,6 @@ import { validateProductForm } from "@/helpers/validate";
 import * as XLSX from "xlsx";
 import { useAppContext } from "@/context/AppContext";
 import Loader from "../Loader/Loader";
-import { Loader2 } from "lucide-react";
 import { FaDownload } from "react-icons/fa";
 import Loader1 from "../Loader/Loader1";
 
