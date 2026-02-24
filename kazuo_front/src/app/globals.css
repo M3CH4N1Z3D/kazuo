@@ -9,14 +9,14 @@
   @layer base {
   :root {
     /* Brand Colors */
-    --primary: 221 83% 53%; /* #2563EB - Blue 600 */
+    --primary: 195 100% 50%; /* Logo Blue */
     --primary-foreground: 0 0% 100%; /* White */
     
     --secondary: 210 40% 96%; /* #F1F5F9 - Slate 100 - Used for subtle backgrounds */
     --secondary-foreground: 222 47% 11%; /* Slate 900 */
 
     --accent: 210 40% 96%; /* Same as secondary for hover states */
-    --accent-foreground: 221 83% 53%; /* Blue 600 for text on accent */
+    --accent-foreground: 195 100% 50%; /* Logo Blue for text on accent */
 
     --destructive: 0 84% 60%; /* #EF4444 - Red 500 */
     --destructive-foreground: 0 0% 100%;
@@ -36,14 +36,14 @@
 
     --border: 214 32% 91%; /* #E2E8F0 - Slate 200 */
     --input: 214 32% 91%;
-    --ring: 221 83% 53%; /* Blue 600 */
+    --ring: 195 100% 50%; /* Logo Blue */
 
     --radius: 0.5rem;
 
     /* Charts */
-    --chart-1: 221 83% 53%;
+    --chart-1: 195 100% 50%; /* Logo Blue */
     --chart-2: 25 95% 53%; /* Orange 500 */
-    --chart-3: 142 71% 45%; /* Green 500 */
+    --chart-3: 150 100% 50%; /* Logo Green */
     --chart-4: 48 96% 47%; /* Yellow 500 */
     --chart-5: 262 83% 58%; /* Purple 500 */
   }
@@ -58,7 +58,7 @@
     --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 217 91% 60%;
+    --primary: 195 100% 50%;
     --primary-foreground: 222 47% 11%;
 
     --secondary: 217 19% 27%;
@@ -75,11 +75,11 @@
 
     --border: 217 19% 27%;
     --input: 217 19% 27%;
-    --ring: 224 76% 48%;
+    --ring: 195 100% 50%;
 
-    --chart-1: 220 70% 50%;
+    --chart-1: 195 100% 50%;
     --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
+    --chart-3: 150 100% 50%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     

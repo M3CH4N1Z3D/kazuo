@@ -15,10 +15,25 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       colors: {
+        // Override blue to apply brand identity to hardcoded utility classes
+        blue: {
+          50: '#E0F7FA',
+          100: '#B2EBF2',
+          200: '#80DEEA',
+          300: '#4DD0E1',
+          400: '#26C6DA',
+          500: '#00BFFF', // Logo Blue
+          600: '#0099CC',
+          700: '#007399',
+          800: '#004D66',
+          900: '#002633',
+          950: '#00131A',
+        },
         terciary: "#f97316", // Deprecated: use accent-orange or chart-2
         brand: {
           orange: "#F97316", // Accent Orange
-          blue: "#2563EB",   // Primary Blue (redundant with primary but useful for utilities)
+          blue: "#00BFFF",   // Logo Blue
+          green: "#00FF7F",  // Logo Green
         },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
