@@ -5,12 +5,14 @@ import { MessageCircle, X } from "lucide-react";
 import ChatBot from "./ChatBot";
 import { useAppContext } from "@/context/AppContext";
 import { useTranslation } from "react-i18next";
+import { usePathname } from "next/navigation";
 
 export default function ChatButton() {
   const { t } = useTranslation("global");
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const { isLoggedIn } = useAppContext();
+  const pathname = usePathname();
 
   useEffect(() => {
     const checkIsDesktop = () => {
@@ -25,7 +27,7 @@ export default function ChatButton() {
     };
   }, []);
 
-  if (!isLoggedIn || !isDesktop) return null;
+  if (!isLoggedIn || !isDesktop || pathname === "/Login") return null;
 
   const handleChatBotClick = () => {
     setIsChatOpen(!isChatOpen);

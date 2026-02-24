@@ -27,6 +27,7 @@ const Login: React.FC = () => {
 
   const [dataUser, setDataUser] = useState<ILoginProps>(initialState);
   const [loading, setLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [errors, setErrors] = useState<ILoginError>(initialState);
   const [touched, setTouched] = useState<{ [key: string]: boolean }>({
     email: false,
@@ -111,6 +112,7 @@ const Login: React.FC = () => {
         });
 
         if (response.ok) {
+          setIsRedirecting(true);
           const loginData = await response.json();
           await login(loginData);
           toast.success(t("login.welcome", { name: loginData.name }), {
@@ -122,12 +124,12 @@ const Login: React.FC = () => {
           toast.error(t("login.authError"), {
             description: errorData.message || "Error al iniciar sesión con Google",
           });
+          setLoading(false);
         }
       } catch (error) {
         toast.error(t("login.unexpectedError"), {
             description: "Ocurrió un error al procesar tu solicitud con Google.",
         });
-      } finally {
         setLoading(false);
       }
     },
@@ -162,6 +164,7 @@ const Login: React.FC = () => {
         });
 
         if (response.ok) {
+          setIsRedirecting(true);
           const loginData = await response.json();
           await login(loginData);
           toast.success(t("login.welcome", { name: loginData.name }), {
@@ -173,14 +176,13 @@ const Login: React.FC = () => {
           toast.error(t("login.authError"), {
             description: errorData.message || "Credenciales incorrectas. Por favor, inténtalo de nuevo.",
           });
+          setLoading(false); // Desactiva el loader en caso de error
         }
       } catch (error) {
         toast.error(t("login.unexpectedError"), {
           description: "Ocurrió un error al procesar tu solicitud. Por favor, inténtalo de nuevo.",
         });
-      } finally {
-        setLoading(false); // Desactiva el loader
-        console.log("Datos del formulario:", dataUser);
+        setLoading(false); // Desactiva el loader en caso de error
       }
     }
   };
@@ -209,18 +211,24 @@ const Login: React.FC = () => {
       </div>
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
-          <div className="grid gap-2 text-center">
-            <h1 className="text-3xl font-bold text-gray-900">{t("login.title")}</h1>
-            <p className="text-balance text-muted-foreground">
-              {t("login.subtitle")}
-            </p>
-          </div>
+          {isRedirecting ? (
+            <div className="flex flex-col items-center justify-center h-full space-y-4">
+              <Loader size="lg" message={t("login.redirecting") || "Redirigiendo..."} />
+            </div>
+          ) : (
+            <>
+              <div className="grid gap-2 text-center">
+                <h1 className="text-3xl font-bold text-gray-900">{t("login.title")}</h1>
+                <p className="text-balance text-muted-foreground">
+                  {t("login.subtitle")}
+                </p>
+              </div>
 
-          <div className="grid gap-4">
-            <form onSubmit={handleSubmit} className="grid gap-4">
-              <div className="grid gap-2">
-                <label
-                  htmlFor="email"
+              <div className="grid gap-4">
+                <form onSubmit={handleSubmit} className="grid gap-4">
+                  <div className="grid gap-2">
+                    <label
+                      htmlFor="email"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   {t("login.emailLabel")}
@@ -300,6 +308,8 @@ const Login: React.FC = () => {
               </Link>
             </div>
           </div>
+            </>
+          )}
         </div>
       </div>
     </div>
