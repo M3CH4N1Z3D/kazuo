@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useTranslation } from "react-i18next";
+import { useGoogleLogin } from "@react-oauth/google";
+import { FcGoogle } from "react-icons/fc";
 
 const Login: React.FC = () => {
   const { t } = useTranslation("global");
@@ -96,6 +98,46 @@ const Login: React.FC = () => {
       ["encrypt", "decrypt"]
     );
   };
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${kazuo_back}/auth/google`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token: tokenResponse.access_token }),
+        });
+
+        if (response.ok) {
+          const loginData = await response.json();
+          await login(loginData);
+          toast.success(t("login.welcome", { name: loginData.name }), {
+            description: t("login.loginSuccess"),
+          });
+          router.push(`/GestionInventario`);
+        } else {
+          const errorData = await response.json();
+          toast.error(t("login.authError"), {
+            description: errorData.message || "Error al iniciar sesión con Google",
+          });
+        }
+      } catch (error) {
+        toast.error(t("login.unexpectedError"), {
+            description: "Ocurrió un error al procesar tu solicitud con Google.",
+        });
+      } finally {
+        setLoading(false);
+      }
+    },
+    onError: () => {
+      toast.error(t("login.authError"), {
+        description: "Error al conectar con Google",
+      });
+    },
+  });
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -228,6 +270,25 @@ const Login: React.FC = () => {
               </div>
               <Button type="submit" className="w-full" disabled={isButtonDisabled}>
                 {loading ? <Loader /> : t("login.submitButton")}
+              </Button>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    O continuar con
+                  </span>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={() => googleLogin()}
+                disabled={loading}
+                className="w-full"
+              >
+                <FcGoogle className="mr-2 h-4 w-4" /> Google
               </Button>
             </form>
             <div className="mt-4 text-center text-sm">

@@ -43,8 +43,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       if (loginData.token) {
         localStorage.setItem("token", loginData.token);
       }
-      if (userData?.igmUrl) {
-        localStorage.setItem("igmUrl", userData.igmUrl);
+      if (loginData.igmUrl) {
+        localStorage.setItem("igmUrl", loginData.igmUrl);
       }
     } catch (error) {
       console.error("Error de login", error);

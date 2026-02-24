@@ -4,6 +4,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/Loader/Loader";
 import { AppProvider } from "@/context/AppContext";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { I18nextProvider } from "react-i18next";
 import i18next from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
@@ -56,8 +57,10 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   }
 
   return (
-    <I18nextProvider i18n={i18next}>
-      <AppProvider>{children}</AppProvider>
-    </I18nextProvider>
+    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
+      <I18nextProvider i18n={i18next}>
+        <AppProvider>{children}</AppProvider>
+      </I18nextProvider>
+    </GoogleOAuthProvider>
   );
 }
