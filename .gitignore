@@ -100,3 +100,10 @@ kazuo-user_accessKeys.csv
 *.csv
 DEPLOYMENT_GUIDE.md
 *.md
+
+# PWA files
+kazuo_front/public/sw.js
+kazuo_front/public/sw.js.map
+kazuo_front/public/workbox-*.js
+kazuo_front/public/workbox-*.js.map
+kazuo_front/public/worker-*.js
