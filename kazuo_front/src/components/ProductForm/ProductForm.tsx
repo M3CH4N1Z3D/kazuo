@@ -13,7 +13,7 @@ import { validateProductForm } from "@/helpers/validate";
 import * as XLSX from "xlsx";
 import { useAppContext } from "@/context/AppContext";
 import Loader from "../Loader/Loader";
-import { FaDownload } from "react-icons/fa";
+import { FaDownload, FaUpload } from "react-icons/fa";
 import Loader1 from "../Loader/Loader1";
 
 const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, isModal }) => {
@@ -557,29 +557,38 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
             {loading ? <Loader /> : t("productForm.submitButton")}
           </button>
 
-          <p className="text-center"></p>
+          <div className="flex gap-4 mt-4">
+            <button
+              type="button"
+              onClick={downloadTemplate}
+              className="flex-1 bg-blue-500 text-white rounded flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors duration-200"
+              style={{ height: "40px" }}
+              title="Descargar Plantilla"
+            >
+              <FaDownload className="h-5 w-5" />
+              {loadingTemplate && (
+                <div className="flex items-center justify-center">
+                  <Loader1 />
+                </div>
+              )}
+            </button>
 
-          <button
-            onClick={downloadTemplate}
-            className="bg-blue-500 text-white rounded w-full flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors duration-200"
-            style={{ height: "40px" }}
-          >
-            <FaDownload className="h-5 w-5" />
-            {loadingTemplate ? (
-              <div className="flex items-center justify-center">
-                <Loader1 />
-              </div>
-            ) : (
-              t("productForm.downloadTemplate")
-            )}
-          </button>
-
-          <input
-            type="file"
-            accept=".xlsx, .xls"
-            onChange={handleFileChange}
-            className="mt-4"
-          />
+            <label
+              htmlFor="file-upload"
+              className="flex-1 bg-blue-500 text-white rounded flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors duration-200 cursor-pointer"
+              style={{ height: "40px" }}
+              title="Carga Masiva de Productos"
+            >
+              <FaUpload className="h-5 w-5" />
+            </label>
+            <input
+              id="file-upload"
+              type="file"
+              accept=".xlsx, .xls"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </div>
         </form>
       </div>
     </div>

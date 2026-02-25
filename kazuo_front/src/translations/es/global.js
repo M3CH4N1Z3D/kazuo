@@ -436,6 +436,8 @@ export const Spanish = {
     minStockPlaceholder: "Ingrese la cantidad mínima",
     submitButton: "Registrar Producto",
     downloadTemplate: "Descargar Plantilla",
+    uploadTemplate: "Cargar a partir de plantilla",
+    massUploadTitle: "Carga Masiva de Productos",
     alerts: {
       sessionErrorTitle: "Error",
       sessionErrorText: "No se encontró información de sesión. Por favor inicie sesión nuevamente.",

@@ -432,6 +432,8 @@ export const English = {
     minStockPlaceholder: "Enter minimum quantity",
     submitButton: "Register Product",
     downloadTemplate: "Download Template",
+    uploadTemplate: "Upload from template",
+    massUploadTitle: "Mass Product Upload",
     alerts: {
       sessionErrorTitle: "Error",
       sessionErrorText: "No session information found. Please login again.",
