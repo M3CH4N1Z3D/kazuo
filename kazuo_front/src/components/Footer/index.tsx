@@ -72,21 +72,16 @@ export default function Footer() {
 
         {/* Secciones adicionales de Spot-On, Soluciones y Recursos */}
         <div>
-          <h3 className="font-bold text-lg mb-4">{t("footer.kazuo")}</h3>
+          <h3 className="font-bold text-lg mb-4">SPM INTEGRAL</h3>
           <ul className="space-y-2">
             <li>
-              <a href="/Nosotros" className="hover:underline">
+              <a href="https://spm-integral-site.vercel.app/about" className="hover:underline">
                 {t("footer.whoWeAre")}
-              </a>
-            </li>
-            <li>
-              <a href="/Ubicacion" className="hover:underline">
-                {t("footer.location")}
               </a>
             </li>
 
             <li>
-              <a href="/Contacto" className="hover:underline">
+              <a href="https://spm-integral-site.vercel.app/contact" className="hover:underline">
                 {t("footer.contactUs")}
               </a>
             </li>
