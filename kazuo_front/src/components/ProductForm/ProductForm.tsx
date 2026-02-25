@@ -548,10 +548,10 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
           <button
             type="submit"
             disabled={!areFieldsFilled()}
-            className={`flex items-center justify-center w-full py-2 px-4 text-white rounded-md ${
+            className={`flex items-center justify-center w-full py-2 px-4 rounded-xl font-medium shadow-sm transition-all gap-2 border ${
               areFieldsFilled()
-                ? "bg-blue-500 hover:bg-blue-900"
-                : "bg-gray-300 cursor-not-allowed"
+                ? "bg-white border-slate-200 text-slate-700 hover:shadow-md hover:border-transparent hover:bg-gradient-to-r hover:from-sky-500 hover:to-green-500 hover:text-white"
+                : "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
             } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
           >
             {loading ? <Loader /> : t("productForm.submitButton")}
@@ -561,7 +561,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
             <button
               type="button"
               onClick={downloadTemplate}
-              className="flex-1 bg-blue-500 text-white rounded flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors duration-200"
+              className="flex-1 bg-white border border-slate-200 text-slate-700 rounded-xl font-medium shadow-sm hover:shadow-md hover:border-transparent hover:bg-gradient-to-r hover:from-sky-500 hover:to-green-500 hover:text-white flex items-center justify-center gap-2 transition-all duration-200"
               style={{ height: "40px" }}
               title="Descargar Plantilla"
             >
@@ -575,7 +575,7 @@ const ProductForm: React.FC<IEditStoreProps> = ({ storeId, onSuccess, onCancel, 
 
             <label
               htmlFor="file-upload"
-              className="flex-1 bg-blue-500 text-white rounded flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors duration-200 cursor-pointer"
+              className="flex-1 bg-white border border-slate-200 text-slate-700 rounded-xl font-medium shadow-sm hover:shadow-md hover:border-transparent hover:bg-gradient-to-r hover:from-sky-500 hover:to-green-500 hover:text-white flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer"
               style={{ height: "40px" }}
               title="Carga Masiva de Productos"
             >

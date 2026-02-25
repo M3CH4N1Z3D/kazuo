@@ -454,7 +454,7 @@ export default function MiEmpresa() {
                     {!member.isAdmin && (
                       <button
                         onClick={() => handleOpenPermissionsModal(member)}
-                        className="flex-1 md:flex-none px-3 py-1 bg-yellow-500 text-white text-sm rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition duration-300 flex items-center justify-center"
+                        className="flex-1 md:flex-none px-3 py-1 bg-white border border-slate-200 text-slate-700 text-sm rounded-xl hover:shadow-md hover:border-transparent hover:bg-gradient-to-r hover:from-sky-500 hover:to-green-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 transition duration-300 flex items-center justify-center gap-2"
                         title={t("company.managePermissions")}
                       >
                         <FaKey className="inline mr-1" /> {t("company.permissions")}
@@ -462,7 +462,7 @@ export default function MiEmpresa() {
                     )}
                     <button
                       onClick={() => handleRemoveTeamMember(member.id)}
-                      className="flex-1 md:flex-none px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-300 flex items-center justify-center"
+                      className="flex-1 md:flex-none px-3 py-1 bg-white border border-slate-200 text-slate-700 text-sm rounded-xl hover:shadow-md hover:border-transparent hover:bg-gradient-to-r hover:from-sky-500 hover:to-green-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 transition duration-300 flex items-center justify-center gap-2"
                     >
                       <FaTrash className="inline mr-1" /> {t("company.delete")}
                     </button>
@@ -505,7 +505,7 @@ export default function MiEmpresa() {
                 />
                 <button
                   onClick={handleAddTeamMember}
-                  className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300"
+                  className="w-full px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl font-medium shadow-sm hover:shadow-md hover:border-transparent hover:bg-gradient-to-r hover:from-sky-500 hover:to-green-500 hover:text-white transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50"
                 >
                   <FaPlus className="inline mr-2" /> {t("company.addButton")}
                 </button>

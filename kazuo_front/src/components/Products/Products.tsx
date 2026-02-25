@@ -331,10 +331,10 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
             </h2>
             <div className="flex flex-col sm:flex-row gap-4">
               <button
-                className={`w-full sm:w-52 px-4 py-2 rounded text-sm text-white transition duration-300 ease-in-out flex items-center justify-center ${
+                className={`w-full sm:w-52 px-4 py-2 rounded-xl text-sm transition-all duration-300 ease-in-out flex items-center justify-center gap-2 border shadow-sm font-medium ${
                   userData?.isAdmin
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-gray-400 cursor-not-allowed"
+                    ? "bg-white border-slate-200 text-slate-700 hover:shadow-md hover:border-transparent hover:bg-gradient-to-r hover:from-sky-500 hover:to-green-500 hover:text-white"
+                    : "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
                 }`}
                 onClick={handleGenerateReport}
                 disabled={!userData?.isAdmin}
@@ -342,10 +342,10 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
                 {t("products.generateReport")}
               </button>
               <button
-                className={`w-full sm:w-52 px-4 py-2 rounded text-sm text-white transition duration-300 ease-in-out flex items-center justify-center ${
+                className={`w-full sm:w-52 px-4 py-2 rounded-xl text-sm transition-all duration-300 ease-in-out flex items-center justify-center gap-2 border shadow-sm font-medium ${
                   userData?.isAdmin
-                    ? "bg-green-600 hover:bg-green-700"
-                    : "bg-gray-400 cursor-not-allowed"
+                    ? "bg-white border-slate-200 text-slate-700 hover:shadow-md hover:border-transparent hover:bg-gradient-to-r hover:from-sky-500 hover:to-green-500 hover:text-white"
+                    : "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
                 }`}
                 onClick={handleNavigateToStatistics}
                 disabled={!userData?.isAdmin}
@@ -353,7 +353,7 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
                 {t("products.statsByStore")}
               </button>
               <button
-                className="w-full sm:w-52 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm transition duration-300 ease-in-out flex items-center justify-center"
+                className="w-full sm:w-52 bg-white border border-slate-200 text-slate-700 hover:shadow-md hover:border-transparent hover:bg-gradient-to-r hover:from-sky-500 hover:to-green-500 hover:text-white px-4 py-2 rounded-xl text-sm transition-all duration-300 ease-in-out flex items-center justify-center gap-2 shadow-sm font-medium"
                 onClick={handleCreateNewProduct}
                 id="tour-add-product-btn"
               >

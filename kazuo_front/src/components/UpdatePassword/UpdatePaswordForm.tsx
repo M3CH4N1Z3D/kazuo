@@ -217,10 +217,10 @@ const UpdatePassForm = () => {
           <button
             type="submit"
             disabled={!isFormValid}
-            className={`w-full py-2 px-4 text-white font-semibold rounded-md shadow-sm ${
+            className={`w-full py-2 px-4 font-semibold rounded-xl shadow-sm transition-all border ${
               isFormValid
-                ? "bg-gray-900 hover:bg-gray-800"
-                : "bg-gray-400 cursor-not-allowed"
+                ? "bg-white border-slate-200 text-slate-700 hover:shadow-md hover:border-transparent hover:bg-gradient-to-r hover:from-sky-500 hover:to-green-500 hover:text-white"
+                : "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
             }`}
           >
             Actualizar contraseña

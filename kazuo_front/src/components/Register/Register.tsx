@@ -198,7 +198,7 @@ const Register = () => {
             <div>
               <button
                 onClick={handleGoogleLogin}
-                className="w-full py-2 px-4 bg-white text-gray-700 font-semibold rounded-md shadow-sm hover:bg-gray-50 border border-gray-300 flex items-center justify-center"
+                className="w-full py-2 px-4 rounded-xl font-medium shadow-sm transition-all flex items-center justify-center gap-2 border bg-white border-slate-200 text-slate-700 hover:shadow-md hover:border-transparent hover:bg-gradient-to-r hover:from-sky-500 hover:to-green-500 hover:text-white"
               >
                 <svg
                   className="w-5 h-5 mr-2"
@@ -327,10 +327,10 @@ const Register = () => {
           <button
             type="submit"
             disabled={!isFormValid}
-            className={`w-full py-2 px-4 text-white font-semibold rounded-md shadow-sm flex justify-center items-center ${
+            className={`w-full py-2 px-4 font-semibold rounded-xl shadow-sm flex justify-center items-center transition-all border ${
               isFormValid
-                ? "bg-gray-900 hover:bg-gray-800"
-                : "bg-gray-400 cursor-not-allowed"
+                ? "bg-white border-slate-200 text-slate-700 hover:shadow-md hover:border-transparent hover:bg-gradient-to-r hover:from-sky-500 hover:to-green-500 hover:text-white"
+                : "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
             }`}
           >
             {loading ? <Loader /> : t("register.submitButton")}

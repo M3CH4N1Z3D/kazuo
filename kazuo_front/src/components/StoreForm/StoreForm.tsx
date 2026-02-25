@@ -155,9 +155,9 @@ export const StoreForm = () => {
           <button
             type="submit"
             disabled={isButtonDisabled} // Deshabilita el botón si isButtonDisabled es true
-            className={`w-full py-2 px-4 text-white ${
-              isButtonDisabled ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-900"
-            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-md flex items-center justify-center`}
+            className={`w-full py-2 px-4 rounded-xl font-medium shadow-sm transition-all flex items-center justify-center gap-2 border ${
+              isButtonDisabled ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed" : "bg-white border-slate-200 text-slate-700 hover:shadow-md hover:border-transparent hover:bg-gradient-to-r hover:from-sky-500 hover:to-green-500 hover:text-white"
+            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500`}
           >
             {loading ? <Loader /> : t("storeForm.submitButton")}
           </button>
