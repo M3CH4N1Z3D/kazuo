@@ -439,8 +439,22 @@ const Inventario: React.FC = () => {
         </h2>
         <div className="flex items-center gap-4">
           <button
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-sm transition-colors font-medium flex items-center gap-2"
-            onClick={handleNavigateToCreateStore}
+            className={`px-6 py-2 rounded-lg shadow-sm transition-colors font-medium flex items-center gap-2 ${
+              userData && !userData.company
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            }`}
+            onClick={
+              userData && !userData.company
+                ? undefined
+                : handleNavigateToCreateStore
+            }
+            disabled={!!(userData && !userData.company)}
+            title={
+              userData && !userData.company
+                ? t("inventory.createCompanyFirst")
+                : ""
+            }
           >
             <span>+</span> {t("inventory.createStore")}
           </button>

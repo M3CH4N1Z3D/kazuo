@@ -34,8 +34,9 @@ export const StoreForm = () => {
 
   // Verifica si los campos están completos para habilitar el botón
   useEffect(() => {
-    setIsButtonDisabled(!(name && selectedCategory));
-  }, [name, selectedCategory]);
+    const hasCompany = !!userData?.company;
+    setIsButtonDisabled(!(name && selectedCategory && hasCompany));
+  }, [name, selectedCategory, userData]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -97,6 +98,14 @@ export const StoreForm = () => {
         <h2 className="text-2xl font-bold text-center text-blue-700">
           {t("storeForm.title")}
         </h2>
+        {userData && !userData.company && (
+          <div
+            className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4"
+            role="alert"
+          >
+            <p>{t("inventory.createCompanyFirst")}</p>
+          </div>
+        )}
         <form className="space-y-6" onSubmit={handleSubmit}>
           {/* Campo para el nombre de la bodega */}
           <div className="space-y-2">

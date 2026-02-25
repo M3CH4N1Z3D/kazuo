@@ -188,6 +188,7 @@ export const English = {
     uploadImageError: "Error uploading image",
     uploadImageGenericError: "There was an error uploading the image",
     storeNameLoading: "Loading store name",
+    createCompanyFirst: "You must create a company first",
   },
   products: {
     generateReport: "Generate Report",

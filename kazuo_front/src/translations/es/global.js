@@ -188,6 +188,7 @@ export const Spanish = {
     uploadImageError: "Error al subir la imagen",
     uploadImageGenericError: "Hubo un error al cargar la imagen",
     storeNameLoading: "Cargando el nombre de la bodega",
+    createCompanyFirst: "Primero debes crear una empresa",
   },
   products: {
     generateReport: "Generar Informe",
