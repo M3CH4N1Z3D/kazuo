@@ -58,7 +58,7 @@ export default function Soluciones() {
             mejorar la eficiencia de tu negocio.
           </p>
           <button className="bg-white text-blue-600 px-6 py-3 rounded-md font-semibold hover:bg-blue-100 transition duration-300">
-            <Link href="/Planes">Comienza tu prueba gratuita</Link>
+            <Link href="/Register">Registrate</Link>
           </button>
         </div>
 

@@ -1,8 +1,10 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import { FaLinkedin, FaInstagram, FaGithub } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import TermsModal from "./TermsModal";
 
 type Platform = "instagram" | "linkedin" | "github";
 
@@ -15,6 +17,7 @@ type Participant = {
 export default function Footer() {
   const [t] = useTranslation("global");
   const pathname = usePathname();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Simulación de participantes por red social
   const participants: Record<Platform, Participant[]> = {
@@ -103,12 +106,12 @@ export default function Footer() {
           <h3 className="font-bold text-lg mb-4">{t("footer.resources")}</h3>
           <ul className="space-y-2">
             <li>
-              <a href="/Contacto" className="hover:underline">
+              <a href="https://spm-integral-site.vercel.app/contact" className="hover:underline">
                 {t("footer.support")}
               </a>
             </li>
             <li>
-              <a href="/Sobre Nosotros" className="hover:underline">
+              <a href="https://spm-integral-site.vercel.app/about" className="hover:underline">
                 {t("footer.developers")}
               </a>
             </li>
@@ -119,12 +122,17 @@ export default function Footer() {
       <div className="mt-12 text-sm text-blue-300">
         <p>
           {t("footer.cookiesDisclaimer")}{" "}
-          <a href="#" className="underline">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="underline hover:text-white focus:outline-none"
+          >
             {t("footer.termsConditions")}
-          </a>
+          </button>
         </p>
         <p className="mt-2">{t("footer.rightsReserved")}</p>
       </div>
+
+      <TermsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </footer>
   );
 }

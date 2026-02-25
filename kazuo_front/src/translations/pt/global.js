@@ -95,7 +95,7 @@ export const Portuguese = {
     cookiesDisclaimer:
       "Ao navegar nos sites de propriedade da SPM INTEGRAL, você aceita o uso de Cookies de acordo com nossos",
     termsConditions: "termos e condições",
-    rightsReserved: "© 2024 Spot-On Project. Todos os direitos reservados.",
+    rightsReserved: "© 2026 Spot-On Project. Todos os direitos reservados.",
   },
   solutions: {
     title: "Controle de Estoque Spot-On",
