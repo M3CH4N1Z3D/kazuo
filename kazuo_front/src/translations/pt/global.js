@@ -484,5 +484,51 @@ export const Portuguese = {
       updatedText: "A loja foi atualizada com sucesso.",
       updateError: "Não foi possível atualizar a loja. Por favor, tente novamente.",
     }
+  },
+  tour: {
+    welcome: {
+      title: "Bem-vindo ao Spot-On!",
+      content: "Vamos fazer um tour rápido para você começar a gerenciar seu negócio.",
+    },
+    createStore: {
+      title: "Crie sua primeira loja",
+      content: "Aqui você pode criar e gerenciar seus armazéns ou lojas.",
+    },
+    profile: {
+      title: "Seu Perfil",
+      content: "Gerencie sua conta, altere sua senha e atualize suas informações.",
+    },
+    help: {
+      title: "Ajuda",
+      content: "Se precisar ver este tour novamente, clique aqui.",
+    },
+    inventory: {
+      title: "Gestão de Estoque",
+      content: "Aqui você pode ver todos os seus armazéns e gerenciar seu estoque.",
+    },
+    company: {
+      title: "Gestão da Empresa",
+      content: "Registre e gerencie os dados da sua empresa e equipe.",
+    },
+    products: {
+      title: "Lista de Produtos",
+      content: "Visualize e gerencie todos os produtos deste armazém.",
+      addBtnTitle: "Adicionar Produto",
+      addBtnContent: "Clique aqui para adicionar um novo produto ao estoque.",
+    },
+    statistics: {
+      title: "Estatísticas",
+      content: "Analise o desempenho do seu negócio com gráficos detalhados.",
+    },
+    chatbot: {
+      title: "Assistente Virtual",
+      content: "Se tiver dúvidas, nosso assistente virtual está aqui para ajudar.",
+    },
+    next: "Próximo",
+    back: "Voltar",
+    skip: "Pular",
+    finish: "Finalizar",
+    step: "Passo",
+    of: "de",
   }
 };

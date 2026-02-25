@@ -21,6 +21,7 @@ import {
   UserPlus,
   Building,
   User,
+  CircleHelp,
 } from "lucide-react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
@@ -190,6 +191,7 @@ function NavLinks({
           href="/Profile"
           onClick={onLinkClick}
           className={getLinkClasses("/Profile")}
+          id="tour-profile-link"
         >
           <User size={18} /> {t("navbar.profile")}
         </Link>
@@ -260,6 +262,17 @@ function AuthButtons({
     <>
       {isLoggedIn ? (
         <>
+           <button
+            onClick={() => window.dispatchEvent(new Event("start-tour"))}
+            className={`w-full lg:w-auto px-4 py-2 text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-2 ${
+              !mobile ? "hidden lg:flex" : ""
+            }`}
+            id="tour-help-btn"
+            title={t("tour.help.title")}
+          >
+            <CircleHelp size={18} /> {mobile && t("tour.help.title")}
+          </button>
+
           <button
             onClick={handleLogout}
             className={`w-full lg:w-auto px-4 py-2 text-muted-foreground hover:text-destructive transition-colors flex items-center justify-center gap-2 ${

@@ -455,6 +455,7 @@ const Inventario: React.FC = () => {
                 ? t("inventory.createCompanyFirst")
                 : ""
             }
+            id="tour-create-store-btn"
           >
             <span>+</span> {t("inventory.createStore")}
           </button>
@@ -817,7 +818,7 @@ const Inventario: React.FC = () => {
 
             if (displayStores.length === 0) {
               return (
-                <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100">
+                <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100" id="tour-inventory-section">
                   <div className="text-gray-400 mb-3 text-5xl">📦</div>
                   <h3 className="text-lg font-medium text-gray-900">
                     {t("inventory.noStoresTitle")}
@@ -832,7 +833,7 @@ const Inventario: React.FC = () => {
             }
 
              return (
-               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="tour-inventory-section">
                  {displayStores.map((bodega) => (
                    <div
                      key={bodega.id}

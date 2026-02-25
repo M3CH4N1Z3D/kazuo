@@ -488,5 +488,51 @@ export const Spanish = {
       updatedText: "La bodega se ha actualizado correctamente.",
       updateError: "No se pudo actualizar la bodega. Por favor, inténtalo de nuevo.",
     }
+  },
+  tour: {
+    welcome: {
+      title: "¡Bienvenido a Spot-On!",
+      content: "Vamos a dar un recorrido rápido para que puedas empezar a gestionar tu negocio.",
+    },
+    createStore: {
+      title: "Crea tu primera bodega",
+      content: "Aquí puedes crear y gestionar tus bodegas o tiendas.",
+    },
+    profile: {
+      title: "Tu Perfil",
+      content: "Gestiona tu cuenta, cambia tu contraseña y actualiza tu información.",
+    },
+    help: {
+      title: "Ayuda",
+      content: "Si necesitas ver este tour de nuevo, haz click aquí.",
+    },
+    inventory: {
+      title: "Gestión de Inventario",
+      content: "Aquí podrás ver todas tus bodegas y gestionar su inventario.",
+    },
+    company: {
+      title: "Gestión de Empresa",
+      content: "Registra y administra los datos de tu empresa y equipo.",
+    },
+    products: {
+      title: "Listado de Productos",
+      content: "Visualiza y gestiona todos los productos de esta bodega.",
+      addBtnTitle: "Agregar Producto",
+      addBtnContent: "Haz clic aquí para añadir un nuevo producto al inventario.",
+    },
+    statistics: {
+      title: "Estadísticas",
+      content: "Analiza el rendimiento de tu negocio con gráficos detallados.",
+    },
+    chatbot: {
+      title: "Asistente Virtual",
+      content: "Si tienes dudas, nuestro asistente virtual está aquí para ayudarte.",
+    },
+    next: "Siguiente",
+    back: "Atrás",
+    skip: "Saltar",
+    finish: "Finalizar",
+    step: "Paso",
+    of: "de",
   }
 };

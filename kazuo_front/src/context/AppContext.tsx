@@ -63,12 +63,63 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     window.location.href = "/Login";
   };
 
+  const markTourAsSeen = async () => {
+    if (!userData) return;
+
+    // Update local state immediately
+    const updatedUser = { ...userData, hasSeenTour: true };
+    setUserData(updatedUser);
+    localStorage.setItem("userData", JSON.stringify(updatedUser));
+
+    // Update backend
+    try {
+      const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
+      await fetch(`${kazuo_back}/users/${userData.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userData.token}`,
+        },
+        body: JSON.stringify({ hasSeenTour: true }),
+      });
+    } catch (error) {
+      console.error("Error updating tour status", error);
+    }
+  };
+
+  const updateTourProgress = async (tourKey: string, completed: boolean) => {
+    if (!userData) return;
+
+    const currentProgress = userData.tourProgress || {};
+    const updatedProgress = { ...currentProgress, [tourKey]: completed };
+    const updatedUser = { ...userData, tourProgress: updatedProgress };
+
+    setUserData(updatedUser);
+    localStorage.setItem("userData", JSON.stringify(updatedUser));
+
+    try {
+      const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
+      await fetch(`${kazuo_back}/users/${userData.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userData.token}`,
+        },
+        body: JSON.stringify({ tourProgress: updatedProgress }),
+      });
+    } catch (error) {
+      console.error("Error updating tour progress", error);
+    }
+  };
+
   const value: AppContextType = {
     isLoggedIn,
     userData,
     login,
     logout,
     setUserData,
+    markTourAsSeen,
+    updateTourProgress,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -107,6 +107,19 @@ export class Users {
   @Column({ nullable: true })
   googleId: string | null;
 
+  @ApiProperty({
+    description: 'Indica si el usuario ha visto el tour de bienvenida',
+    example: true,
+  })
+  @Column({
+    type: 'boolean',
+    default: false,
+  })
+  hasSeenTour: boolean;
+
+  @Column({ type: 'json', default: {} })
+  tourProgress: Record<string, boolean>;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 

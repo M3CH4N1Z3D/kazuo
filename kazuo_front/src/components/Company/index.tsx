@@ -393,7 +393,7 @@ export default function MiEmpresa() {
   }
 
   return (
-    <div className="container mx-auto py-10 px-4">
+    <div id="tour-company-section" className="container mx-auto py-10 px-4">
       <h1 className="text-3xl font-bold text-center mb-10">{t("company.title")}</h1>
       {/* Sección de información de la empresa */}
       <div className="bg-white shadow-md rounded-lg overflow-hidden mb-8">

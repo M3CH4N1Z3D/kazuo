@@ -48,6 +48,8 @@ export interface userData {
   auth0Id?: string;
   isAdmin?: boolean;
   isSuperAdmin?: boolean;
+  hasSeenTour?: boolean;
+  tourProgress?: Record<string, boolean>;
 }
 
 export interface IProduct {
@@ -99,6 +101,8 @@ export interface AppContextType {
   setUserData: React.Dispatch<React.SetStateAction<userData | null>>;
   login: (loginData: any) => Promise<void>;
   logout: () => void;
+  markTourAsSeen: () => Promise<void>;
+  updateTourProgress: (tourKey: string, completed: boolean) => Promise<void>;
 }
 
 export interface IFormData {

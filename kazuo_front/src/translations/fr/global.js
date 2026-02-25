@@ -467,5 +467,51 @@ export const French = {
       errorText: "Impossible de créer le magasin. Veuillez réessayer.",
       creationFailed: "Erreur lors de la création du magasin",
     }
+  },
+  tour: {
+    welcome: {
+      title: "Bienvenue sur Spot-On !",
+      content: "Faisons un tour rapide pour que vous puissiez commencer à gérer votre entreprise.",
+    },
+    createStore: {
+      title: "Créez votre premier magasin",
+      content: "Ici, vous pouvez créer et gérer vos entrepôts ou magasins.",
+    },
+    profile: {
+      title: "Votre Profil",
+      content: "Gérez votre compte, changez votre mot de passe et mettez à jour vos informations.",
+    },
+    help: {
+      title: "Aide",
+      content: "Si vous avez besoin de revoir ce tour, cliquez ici.",
+    },
+    inventory: {
+      title: "Gestion des Stocks",
+      content: "Ici vous pouvez voir tous vos entrepôts et gérer leur inventaire.",
+    },
+    company: {
+      title: "Gestion d'Entreprise",
+      content: "Enregistrez et gérez les données de votre entreprise et de votre équipe.",
+    },
+    products: {
+      title: "Liste des Produits",
+      content: "Visualisez et gérez tous les produits de cet entrepôt.",
+      addBtnTitle: "Ajouter un Produit",
+      addBtnContent: "Cliquez ici pour ajouter un nouveau produit à l'inventaire.",
+    },
+    statistics: {
+      title: "Statistiques",
+      content: "Analysez les performances de votre entreprise avec des graphiques détaillés.",
+    },
+    chatbot: {
+      title: "Assistant Virtuel",
+      content: "Si vous avez des questions, notre assistant virtuel est là pour vous aider.",
+    },
+    next: "Suivant",
+    back: "Retour",
+    skip: "Passer",
+    finish: "Terminer",
+    step: "Étape",
+    of: "sur",
   }
 };

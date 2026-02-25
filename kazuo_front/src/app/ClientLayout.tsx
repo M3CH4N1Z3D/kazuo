@@ -13,7 +13,9 @@ import { Spanish } from "../translations/es/global";
 import { English } from "../translations/en/global";
 import { Portuguese } from "../translations/pt/global";
 import { French } from "../translations/fr/global";
+import TourGuide from "@/components/TourGuide";
 
+// Force rebuild
 i18next.use(LanguageDetector).init({
   interpolation: { escapeValue: false },
   fallbackLng: "es",
@@ -61,7 +63,10 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
       <I18nextProvider i18n={i18next}>
         <AlertProvider>
-          <AppProvider>{children}</AppProvider>
+          <AppProvider>
+            <TourGuide />
+            {children}
+          </AppProvider>
         </AlertProvider>
       </I18nextProvider>
     </GoogleOAuthProvider>

@@ -484,5 +484,51 @@ export const English = {
       updatedText: "The store has been updated successfully.",
       updateError: "Could not update store. Please try again.",
     }
+  },
+  tour: {
+    welcome: {
+      title: "Welcome to Spot-On!",
+      content: "Let's take a quick tour so you can start managing your business.",
+    },
+    createStore: {
+      title: "Create your first store",
+      content: "Here you can create and manage your warehouses or stores.",
+    },
+    profile: {
+      title: "Your Profile",
+      content: "Manage your account, change your password, and update your information.",
+    },
+    help: {
+      title: "Help",
+      content: "If you need to see this tour again, click here.",
+    },
+    inventory: {
+      title: "Inventory Management",
+      content: "Here you can see all your warehouses and manage their inventory.",
+    },
+    company: {
+      title: "Company Management",
+      content: "Register and manage your company and team data.",
+    },
+    products: {
+      title: "Product List",
+      content: "View and manage all products in this warehouse.",
+      addBtnTitle: "Add Product",
+      addBtnContent: "Click here to add a new product to the inventory.",
+    },
+    statistics: {
+      title: "Statistics",
+      content: "Analyze your business performance with detailed charts.",
+    },
+    chatbot: {
+      title: "Virtual Assistant",
+      content: "If you have questions, our virtual assistant is here to help.",
+    },
+    next: "Next",
+    back: "Back",
+    skip: "Skip",
+    finish: "Finish",
+    step: "Step",
+    of: "of",
   }
 };

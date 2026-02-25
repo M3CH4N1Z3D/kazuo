@@ -3,6 +3,7 @@ import {
   IsEmail,
   IsNotEmpty,
   IsString,
+  IsBoolean,
   Length,
   Matches,
   IsNumber,
@@ -97,6 +98,23 @@ export class CreateUserDto {
   })
   @IsOptional()
   permissions?: string[];
+
+  @ApiProperty({
+    description: 'Indica si el usuario ha visto el tour de bienvenida',
+    example: true,
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  hasSeenTour?: boolean;
+
+  @ApiProperty({
+    description: 'Progreso del tour del usuario',
+    example: { welcome: true, company: false },
+    required: false,
+  })
+  @IsOptional()
+  tourProgress?: Record<string, boolean>;
 }
 
 export class LoginUserDto extends PickType(CreateUserDto, ['email']) {

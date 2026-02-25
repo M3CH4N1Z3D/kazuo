@@ -324,7 +324,7 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
   return (
     <div className="w-full min-h-screen flex flex-col justify-center bg-gray-100">
       <main className="w-full flex-grow container mx-auto px-4 py-8">
-        <div className="rounded-md p-8 md:w-2/3 mx-auto">
+        <div className="rounded-md p-8 md:w-2/3 mx-auto" id="tour-products-section">
           <div className="flex flex-col gap-4 mb-4">
             <h2 className="text-3xl font-bold text-gray-800 whitespace-nowrap">
               {storeName || t("inventory.storeNameLoading")}
@@ -355,6 +355,7 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
               <button
                 className="w-full sm:w-52 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm transition duration-300 ease-in-out flex items-center justify-center"
                 onClick={handleCreateNewProduct}
+                id="tour-add-product-btn"
               >
                 {t("products.addProduct")}
               </button>
