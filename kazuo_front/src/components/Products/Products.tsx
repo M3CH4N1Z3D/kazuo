@@ -5,6 +5,7 @@ import { IEditStoreProps, IProduct } from "@/interfaces/types";
 import { useEffect, useState, useRef, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import ProductForm from "../ProductForm/ProductForm";
+import ProductStatsModal from "./ProductStatsModal";
 import { useAppContext } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import jsPDF from "jspdf";
@@ -32,6 +33,8 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [storeName, setStoreName] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProductStats, setSelectedProductStats] = useState<IProduct | null>(null);
+  const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const kazuo_back = process.env.NEXT_PUBLIC_API_URL;
@@ -101,6 +104,16 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleOpenStats = (product: IProduct) => {
+    setSelectedProductStats(product);
+    setIsStatsModalOpen(true);
+  };
+
+  const handleCloseStats = () => {
+    setIsStatsModalOpen(false);
+    setSelectedProductStats(null);
   };
 
   const handleProductCreated = () => {
@@ -449,8 +462,9 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
                               />
                               <FontAwesomeIcon
                                 icon={faChartLine}
-                                className="text-green-500 hover:text-green-600"
+                                className="text-green-500 hover:text-green-600 cursor-pointer"
                                 title={t("products.viewStats")}
+                                onClick={() => handleOpenStats(product)}
                               />
                               <FontAwesomeIcon
                                 icon={faPlus}
@@ -523,6 +537,12 @@ const Products: React.FC<IEditStoreProps> = ({ storeId }) => {
           </div>
         </Dialog>
       </Transition>
+
+      <ProductStatsModal
+        isOpen={isStatsModalOpen}
+        onClose={handleCloseStats}
+        product={selectedProductStats}
+      />
     </div>
   );
 };
