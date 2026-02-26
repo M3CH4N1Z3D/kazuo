@@ -192,36 +192,49 @@ const Statistics: React.FC<IStatisticsProps> = ({ storeId }) => {
               <p className="text-sm text-slate-500">Top 25 productos con mayor inventario</p>
             </div>
             
-            <div className="flex-1 relative h-64 flex items-end justify-between gap-1 sm:gap-2 pb-6 border-b border-slate-100">
-              {/* Eje Y (Simulado Dinámicamente) */}
-              <div className="absolute left-0 top-0 bottom-6 w-full flex flex-col justify-between pointer-events-none z-0">
+            <div className="flex-1 flex flex-row items-end pb-6 border-b border-slate-100 h-64">
+              {/* Eje Y - Fixed Column */}
+              <div className="w-8 h-full flex flex-col justify-between pt-12 pb-0 z-20 bg-white text-xs text-slate-300 pointer-events-none">
                  {[100, 80, 60, 40, 20, 0].map(pct => (
-                   <div key={pct} className="w-full flex items-center text-xs text-slate-300">
-                      <span className="w-8">{Math.round((maxQuantity * pct) / 100)}</span>
-                      <div className="flex-1 h-px bg-slate-50 ml-2"></div>
+                   <div key={pct} className="flex items-center justify-end h-4 w-full pr-2">
+                      <span>{Math.round((maxQuantity * pct) / 100)}</span>
                    </div>
                  ))}
               </div>
 
-              {/* Barras */}
-              <div className="relative z-10 w-full h-full flex items-end justify-between gap-[2px] sm:gap-1.5 pl-10 pt-4">
-                 {barChartData.map((prod, idx) => {
-                   const heightPct = (Number(prod.quantity) / maxQuantity) * 100;
-                   return (
-                     <div key={prod.id || idx} className="group relative w-full flex justify-center h-full items-end">
-                       {/* Tooltip Hover */}
-                       <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-white text-xs py-1 px-2 rounded pointer-events-none whitespace-nowrap z-20">
-                         {prod.name}: {prod.quantity} ud.
-                       </div>
-                       {/* Barra con gradiente SPOT-ON */}
-                       <div 
-                         className="w-full bg-gradient-to-t from-sky-500 to-sky-400 group-hover:from-green-500 group-hover:to-green-400 rounded-t-sm sm:rounded-t-md transition-all duration-300 cursor-pointer"
-                         style={{ height: `${heightPct}%` }}
-                       ></div>
-                     </div>
-                   );
-                 })}
-                 {barChartData.length === 0 && <div className="w-full text-center text-slate-400 self-center">No hay datos</div>}
+              {/* Chart Area - Scrollable */}
+              <div className="flex-1 h-full overflow-x-auto relative pt-12 ml-1">
+                 <div className="relative h-full min-w-[600px] sm:min-w-full">
+                    {/* Grid Lines (Background) */}
+                    <div className="absolute inset-0 flex flex-col justify-between pointer-events-none z-0 pt-12">
+                       {[100, 80, 60, 40, 20, 0].map(pct => (
+                         <div key={pct} className="w-full flex items-center h-4">
+                            <div className="w-full h-px bg-slate-50"></div>
+                         </div>
+                       ))}
+                    </div>
+
+                    {/* Barras */}
+                    <div className="relative z-10 h-full flex items-end justify-between gap-1 sm:gap-2">
+                       {barChartData.map((prod, idx) => {
+                         const heightPct = (Number(prod.quantity) / maxQuantity) * 100;
+                         return (
+                           <div key={prod.id || idx} className="group relative w-full flex justify-center h-full items-end">
+                             {/* Tooltip Hover */}
+                             <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-white text-xs py-1 px-2 rounded pointer-events-none whitespace-nowrap z-20">
+                               {prod.name}: {prod.quantity} ud.
+                             </div>
+                             {/* Barra con gradiente SPOT-ON */}
+                             <div 
+                               className="w-full bg-gradient-to-t from-sky-500 to-sky-400 group-hover:from-green-500 group-hover:to-green-400 rounded-t-sm sm:rounded-t-md transition-all duration-300 cursor-pointer"
+                               style={{ height: `${heightPct}%` }}
+                             ></div>
+                           </div>
+                         );
+                       })}
+                       {barChartData.length === 0 && <div className="w-full text-center text-slate-400 self-center">No hay datos</div>}
+                    </div>
+                 </div>
               </div>
             </div>
           </div>
