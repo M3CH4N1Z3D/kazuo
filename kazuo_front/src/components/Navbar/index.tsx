@@ -203,7 +203,9 @@ function NavLinks({
           <Users size={18} /> {t("navbar.aboutUs")}
         </Link>
         <Link
-          href="/Contacto"
+          href="https://spm-integral-site.vercel.app/contact"
+          target="_blank"
+          rel="noopener noreferrer"
           onClick={onLinkClick}
           className={getLinkClasses("/Contacto")}
         >
