@@ -99,6 +99,7 @@ kazuo-user_accessKeys.csv
 *accessKeys.csv
 *.csv
 *.md
+*code-workspace
 
 # PWA files
 kazuo_front/public/sw.js

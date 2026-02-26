@@ -1,0 +1,39 @@
+{
+  "pos": {
+    "sync_status": "Sync Status",
+    "sync_pending": "Sync: {{count}} pending",
+    "sync_ok": "Sync: Up to date",
+    "sync_error": "Sync: Error",
+    "input_label": "Product Code / Barcode",
+    "input_placeholder": "Scan or type code...",
+    "add_to_cart": "Add to Cart",
+    "table": {
+      "code": "Code",
+      "name": "Product Name",
+      "price": "Price",
+      "qty": "Qty",
+      "total": "Total"
+    },
+    "total_amount": "Total Amount",
+    "pay_checkout": "PAY / CHECKOUT",
+    "clear_cart": "Clear Cart",
+    "alerts": {
+      "not_found_title": "Not Found",
+      "not_found_msg": "Product '{{code}}' not found.",
+      "insufficient_stock_title": "Insufficient Stock",
+      "insufficient_stock_msg": "Only {{stock}} units available.",
+      "empty_cart_title": "Empty Cart",
+      "empty_cart_msg": "Add products before paying.",
+      "success_title": "Success",
+      "success_msg": "Sale completed! Total: ${{total}}",
+      "error_title": "Error",
+      "transaction_failed": "Transaction failed: {{error}}"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "restart_required": "Restart application to apply some changes."
+  }
+}

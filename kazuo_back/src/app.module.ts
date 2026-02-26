@@ -14,6 +14,7 @@ import { CompanyModule } from './company/company.module';
 import { ProvidersModule } from './providers/providers.module';
 import { InformesModule } from './modules/informes/informes.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
+import { SyncModule } from './modules/sync/sync.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ChatbotModule } from './chatbot/chatbot.module';
     ProvidersModule,
     InformesModule,
     ChatbotModule,
+    SyncModule,
 
     SeedsModule,
 

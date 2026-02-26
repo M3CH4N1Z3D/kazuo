@@ -12,10 +12,14 @@ import {
   UseGuards,
   Req,
   Patch,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { TransferStockDto } from './dto/transfer-stock.dto';
 import { AuthGuard } from '../auth/guards/auth-guard.guard';
 import { Product } from '../../Entities/product.entity';
 import {
@@ -42,6 +46,30 @@ export class ProductController {
   @UseGuards(AuthGuard)
   async bulkCreate(@Body() products: CreateProductDto[]) {
     return this.productService.bulkCreate(products);
+  }
+
+  @Post('transfer')
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Transferir stock entre bodegas' })
+  @ApiBody({ type: TransferStockDto })
+  async transferStock(@Body() transferStockDto: TransferStockDto) {
+    return this.productService.transferStock(
+      transferStockDto.sourceStoreId,
+      transferStockDto.targetStoreId,
+      transferStockDto.barcode,
+      transferStockDto.quantity,
+    );
+  }
+
+  @Post('import')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Importar productos desde CSV' })
+  async importProducts(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new Error('File is required');
+    }
+    return this.productService.importProducts(file.buffer);
   }
 
   @Get()

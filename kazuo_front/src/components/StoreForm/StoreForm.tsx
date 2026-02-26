@@ -12,6 +12,7 @@ export const StoreForm = () => {
   const { t } = useTranslation("global");
   const { showAlert } = useAlert();
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [type, setType] = useState<string>("VENTA");
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState<string>("");
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true); // Estado para habilitar/deshabilitar el botón
@@ -26,6 +27,10 @@ export const StoreForm = () => {
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCategory(e.target.value);
+  };
+
+  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setType(e.target.value);
   };
 
   const handleNombreBodegaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,6 +55,7 @@ export const StoreForm = () => {
     const dataStore = {
       name,
       categoryName: selectedCategory,
+      type,
       userId,
       companyIds,
     };
@@ -149,6 +155,26 @@ export const StoreForm = () => {
                   {category.name}
                 </option>
               ))}
+            </select>
+          </div>
+
+          {/* Desplegable para seleccionar tipo */}
+          <div className="space-y-2">
+            <label
+              htmlFor="type"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Tipo de Bodega
+            </label>
+            <select
+              name="type"
+              id="type"
+              value={type}
+              onChange={handleTypeChange}
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            >
+              <option value="VENTA">VENTA</option>
+              <option value="RESPALDO">RESPALDO</option>
             </select>
           </div>
 

@@ -22,6 +22,7 @@ import {
   Building,
   User,
   CircleHelp,
+  ArrowRightLeft,
 } from "lucide-react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
@@ -179,6 +180,13 @@ function NavLinks({
           className={getLinkClasses("/GestionInventario")}
         >
           <LayoutDashboard size={18} /> {t("navbar.inventoryManagement")}
+        </Link>
+        <Link
+          href="/Transfer"
+          onClick={onLinkClick}
+          className={getLinkClasses("/Transfer")}
+        >
+          <ArrowRightLeft size={18} /> {t("navbar.transfer")}
         </Link>
         <Link
           href="/Company"

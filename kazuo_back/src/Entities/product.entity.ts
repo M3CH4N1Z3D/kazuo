@@ -6,6 +6,7 @@ import {
   JoinColumn,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Store } from './store.entity';
@@ -13,6 +14,7 @@ import { Users } from './users.entity';
 import { Provider } from './providers.entity';
 import { Category } from './category.entity';
 import { Company } from './company.entity';
+import { SaleItem } from './sale-item.entity';
 
 @Entity({ name: 'products' })
 export class Product {
@@ -33,6 +35,9 @@ export class Product {
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   inPrice: number;
+
+  @Column({ nullable: true })
+  barcode: string;
 
   @Column()
   bange: string;
@@ -61,5 +66,7 @@ export class Product {
   @ManyToOne(() => Category, (category) => category.products, { onDelete: 'CASCADE' })
   category: Category;
 
+  @OneToMany(() => SaleItem, (saleItem) => saleItem.product)
+  saleItems: SaleItem[];
 
 }

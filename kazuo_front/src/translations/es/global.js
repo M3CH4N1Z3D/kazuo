@@ -25,6 +25,7 @@ export const Spanish = {
     cancel: "Cancelar",
     menu: "Menú",
     language: "Idioma",
+    transfer: "Traslados",
   },
   login: {
     title: "Iniciar Sesión",

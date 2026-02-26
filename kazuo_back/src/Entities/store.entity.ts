@@ -11,6 +11,7 @@ import { Category } from './category.entity';
 import { Users } from './users.entity';
 import { Product } from './product.entity';
 import { Company } from './company.entity';
+import { Sale } from './sale.entity';
 
 @Entity({ name: 'store' })
 export class Store {
@@ -26,6 +27,13 @@ export class Store {
   @ManyToOne(() => Category, (category) => category.stores, { onDelete: 'CASCADE' })
   category: Category;
 
+  @Column({
+    type: 'enum',
+    enum: ['VENTA', 'RESPALDO'],
+    default: 'VENTA',
+  })
+  type: string;
+
   @OneToMany(() => Product, (product) => product.store)
   products: Product[];
 
@@ -35,4 +43,6 @@ export class Store {
   @ManyToMany(() => Company, (company) => company.stores, { onDelete: 'CASCADE' })
   companies: Company[];
   
+  @OneToMany(() => Sale, (sale) => sale.store)
+  sales: Sale[];
 }

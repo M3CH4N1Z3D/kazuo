@@ -1,0 +1,39 @@
+{
+  "pos": {
+    "sync_status": "Status de Sincronização",
+    "sync_pending": "Sync: {{count}} pendentes",
+    "sync_ok": "Sync: Atualizado",
+    "sync_error": "Sync: Erro",
+    "input_label": "Código do Produto / Barras",
+    "input_placeholder": "Digitalizar ou digitar código...",
+    "add_to_cart": "Adicionar ao Carrinho",
+    "table": {
+      "code": "Código",
+      "name": "Nome do Produto",
+      "price": "Preço",
+      "qty": "Qtd",
+      "total": "Total"
+    },
+    "total_amount": "Valor Total",
+    "pay_checkout": "PAGAR / FINALIZAR",
+    "clear_cart": "Limpar Carrinho",
+    "alerts": {
+      "not_found_title": "Não Encontrado",
+      "not_found_msg": "Produto '{{code}}' não encontrado.",
+      "insufficient_stock_title": "Estoque Insuficiente",
+      "insufficient_stock_msg": "Apenas {{stock}} unidades disponíveis.",
+      "empty_cart_title": "Carrinho Vazio",
+      "empty_cart_msg": "Adicione produtos antes de pagar.",
+      "success_title": "Sucesso",
+      "success_msg": "Venda concluída! Total: ${{total}}",
+      "error_title": "Erro",
+      "transaction_failed": "Transação falhou: {{error}}"
+    }
+  },
+  "settings": {
+    "title": "Configurações",
+    "language": "Idioma",
+    "theme": "Tema",
+    "restart_required": "Reinicie o aplicativo para aplicar algumas alterações."
+  }
+}
