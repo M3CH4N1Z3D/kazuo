@@ -1,0 +1,159 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { useAlert } from "@/context/AlertContext";
+import { useRouter } from "next/navigation";
+import { ICategory, IEditStoreProps } from "@/interfaces/types";
+import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
+
+const EditStoreForm: React.FC<IEditStoreProps> = ({ storeId }) => {
+  const [t] = useTranslation("global");
+  const { showAlert } = useAlert();
+  const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const router = useRouter();
+
+  useEffect(() => {
+    const categoriesFromStorage: ICategory[] = JSON.parse(
+      localStorage.getItem("Categorias") || "[]"
+    );
+    setCategories(categoriesFromStorage);
+
+    const fetchStoreData = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/store/${storeId}`);
+        if (response.ok) {
+          const storeData = await response.json();
+          setName(storeData.name);
+          setSelectedCategory(storeData.categoryName);
+        }
+      } catch (error) {
+        console.error("Error al obtener datos de la tienda:", error);
+      }
+    };
+
+    fetchStoreData();
+  }, [storeId]);
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(e.target.value);
+  };
+
+  const handleNombreBodegaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    const userId = userData.id;
+
+    const dataStore = {
+      name,
+      categoryName: selectedCategory,
+      userId,
+    };
+
+    try {
+      setLoading(true);
+      const response = await fetch(`${apiUrl}/store/${storeId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userData.token}`,
+        },
+        body: JSON.stringify(dataStore),
+      });
+      console.log(userData.token);
+      if (response.ok) {
+        showAlert({
+          title: t("storeForm.alerts.updatedTitle"),
+          message: t("storeForm.alerts.updatedText"),
+          variant: "success",
+          confirmText: t("products.accept"),
+        });
+        router.push("/GestionInventario");
+      } else {
+        throw new Error("Error en la actualización de la bodega");
+      }
+    } catch (error) {
+      showAlert({
+        title: t("storeForm.alerts.errorTitle"),
+        message: t("storeForm.alerts.updateError"),
+        variant: "danger",
+        confirmText: t("products.accept"),
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  const isButtonDisabled = !name || !selectedCategory;
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
+      <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-lg">
+        <h2 className="text-2xl font-bold text-center text-blue-700">
+          {t("storeForm.editTitle")}
+        </h2>
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <div className="space-y-2">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              {t("storeForm.newNameLabel")}
+            </label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              value={name}
+              onChange={handleNombreBodegaChange}
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder={t("storeForm.namePlaceholder")}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label
+              htmlFor="categoryName"
+              className="block text-sm font-medium text-gray-700"
+            >
+              {t("storeForm.newCategoryLabel")}
+            </label>
+            <select
+              name="categoryName"
+              id="category"
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            >
+              <option value="">{t("storeForm.selectCategory")}</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.name}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            type="submit"
+            disabled={isButtonDisabled}
+            className={`flex items-center justify-center w-full py-2 px-4 text-white ${
+              isButtonDisabled ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-900"
+            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-md`}
+          >
+            {loading ? <Loader /> : t("storeForm.updateButton")}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default EditStoreForm;

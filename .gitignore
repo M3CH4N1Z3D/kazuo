@@ -95,15 +95,15 @@ dist-ssr
 
 
 #
-kazuo-user_accessKeys.csv
+spot-on-user_accessKeys.csv
 *accessKeys.csv
 *.csv
 *.md
 *code-workspace
 
 # PWA files
-kazuo_front/public/sw.js
-kazuo_front/public/sw.js.map
-kazuo_front/public/workbox-*.js
-kazuo_front/public/workbox-*.js.map
-kazuo_front/public/worker-*.js
+front/public/sw.js
+front/public/sw.js.map
+front/public/workbox-*.js
+front/public/workbox-*.js.map
+front/public/worker-*.js
